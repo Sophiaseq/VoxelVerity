@@ -10,6 +10,8 @@
 
 #define UE_API MUNDUSGRANUM_API
 
+class UMGHealthSet;
+class UMGCombatSet;
 class UMGCharacterDefinition;
 class UMGAbilitySystemComponent;
 class UAbilitySystemComponent;
@@ -33,12 +35,28 @@ public:
 	UMGAbilitySystemComponent* GetMGAbilitySystemComponent() const { return AbilitySystemComponent; }
 	UE_API virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	
+	void SetHealthSet(const TObjectPtr<UAttributeSet>& InHealthSet){this->HealthSet = InHealthSet;}
+	void SetCombatSet(const TObjectPtr<const UAttributeSet>& InCombatSet){this->CombatSet = InCombatSet;}
+	[[nodiscard]] TObjectPtr<UAttributeSet> GetHealth() const{return HealthSet;}
+
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "MundusGranum|PlayerState")
-	TObjectPtr<UMGAbilitySystemComponent> AbilitySystemComponent;
-	
-	UPROPERTY(VisibleAnywhere, Category = "MundusGranum|PlayerState")
 	TObjectPtr<const UMGCharacterDefinition> PawnData;
+	
+private:
+	// The ability system component sub-object used by player characters.
+	UPROPERTY(VisibleAnywhere, Category = "MundusGranum|PlayerState")
+	TObjectPtr<UMGAbilitySystemComponent> AbilitySystemComponent;
+
+	// Health attribute set used by this actor.
+	//HACK 临时取消const
+	UPROPERTY()
+	TObjectPtr<UAttributeSet> HealthSet;
+
+	// Combat attribute set used by this actor.
+	UPROPERTY()
+	TObjectPtr<const UAttributeSet> CombatSet;
+	
 };
 
 #undef UE_API

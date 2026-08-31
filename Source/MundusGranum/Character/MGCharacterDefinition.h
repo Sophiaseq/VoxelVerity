@@ -30,18 +30,18 @@ class MUNDUSGRANUM_API UMGCharacterDefinition : public UPrimaryDataAsset
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FText CharacterName;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "MundusGranum|Pawn")
+	TSubclassOf<APawn> PawnClass;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "MundusGranum|Input")
+	TObjectPtr<UMGInputConfig> InputConfig;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSoftObjectPtr<USkeletalMesh> SkeletalMesh;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSoftClassPtr<UAnimInstance> AnimBlueprintClass;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	float MaxHealth = 100.0f;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	float MoveSpeed = 300.0f;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TArray<TSoftObjectPtr<UMGItemDefinition>> DropItemOnDeath;

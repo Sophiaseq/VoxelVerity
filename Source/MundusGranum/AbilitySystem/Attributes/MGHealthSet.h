@@ -17,6 +17,8 @@ class MUNDUSGRANUM_API UMGHealthSet : public UMGAttributeSet
 	
 public:
 	UMGHealthSet();
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	
 	ATTRIBUTE_ACCESSORS_BASIC(UMGHealthSet, Health)  // 自动生成Getter/Setter/Init函数
 	ATTRIBUTE_ACCESSORS_BASIC(UMGHealthSet, MaxHealth)
 	ATTRIBUTE_ACCESSORS_BASIC(UMGHealthSet, Mana)
@@ -64,33 +66,33 @@ protected:
 	
 private:
 	/** 当前生命值 — 降到0时角色死亡 */
-	UPROPERTY(VisibleAnywhere, Category = "Vital|Health", ReplicatedUsing = OnRep_Health)
+	UPROPERTY(BlueprintReadOnly, Category = "Vital|Health", ReplicatedUsing = OnRep_Health, meta = (AllowPrivateAccess))
 	FGameplayAttributeData Health;
 	
 	/** 最大生命值 — 由装备、等级、Buff等影响 */
-	UPROPERTY(VisibleAnywhere, Category = "Vital|Health", ReplicatedUsing = OnRep_MaxHealth)
+	UPROPERTY(BlueprintReadOnly, Category = "Vital|Health", ReplicatedUsing = OnRep_MaxHealth, meta = (AllowPrivateAccess))
 	FGameplayAttributeData MaxHealth;
 	
 	/** 当前法力值 — 施放技能消耗法力 */
-	UPROPERTY(VisibleAnywhere, Category = "Vital|Mana", ReplicatedUsing = OnRep_Mana)
+	UPROPERTY(BlueprintReadOnly, Category = "Vital|Mana", ReplicatedUsing = OnRep_Mana, meta = (AllowPrivateAccess))
 	FGameplayAttributeData Mana;
 	
 	/** 最大法力值 */
-	UPROPERTY(VisibleAnywhere, Category = "Vital|Mana", ReplicatedUsing = OnRep_MaxMana)
+	UPROPERTY(BlueprintReadOnly, Category = "Vital|Mana", ReplicatedUsing = OnRep_MaxMana, meta = (AllowPrivateAccess))
 	FGameplayAttributeData MaxMana;
 	
 	/** 当前体力值 — 闪避、冲刺消耗体力 */
-	UPROPERTY(VisibleAnywhere, Category = "Vital|Stamina", ReplicatedUsing = OnRep_Stamina)
+	UPROPERTY(BlueprintReadOnly, Category = "Vital|Stamina", ReplicatedUsing = OnRep_Stamina, meta = (AllowPrivateAccess))
 	FGameplayAttributeData Stamina;
 	
 	/** 最大体力值 */
-	UPROPERTY(VisibleAnywhere, Category = "Vital|Stamina", ReplicatedUsing = OnRep_MaxStamina)
+	UPROPERTY(BlueprintReadOnly, Category = "Vital|Stamina", ReplicatedUsing = OnRep_MaxStamina, meta = (AllowPrivateAccess))
 	FGameplayAttributeData MaxStamina;
 		
-	UPROPERTY(VisibleAnywhere, Category = "Meta")
+	UPROPERTY(BlueprintReadOnly, Category = "Meta", meta = (AllowPrivateAccess))
 	FGameplayAttributeData IncomingDamage;
 	
 	/** 受到的最终治疗值（临时属性） */
-	UPROPERTY(VisibleAnywhere, Category = "Meta")
+	UPROPERTY(BlueprintReadOnly, Category = "Meta", meta = (AllowPrivateAccess))
 	FGameplayAttributeData IncomingHealing;
 };

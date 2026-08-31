@@ -3,30 +3,79 @@
 
 #include "MGCharacter.h"
 
+#include "MGPawnExtensionComponent.h"
+#include "AbilitySystem/MGAbilitySystemComponent.h"
+#include "Player/MGPlayerController.h"
+#include "Player/MGPlayerState.h"
+#include "UI/HUD/MGHUD.h"
+
 
 // Sets default values
 AMGCharacter::AMGCharacter()
 {
-	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-// Called when the game starts or when spawned
 void AMGCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
-// Called every frame
+void AMGCharacter::InitAbilityActorInfo()
+{
+	AMGPlayerState* MGPlayerState = GetPlayerState<AMGPlayerState>();
+	check(MGPlayerState);
+	MGPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(MGPlayerState,this);
+	UMGAbilitySystemComponent* ASC = MGPlayerState->GetMGAbilitySystemComponent();
+	PawnExtComponent->InitializeAbilitySystem(ASC, this);
+	
+	if (AMGPlayerController* MGPlayerController = Cast<AMGPlayerController>(GetController()))
+	{
+		if (AMGHUD* MGHUD = Cast<AMGHUD>(MGPlayerController->GetHUD()))
+		{
+			MGHUD->InitOverlay(MGPlayerController, MGPlayerState, ASC, MGPlayerState->GetHealth());
+		}
+	}
+}
+
+void AMGCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	
+	//Init ability actor info for the Server
+	InitAbilityActorInfo();
+}
+
+void AMGCharacter::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+	
+	InitAbilityActorInfo();
+}
+
 void AMGCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
 
-// Called to bind functionality to input
 void AMGCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+}
+
+UMGAbilitySystemComponent* AMGCharacter::GetMGAbilitySystemComponent() const
+{
+	return Cast<UMGAbilitySystemComponent>(GetAbilitySystemComponent());
+}
+
+UAbilitySystemComponent* AMGCharacter::GetAbilitySystemComponent() const
+{
+	if (PawnExtComponent == nullptr)
+	{
+		return nullptr;
+	}
+
+	return PawnExtComponent->GetMGAbilitySystemComponent();
 }
 

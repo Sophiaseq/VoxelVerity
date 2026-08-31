@@ -1,4 +1,5 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿/*
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "MGDamageExecution.h"
@@ -175,3 +176,4 @@ float UMGDamageExecution::CalculateBaseMagnitude_Implementation(const FGameplayE
     // 返回计算结果 → GAS会将此值应用到GE的目标属性上（通常是IncomingDamage）
     return FinalDamage;
 }
+*/

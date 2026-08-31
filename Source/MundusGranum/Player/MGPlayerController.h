@@ -6,6 +6,8 @@
 #include "GameFramework/PlayerController.h"
 #include "MGPlayerController.generated.h"
 
+struct FInputActionValue;
+class UMGInputConfig;
 class UInputMappingContext;
 /**
  * 
@@ -18,10 +20,22 @@ class MUNDUSGRANUM_API AMGPlayerController : public APlayerController
 public:
 	AMGPlayerController();
 	
+	//~AController interface
+	virtual void InitPlayerState() override;
+	virtual void CleanupPlayerState() override;
+	virtual void OnRep_PlayerState() override;
+	//~End of AController interface
+
 protected:
 	virtual void BeginPlay() override;
 	
+	// Called when the player state is set or cleared
+	virtual void OnPlayerStateChanged();
+
 private:
-	UPROPERTY(EditAnywhere, Category = Input)
-	TObjectPtr<UInputMappingContext> MGContext;
+	void BroadcastOnPlayerStateChanged();
+	
+	UPROPERTY()
+	TObjectPtr<APlayerState> LastSeenPlayerState;
+
 };

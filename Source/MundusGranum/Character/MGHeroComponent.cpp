@@ -1,7 +1,22 @@
 ﻿#include "MGHeroComponent.h"
 #include "MGCharacterBase.h"
 #include "EnhancedInputSubsystems.h"
-#include "GameFramework/CharacterMovementComponent.h"
+#include "MGCharacterDefinition.h"
+#include "MGPawnExtensionComponent.h"
+#include "MundusGranumGameplayTags.h"
+#include "Components/GameFrameworkComponentDelegates.h"
+#include "Components/GameFrameworkComponentManager.h"
+#include "GameFeatures/GameFeatureAction_AddInputContextMapping.h"
+#include "Input/MGInputComponent.h"
+#include "Player/MGPlayerController.h"
+#include "Player/MGPlayerState.h"
+#include "UserSettings/EnhancedInputUserSettings.h"
+#include "InputMappingContext.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(MGHeroComponent)
+
+const FName UMGHeroComponent::NAME_BindInputsNow("BindInputsNow");
+const FName UMGHeroComponent::NAME_ActorFeatureName("Hero");
 
 UMGHeroComponent::UMGHeroComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -14,7 +29,262 @@ void UMGHeroComponent::BeginPlay()
 	
 }
 
-void UMGHeroComponent::Input_Move(const FInputActionValue& InputActionValue) const
+bool UMGHeroComponent::CanChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState, FGameplayTag DesiredState) const
+{
+	check(Manager);
+
+	APawn* Pawn = GetPawn<APawn>();
+
+	if (!CurrentState.IsValid() && DesiredState == MundusGranumGameplayTags::InitState_Spawned)
+	{
+		// As long as we have a real pawn, let us transition
+		if (Pawn)
+		{
+			return true;
+		}
+	}
+	else if (CurrentState == MundusGranumGameplayTags::InitState_Spawned && DesiredState == MundusGranumGameplayTags::InitState_DataAvailable)
+	{
+		// The player state is required.
+		if (!GetPlayerState<AMGPlayerState>())
+		{
+			return false;
+		}
+
+		// If we're authority or autonomous, we need to wait for a controller with registered ownership of the player state.
+		if (Pawn->GetLocalRole() != ROLE_SimulatedProxy)
+		{
+			AController* Controller = GetController<AController>();
+
+			const bool bHasControllerPairedWithPS = (Controller != nullptr) && \
+				(Controller->PlayerState != nullptr) && \
+				(Controller->PlayerState->GetOwner() == Controller);
+
+			if (!bHasControllerPairedWithPS)
+			{
+				return false;
+			}
+		}
+
+		const bool bIsLocallyControlled = Pawn->IsLocallyControlled();
+		const bool bIsBot = Pawn->IsBotControlled();
+
+		if (bIsLocallyControlled && !bIsBot)
+		{
+			AMGPlayerController* MGPC = GetController<AMGPlayerController>();
+
+			// The input component and local player is required when locally controlled.
+			if (!Pawn->InputComponent || !MGPC || !MGPC->GetLocalPlayer())
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+	else if (CurrentState == MundusGranumGameplayTags::InitState_DataAvailable && DesiredState == MundusGranumGameplayTags::InitState_DataInitialized)
+	{
+		// Wait for player state and extension component
+		AMGPlayerState* MGPS = GetPlayerState<AMGPlayerState>();
+
+		return MGPS && Manager->HasFeatureReachedInitState(Pawn, UMGPawnExtensionComponent::NAME_ActorFeatureName, MundusGranumGameplayTags::InitState_DataInitialized);
+	}
+	else if (CurrentState == MundusGranumGameplayTags::InitState_DataInitialized && DesiredState == MundusGranumGameplayTags::InitState_GameplayReady)
+	{
+		// TODO add ability initialization checks?
+		return true;
+	}
+
+	return false;
+}
+
+void UMGHeroComponent::HandleChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState, FGameplayTag DesiredState)
+{
+	if (CurrentState == MundusGranumGameplayTags::InitState_DataAvailable && DesiredState == MundusGranumGameplayTags::InitState_DataInitialized)
+	{
+		APawn* Pawn = GetPawn<APawn>();
+		AMGPlayerState* MGPS = GetPlayerState<AMGPlayerState>();
+		if (!ensure(Pawn && MGPS))
+		{
+			return;
+		}
+
+		const UMGCharacterDefinition* PawnData = nullptr;
+
+		if (UMGPawnExtensionComponent* PawnExtComp = UMGPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
+		{
+			PawnData = PawnExtComp->GetPawnData<UMGCharacterDefinition>();
+
+			// The player state holds the persistent data for this player (state that persists across deaths and multiple pawns).
+			// The ability system component and attribute sets live on the player state.
+			PawnExtComp->InitializeAbilitySystem(MGPS->GetMGAbilitySystemComponent(), MGPS);
+		}
+
+		if (AMGPlayerController* MGPC = GetController<AMGPlayerController>())
+		{
+			if (Pawn->InputComponent != nullptr)
+			{
+				InitializePlayerInput(Pawn->InputComponent);
+			}
+		}
+
+		// Hook up the delegate for all pawns, in case we spectate later
+		/*if (PawnData)
+		{
+			if (UMGCameraComponent* CameraComponent = UMGCameraComponent::FindCameraComponent(Pawn))
+			{
+				CameraComponent->DetermineCameraModeDelegate.BindUObject(this, &ThisClass::DetermineCameraMode);
+			}
+		}*/
+	}
+}
+
+void UMGHeroComponent::OnActorInitStateChanged(const FActorInitStateChangedParams& Params)
+{
+	if (Params.FeatureName == UMGPawnExtensionComponent::NAME_ActorFeatureName)
+	{
+		if (Params.FeatureState == MundusGranumGameplayTags::InitState_DataInitialized)
+		{
+			// If the extension component says all all other components are initialized, try to progress to next state
+			CheckDefaultInitialization();
+		}
+	}
+}
+
+void UMGHeroComponent::CheckDefaultInitialization()
+{
+	static const TArray<FGameplayTag> StateChain = { MundusGranumGameplayTags::InitState_Spawned, MundusGranumGameplayTags::InitState_DataAvailable, MundusGranumGameplayTags::InitState_DataInitialized, MundusGranumGameplayTags::InitState_GameplayReady };
+
+	// This will try to progress from spawned (which is only set in BeginPlay) through the data initialization stages until it gets to gameplay ready
+	ContinueInitStateChain(StateChain);
+}
+
+void UMGHeroComponent::AddAdditionalInputConfig(const UMGInputConfig* InputConfig)
+{
+	TArray<uint32> BindHandles;
+
+	const APawn* Pawn = GetPawn<APawn>();
+	if (!Pawn)
+	{
+		return;
+	}
+	
+	const APlayerController* PC = GetController<APlayerController>();
+	check(PC);
+
+	const ULocalPlayer* LP = PC->GetLocalPlayer();
+	check(LP);
+
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = LP->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+	check(Subsystem);
+
+	if (const UMGPawnExtensionComponent* PawnExtComp = UMGPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
+	{
+		UMGInputComponent* MGIC = Pawn->FindComponentByClass<UMGInputComponent>();
+		if (ensureMsgf(MGIC, TEXT("Unexpected Input Component class! The Gameplay Abilities will not be bound to their inputs. Change the input component to UMGInputComponent or a subclass of it.")))
+		{
+			//TODO
+			//MGIC->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, /*out*/ BindHandles);
+		}
+	}
+}
+
+void UMGHeroComponent::RemoveAdditionalInputConfig(const UMGInputConfig* InputConfig)
+{
+	//@TODO: Implement me!
+}
+
+bool UMGHeroComponent::IsReadyToBindInputs() const
+{
+	return bReadyToBindInputs;
+}
+
+void UMGHeroComponent::InitializePlayerInput(UInputComponent* PlayerInputComponent)
+{
+	check(PlayerInputComponent);
+
+	const APawn* Pawn = GetPawn<APawn>();
+	if (!Pawn)
+	{
+		return;
+	}
+
+	const APlayerController* PC = GetController<APlayerController>();
+	check(PC);
+
+	//TODO UMGLocalPlayer
+	const ULocalPlayer* LP = Cast<ULocalPlayer>(PC->GetLocalPlayer());
+	check(LP);
+
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = LP->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+	check(Subsystem);
+
+	Subsystem->ClearAllMappings();
+
+	if (const UMGPawnExtensionComponent* PawnExtComp = UMGPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
+	{
+		if (const UMGCharacterDefinition* PawnData = PawnExtComp->GetPawnData<UMGCharacterDefinition>())
+		{
+			if (const UMGInputConfig* InputConfig = PawnData->InputConfig)
+			{
+				for (const FInputMappingContextAndPriority& Mapping : DefaultInputMappings)
+				{
+					if (UInputMappingContext* IMC = Mapping.InputMapping.LoadSynchronous())
+					{
+						if (Mapping.bRegisterWithSettings)
+						{
+							if (UEnhancedInputUserSettings* Settings = Subsystem->GetUserSettings())
+							{
+								Settings->RegisterInputMappingContext(IMC);
+							}
+							
+							FModifyContextOptions Options = {};
+							Options.bIgnoreAllPressedKeysUntilRelease = false;
+							// Actually add the config to the local player							
+							Subsystem->AddMappingContext(IMC, Mapping.Priority, Options);
+						}
+					}
+				}
+
+				// The MG Input Component has some additional functions to map Gameplay Tags to an Input Action.
+				// If you want this functionality but still want to change your input component class, make it a subclass
+				// of the UMGInputComponent or modify this component accordingly.
+				UMGInputComponent* MGIC = Cast<UMGInputComponent>(PlayerInputComponent);
+				if (ensureMsgf(MGIC, TEXT("Unexpected Input Component class! The Gameplay Abilities will not be bound to their inputs. Change the input component to UMGInputComponent or a subclass of it.")))
+				{
+					// Add the key mappings that may have been set by the player
+					MGIC->AddInputMappings(InputConfig, Subsystem);
+
+					// This is where we actually bind and input action to a gameplay tag, which means that Gameplay Ability Blueprints will
+					// be triggered directly by these input actions Triggered events. 
+					TArray<uint32> BindHandles;
+					//@HACK MGIC->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, /*out*/ BindHandles);
+
+					MGIC->BindNativeAction(InputConfig, MundusGranumGameplayTags::InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::Input_Move, /*bLogIfNotFound=*/ false);
+					MGIC->BindNativeAction(InputConfig, MundusGranumGameplayTags::InputTag_Look_Mouse, ETriggerEvent::Triggered, this, &ThisClass::Input_LookMouse, /*bLogIfNotFound=*/ false);
+					MGIC->BindNativeAction(InputConfig, MundusGranumGameplayTags::InputTag_Jump, ETriggerEvent::Triggered, this, &ThisClass::Input_Jump, /*bLogIfNotFound=*/ false);
+					MGIC->BindNativeAction(InputConfig, MundusGranumGameplayTags::InputTag_Sprint, ETriggerEvent::Started, this, &ThisClass::Input_SprintPressed, /*bLogIfNotFound=*/ false);
+					MGIC->BindNativeAction(InputConfig, MundusGranumGameplayTags::InputTag_Sprint, ETriggerEvent::Completed, this, &ThisClass::Input_SprintReleased, /*bLogIfNotFound=*/ false);
+					MGIC->BindNativeAction(InputConfig, MundusGranumGameplayTags::InputTag_Pickup, ETriggerEvent::Triggered, this, &ThisClass::Input_Pickup, /*bLogIfNotFound=*/ false);
+					MGIC->BindNativeAction(InputConfig, MundusGranumGameplayTags::InputTag_SelectItem, ETriggerEvent::Triggered, this, &ThisClass::Input_SelectItem, /*bLogIfNotFound=*/ false);
+					MGIC->BindNativeAction(InputConfig, MundusGranumGameplayTags::InputTag_SlowWalk, ETriggerEvent::Triggered, this, &ThisClass::Input_SlowWalk, /*bLogIfNotFound=*/ false);
+					MGIC->BindNativeAction(InputConfig, MundusGranumGameplayTags::InputTag_UseLeftHandItem, ETriggerEvent::Triggered, this, &ThisClass::Input_UseLeftHandItem, /*bLogIfNotFound=*/ false);
+					MGIC->BindNativeAction(InputConfig, MundusGranumGameplayTags::InputTag_UseRightHandItem, ETriggerEvent::Triggered, this, &ThisClass::Input_UseRightHandItem, /*bLogIfNotFound=*/ false);
+				}
+			}
+		}
+	}
+
+	if (ensure(!bReadyToBindInputs))
+	{
+		bReadyToBindInputs = true;
+	}
+ 
+	UGameFrameworkComponentManager::SendGameFrameworkComponentExtensionEvent(const_cast<APlayerController*>(PC), NAME_BindInputsNow);
+	UGameFrameworkComponentManager::SendGameFrameworkComponentExtensionEvent(const_cast<APawn*>(Pawn), NAME_BindInputsNow);
+}
+
+void UMGHeroComponent::Input_Move(const FInputActionValue& InputActionValue)
 {
 	APawn* Pawn = GetPawn<APawn>();
 	AController* Controller = Pawn ? Pawn->GetController() : nullptr;
@@ -58,7 +328,7 @@ void UMGHeroComponent::Input_LookMouse(const FInputActionValue& InputActionValue
 	}
 }
 
-void UMGHeroComponent::Input_Jump() const
+void UMGHeroComponent::Input_Jump()
 {
 	if (ACharacter* Character = GetPawn<ACharacter>())
 	{
@@ -66,7 +336,35 @@ void UMGHeroComponent::Input_Jump() const
 	}
 }
 
+void UMGHeroComponent::Input_Pickup()
+{
+}
 
+void UMGHeroComponent::Input_SprintPressed()
+{
+	
+}
+
+void UMGHeroComponent::Input_SprintReleased()
+{
+	
+}
+
+void UMGHeroComponent::Input_UseLeftHandItem()
+{
+}
+
+void UMGHeroComponent::Input_UseRightHandItem()
+{
+}
+
+void UMGHeroComponent::Input_SelectItem(const FInputActionValue& Value)
+{
+}
+
+void UMGHeroComponent::Input_SlowWalk()
+{
+}
 
 
 

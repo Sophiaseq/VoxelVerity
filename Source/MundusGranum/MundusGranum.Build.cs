@@ -8,9 +8,21 @@ public class MundusGranum : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "GameplayTags", "GameplayAbilities", "ModularGameplay", "GameplayTasks", "ProceduralMeshComponent", "GeometryCollectionEngine", "UMG" });
+		PublicDependencyModuleNames.AddRange(new string[] { 
+			"Core",
+			"CoreUObject", 
+			"Engine", 
+			"InputCore", 
+			"EnhancedInput", 
+			"GameplayAbilities", 
+			"ModularGameplay", 
+			"ProceduralMeshComponent", 
+			"GeometryCollectionEngine", 
+			"UMG",
+			"GameFeatures"
+		});
 
-		PrivateDependencyModuleNames.AddRange(new string[] {  });
+		PrivateDependencyModuleNames.AddRange(new string[] { "GameplayTags", "GameplayTasks" });
 
 		PrivateIncludePaths.AddRange(new string[] { "MundusGranum" });
 
