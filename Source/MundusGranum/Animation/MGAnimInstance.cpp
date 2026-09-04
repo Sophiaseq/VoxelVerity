@@ -3,17 +3,17 @@
 
 #include "MGAnimInstance.h"
 
-#include "Character/MGPlayer.h"
+#include "Character/MGCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
 void UMGAnimInstance::NativeInitializeAnimation()
 {
 	Super::NativeInitializeAnimation();
-	MGCharacterBase = Cast<AMGPlayer>(TryGetPawnOwner());
-	if (MGCharacterBase)
+	MGCharacter = Cast<AMGCharacter>(TryGetPawnOwner());
+	if (MGCharacter)
 	{
-		MGCharacterMovement = MGCharacterBase->GetCharacterMovement();
+		MGCharacterMovement = MGCharacter->GetCharacterMovement();
 	}
 }
 
@@ -24,9 +24,9 @@ void UMGAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	{
 		GroudSpeed = UKismetMathLibrary::VSizeXY(MGCharacterMovement->Velocity);
 		IsFalling = MGCharacterMovement->IsFalling();
-		CharacterState = MGCharacterBase->GetCharacterState();
-		ActionState = MGCharacterBase->GetActionState();
-		CharacterDirection = MGCharacterBase->GetMovementDirection();
+		//CharacterState = MGCharacter->GetCharacterState();
+		//ActionState = MGCharacter->GetActionState();
+		//CharacterDirection = MGCharacter->GetMovementDirection();
 	}
 }
 

@@ -3,14 +3,11 @@
 
 #include "MGHandEquipComponent.h"
 
-#include "Character/MGPlayer.h"
 #include "Items/MGItemDefinition.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Interaction/HitInterface.h"
-#include "Items/MGItemBehavior.h"
 #include "Items/Weapons/MGWeaponItemDefinition.h"
-#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 

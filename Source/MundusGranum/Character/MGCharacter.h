@@ -10,7 +10,7 @@
 class UMGAbilitySystemComponent;
 class UMGPawnExtensionComponent;
 
-UCLASS(Config = Game)
+UCLASS(Blueprintable, Config = Game)
 class MUNDUSGRANUM_API AMGCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
@@ -19,20 +19,23 @@ public:
 	
 	AMGCharacter();
 	virtual void Tick(float DeltaTime) override;
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
 	UFUNCTION(BlueprintCallable, Category = "MundusGranum|PlayerState")
 	UMGAbilitySystemComponent* GetMGAbilitySystemComponent() const;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	
 protected:
+	virtual void OnAbilitySystemInitialized();
+	virtual void OnAbilitySystemUninitialized();
+	
 	virtual void BeginPlay() override;
 	virtual void PossessedBy(AController* NewController) override;
+	virtual void UnPossessed() override;
 	virtual void OnRep_PlayerState() override;
-	
-	//Likely to be modified
-	void InitAbilityActorInfo();
-	
+	virtual void OnRep_Controller() override;
+;
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MundusGranum|Character", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UMGPawnExtensionComponent> PawnExtComponent;

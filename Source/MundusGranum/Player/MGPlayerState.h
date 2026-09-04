@@ -8,42 +8,61 @@
 #include "GameFramework/PlayerState.h"
 #include "MGPlayerState.generated.h"
 
-#define UE_API MUNDUSGRANUM_API
-
-class UMGHealthSet;
-class UMGCombatSet;
-class UMGCharacterDefinition;
-class UMGAbilitySystemComponent;
-class UAbilitySystemComponent;
-class AMGPlayerController;
 /**
  * 
  */
 
-UCLASS(MinimalAPI, Config = Game)
+class UMGExperienceDefinition;
+class UMGCharacterDefinition;
+class UMGAbilitySystemComponent;
+class AMGPlayerController;
+
+UCLASS(Config = Game)
 class AMGPlayerState : public APlayerState, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 	
 public:
-	UE_API AMGPlayerState(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	AMGPlayerState(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 	
 	UFUNCTION(BlueprintCallable, Category = "MundusGranum|PlayerState")
-	UE_API AMGPlayerController* GetMGPlayerController() const;
+	AMGPlayerController* GetMGPlayerController() const;
 	
 	UFUNCTION(BlueprintCallable, Category = "MundusGranum|PlayerState")
 	UMGAbilitySystemComponent* GetMGAbilitySystemComponent() const { return AbilitySystemComponent; }
-	UE_API virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	
+	//~AActor interface
+	virtual void PreInitializeComponents() override;
+	virtual void PostInitializeComponents() override;
+	//~End of AActor interface
+	
+	//~APlayerState interface
+	virtual void Reset() override;
+	virtual void ClientInitialize(AController* C) override;
+	//~End of APlayerState interface
+	
+	static const FName NAME_MGAbilityReady;
+	
+	template <class T>
+	const T* GetPawnData() const { return Cast<T>(PawnData); }
+	
+	void SetPawnData(const UMGCharacterDefinition* InCharacterDefinition);
 	
 	void SetHealthSet(const TObjectPtr<UAttributeSet>& InHealthSet){this->HealthSet = InHealthSet;}
 	void SetCombatSet(const TObjectPtr<const UAttributeSet>& InCombatSet){this->CombatSet = InCombatSet;}
 	[[nodiscard]] TObjectPtr<UAttributeSet> GetHealth() const{return HealthSet;}
 
 protected:
-	UPROPERTY(VisibleAnywhere, Category = "MundusGranum|PlayerState")
+	UFUNCTION()
+	void OnRep_PawnData();
+	
+	UPROPERTY(ReplicatedUsing = OnRep_PawnData)
 	TObjectPtr<const UMGCharacterDefinition> PawnData;
 	
 private:
+	void OnExperienceLoaded(const UMGExperienceDefinition* CurrentExperience);
+	
 	// The ability system component sub-object used by player characters.
 	UPROPERTY(VisibleAnywhere, Category = "MundusGranum|PlayerState")
 	TObjectPtr<UMGAbilitySystemComponent> AbilitySystemComponent;
@@ -58,5 +77,3 @@ private:
 	TObjectPtr<const UAttributeSet> CombatSet;
 	
 };
-
-#undef UE_API

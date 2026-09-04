@@ -7,8 +7,8 @@
 #include "Animation/AnimInstance.h"
 #include "MGAnimInstance.generated.h"
 
+class AMGCharacter;
 class UCharacterMovementComponent;
-class AMGPlayer;
 /**
  * 
  */
@@ -21,7 +21,7 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaTime) override;
 	
 	UPROPERTY(BlueprintReadOnly)
-	AMGPlayer* MGCharacterBase;
+	AMGCharacter* MGCharacter;
 	
 	UPROPERTY(BlueprintReadOnly, Category="Movement")
 	UCharacterMovementComponent* MGCharacterMovement;

@@ -1,0 +1,13 @@
+﻿{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "MGInputFeature",
+	"Description": "输入相关的 GameFeature 内容",
+	"Category": "Game Features",
+	"CanContainContent": true,
+	"Installed": false,
+	"ExplicitlyLoaded": true,
+	"EnabledByDefault": false,
+	"BuiltInInitialFeatureState": "Registered"
+}

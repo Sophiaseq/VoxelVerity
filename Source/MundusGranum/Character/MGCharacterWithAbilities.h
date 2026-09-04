@@ -11,7 +11,7 @@ class UMGCombatSet;
 class UAbilitySystemComponent;
 class UMGAbilitySystemComponent;
 
-UCLASS()
+UCLASS(Blueprintable)
 class MUNDUSGRANUM_API AMGCharacterWithAbilities : public AMGCharacter
 {
 	GENERATED_BODY()

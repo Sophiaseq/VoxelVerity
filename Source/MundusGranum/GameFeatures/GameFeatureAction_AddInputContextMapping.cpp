@@ -35,6 +35,7 @@ void UGameFeatureAction_AddInputContextMapping::OnGameFeatureRegistering()
 
 void UGameFeatureAction_AddInputContextMapping::OnGameFeatureActivating(FGameFeatureActivatingContext& Context)
 {
+	UE_LOG(LogGameFeatures, Warning, TEXT("[DEBUG] OnGameFeatureActivating fired"));
 	FPerContextData& ActiveData = ContextData.FindOrAdd(Context);
 	if (!ensure(ActiveData.ExtensionRequestHandles.IsEmpty()) ||
 		!ensure(ActiveData.ControllersAddedTo.IsEmpty()))
@@ -199,17 +200,24 @@ void UGameFeatureAction_AddInputContextMapping::AddToWorld(const FWorldContext& 
 	UWorld* World = WorldContext.World();
 	UGameInstance* GameInstance = WorldContext.OwningGameInstance;
 	FPerContextData& ActiveData = ContextData.FindOrAdd(ChangeContext);
+	UE_LOG(LogGameFeatures, Warning, TEXT("[DEBUG] AddToWorld: GameInstance=%s World=%s IsGameWorld=%d"),
+		  *GetNameSafe(GameInstance), *GetNameSafe(World), World ? World->IsGameWorld() : -1);
 
 	if ((GameInstance != nullptr) && (World != nullptr) && World->IsGameWorld())
 	{
 		if (UGameFrameworkComponentManager* ComponentManager = UGameInstance::GetSubsystem<UGameFrameworkComponentManager>(GameInstance))
 		{
+			UE_LOG(LogGameFeatures, Warning, TEXT("[DEBUG] AddToWorld: ComponentManager OK, registering handler"));
 			UGameFrameworkComponentManager::FExtensionHandlerDelegate AddAbilitiesDelegate =
 				UGameFrameworkComponentManager::FExtensionHandlerDelegate::CreateUObject(this, &ThisClass::HandleControllerExtension, ChangeContext);
 			TSharedPtr<FComponentRequestHandle> ExtensionRequestHandle =
 				ComponentManager->AddExtensionHandler(APlayerController::StaticClass(), AddAbilitiesDelegate);
 
 			ActiveData.ExtensionRequestHandles.Add(ExtensionRequestHandle);
+		}
+		else
+		{
+			UE_LOG(LogGameFeatures, Warning, TEXT("[DEBUG] AddToWorld: ComponentManager is NULL!"));
 		}
 	}
 }
@@ -234,6 +242,7 @@ void UGameFeatureAction_AddInputContextMapping::Reset(FPerContextData& ActiveDat
 
 void UGameFeatureAction_AddInputContextMapping::HandleControllerExtension(AActor* Actor, FName EventName, FGameFeatureStateChangeContext ChangeContext)
 {
+	UE_LOG(LogGameFeatures, Warning, TEXT("[DEBUG] HandleControllerExtension Event=%s"), *EventName.ToString());
 	APlayerController* AsController = CastChecked<APlayerController>(Actor);
 	FPerContextData& ActiveData = ContextData.FindOrAdd(ChangeContext);
 
@@ -250,6 +259,8 @@ void UGameFeatureAction_AddInputContextMapping::HandleControllerExtension(AActor
 
 void UGameFeatureAction_AddInputContextMapping::AddInputMappingForPlayer(UPlayer* Player, FPerContextData& ActiveData)
 {
+	UE_LOG(LogGameFeatures, Warning, TEXT("[DEBUG] AddInputMappingForPlayer Player=%s, NumMappings=%d"),
+	  *GetNameSafe(Player), InputMappings.Num());
 	if (ULocalPlayer* LocalPlayer = Cast<ULocalPlayer>(Player))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* InputSystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())

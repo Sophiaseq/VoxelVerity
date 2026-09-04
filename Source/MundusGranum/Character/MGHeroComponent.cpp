@@ -1,5 +1,4 @@
 ﻿#include "MGHeroComponent.h"
-#include "MGCharacterBase.h"
 #include "EnhancedInputSubsystems.h"
 #include "MGCharacterDefinition.h"
 #include "MGPawnExtensionComponent.h"
@@ -12,6 +11,8 @@
 #include "Player/MGPlayerState.h"
 #include "UserSettings/EnhancedInputUserSettings.h"
 #include "InputMappingContext.h"
+#include "GameFramework/Character.h"
+#include "Misc/UObjectToken.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(MGHeroComponent)
 
@@ -21,12 +22,26 @@ const FName UMGHeroComponent::NAME_ActorFeatureName("Hero");
 UMGHeroComponent::UMGHeroComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+	bReadyToBindInputs = false;
 }
 
 void UMGHeroComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	// Listen for when the pawn extension component changes init state
+	BindOnActorInitStateChanged(UMGPawnExtensionComponent::NAME_ActorFeatureName, FGameplayTag(), false);
+
+	// Notifies that we are done spawning, then try the rest of initialization
+	ensure(TryToChangeInitState(MundusGranumGameplayTags::InitState_Spawned));
+	CheckDefaultInitialization();
+}
+
+void UMGHeroComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	UnregisterInitStateFeature();
+	
+	Super::EndPlay(EndPlayReason);
 }
 
 bool UMGHeroComponent::CanChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState, FGameplayTag DesiredState) const
@@ -100,6 +115,7 @@ bool UMGHeroComponent::CanChangeInitState(UGameFrameworkComponentManager* Manage
 
 void UMGHeroComponent::HandleChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState, FGameplayTag DesiredState)
 {
+	UE_LOG(LogTemp, Log, TEXT("Hero的当前状态 = %s"), *CurrentState.GetTagName().ToString());
 	if (CurrentState == MundusGranumGameplayTags::InitState_DataAvailable && DesiredState == MundusGranumGameplayTags::InitState_DataInitialized)
 	{
 		APawn* Pawn = GetPawn<APawn>();
@@ -156,7 +172,36 @@ void UMGHeroComponent::CheckDefaultInitialization()
 	static const TArray<FGameplayTag> StateChain = { MundusGranumGameplayTags::InitState_Spawned, MundusGranumGameplayTags::InitState_DataAvailable, MundusGranumGameplayTags::InitState_DataInitialized, MundusGranumGameplayTags::InitState_GameplayReady };
 
 	// This will try to progress from spawned (which is only set in BeginPlay) through the data initialization stages until it gets to gameplay ready
+	
 	ContinueInitStateChain(StateChain);
+}
+
+void UMGHeroComponent::OnRegister()
+{
+	Super::OnRegister();
+	if (!GetPawn<APawn>())
+	{
+		UE_LOG(LogTemp, Error, TEXT("[UMGHeroComponent::OnRegister] This component has been added to a blueprint whose base class is not a Pawn. To use this component, it MUST be placed on a Pawn Blueprint."));
+
+#if WITH_EDITOR
+		if (GIsEditor)
+		{
+			static const FText Message = NSLOCTEXT("MGHeroComponent", "NotOnPawnError", "has been added to a blueprint whose base class is not a Pawn. To use this component, it MUST be placed on a Pawn Blueprint. This will cause a crash if you PIE!");
+			static const FName HeroMessageLogName = TEXT("MGHeroComponent");
+			
+			FMessageLog(HeroMessageLogName).Error()
+				->AddToken(FUObjectToken::Create(this, FText::FromString(GetNameSafe(this))))
+				->AddToken(FTextToken::Create(Message));
+				
+			FMessageLog(HeroMessageLogName).Open();
+		}
+#endif
+	}
+	else
+	{
+		// Register with the init state system early, this will only work if this is a game world
+		RegisterInitStateFeature();
+	}
 }
 
 void UMGHeroComponent::AddAdditionalInputConfig(const UMGInputConfig* InputConfig)
@@ -274,6 +319,7 @@ void UMGHeroComponent::InitializePlayerInput(UInputComponent* PlayerInputCompone
 			}
 		}
 	}
+	UE_LOG(LogTemp, Warning, TEXT("[DEBUG] InitializePlayerInput 跑到了，准备广播 BindInputsNow"));
 
 	if (ensure(!bReadyToBindInputs))
 	{

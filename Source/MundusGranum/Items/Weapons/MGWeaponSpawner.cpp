@@ -3,7 +3,7 @@
 
 #include "MGWeaponSpawner.h"
 
-#include "Character/MGPlayer.h"
+#include "Character/MGCharacter.h"
 #include "Components/SphereComponent.h"
 
 // Sets default values
@@ -34,7 +34,7 @@ void AMGWeaponSpawner::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent,
 	{
 		GEngine->AddOnScreenDebugMessage(1,30.f,FColor::Blue,OtherActorName);
 	}
-	if (AMGPlayer* CharacterBase =  Cast<AMGPlayer>(OtherActor))
+	if (AMGCharacter* CharacterBase =  Cast<AMGCharacter>(OtherActor))
 	{
 		FAttachmentTransformRules AttachmentTransformRules(EAttachmentRule::SnapToTarget, true);
 		WeaponMesh->AttachToComponent(CharacterBase->GetMesh(), AttachmentTransformRules, FName("hand_r"));

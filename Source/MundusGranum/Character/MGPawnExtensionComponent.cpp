@@ -9,6 +9,7 @@
 #include "Components/GameFrameworkComponentManager.h"
 #include "GameFramework/Pawn.h"
 #include "Character/MGCharacterDefinition.h"
+#include "Net/UnrealNetwork.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(MGPawnExtensionComponent)
 
@@ -17,7 +18,17 @@ const FName UMGPawnExtensionComponent::NAME_ActorFeatureName("PawnExtension");
 UMGPawnExtensionComponent::UMGPawnExtensionComponent(const FObjectInitializer& ObjectInitializer) 
     : Super(ObjectInitializer)
 {
+	PrimaryComponentTick.bStartWithTickEnabled = false;
 	PrimaryComponentTick.bCanEverTick = false;
+
+	SetIsReplicatedByDefault(true);
+}
+
+void UMGPawnExtensionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UMGPawnExtensionComponent, PawnData);
 }
 
 void UMGPawnExtensionComponent::SetPawnData(const UMGCharacterDefinition* InPawnData)
@@ -53,6 +64,16 @@ void UMGPawnExtensionComponent::CheckDefaultInitialization()
 
 	// This will try to progress from spawned (which is only set in BeginPlay) through the data initialization stages until it gets to gameplay ready
 	ContinueInitStateChain(StateChain);
+}
+
+void UMGPawnExtensionComponent::SetupPlayerInputComponent()
+{
+	CheckDefaultInitialization();
+}
+
+void UMGPawnExtensionComponent::HandlePlayerStateReplicated()
+{
+	CheckDefaultInitialization();
 }
 
 bool UMGPawnExtensionComponent::CanChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState, FGameplayTag DesiredState) const
@@ -105,6 +126,7 @@ bool UMGPawnExtensionComponent::CanChangeInitState(UGameFrameworkComponentManage
 
 void UMGPawnExtensionComponent::HandleChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState, FGameplayTag DesiredState)
 {
+	UE_LOG(LogTemp, Log, TEXT("PawnExtension的当前状态 = %s"), *CurrentState.GetTagName().ToString());
 	if (DesiredState == MundusGranumGameplayTags::InitState_DataInitialized)
 	{
 		// This is currently all handled by other components listening to this state change
@@ -137,28 +159,27 @@ void UMGPawnExtensionComponent::InitializeAbilitySystem(UMGAbilitySystemComponen
 	if (AbilitySystemComponent)
 	{
 		// Clean up the old ability system component.
-		//UninitializeAbilitySystem();
-		return;
+		UninitializeAbilitySystem();
 	}
 
 	APawn* Pawn = GetPawnChecked<APawn>();
 	AActor* ExistingAvatar = InASC->GetAvatarActor();
 
-	//UE_LOG(LogLyra, Verbose, TEXT("Setting up ASC [%s] on pawn [%s] owner [%s], existing [%s] "), *GetNameSafe(InASC), *GetNameSafe(Pawn), *GetNameSafe(InOwnerActor), *GetNameSafe(ExistingAvatar));
+	UE_LOG(LogTemp, Verbose, TEXT("Setting up ASC [%s] on pawn [%s] owner [%s], existing [%s] "), *GetNameSafe(InASC), *GetNameSafe(Pawn), *GetNameSafe(InOwnerActor), *GetNameSafe(ExistingAvatar));
 
-	/*if ((ExistingAvatar != nullptr) && (ExistingAvatar != Pawn))
+	if ((ExistingAvatar != nullptr) && (ExistingAvatar != Pawn))
 	{
-		UE_LOG(LogLyra, Log, TEXT("Existing avatar (authority=%d)"), ExistingAvatar->HasAuthority() ? 1 : 0);
+		UE_LOG(LogTemp, Log, TEXT("Existing avatar (authority=%d)"), ExistingAvatar->HasAuthority() ? 1 : 0);
 
 		// There is already a pawn acting as the ASC's avatar, so we need to kick it out
 		// This can happen on clients if they're lagged: their new pawn is spawned + possessed before the dead one is removed
 		ensure(!ExistingAvatar->HasAuthority());
 
-		if (ULyraPawnExtensionComponent* OtherExtensionComponent = FindPawnExtensionComponent(ExistingAvatar))
+		if (UMGPawnExtensionComponent* OtherExtensionComponent = FindPawnExtensionComponent(ExistingAvatar))
 		{
 			OtherExtensionComponent->UninitializeAbilitySystem();
 		}
-	}*/
+	}
 
 	AbilitySystemComponent = InASC;
 	AbilitySystemComponent->InitAbilityActorInfo(InOwnerActor, Pawn);
@@ -166,9 +187,113 @@ void UMGPawnExtensionComponent::InitializeAbilitySystem(UMGAbilitySystemComponen
 	/*if (ensure(PawnData))
 	{
 		InASC->SetTagRelationshipMapping(PawnData->TagRelationshipMapping);
+	}*/
+
+	OnAbilitySystemInitialized.Broadcast();
+}
+
+void UMGPawnExtensionComponent::UninitializeAbilitySystem()
+{
+	if (!AbilitySystemComponent)
+	{
+		return;
 	}
 
-	OnAbilitySystemInitialized.Broadcast();*/
+	// Uninitialize the ASC if we're still the avatar actor (otherwise another pawn already did it when they became the avatar actor)
+	if (AbilitySystemComponent->GetAvatarActor() == GetOwner())
+	{
+		FGameplayTagContainer AbilityTypesToIgnore;
+		//AbilityTypesToIgnore.AddTag(MundusGranumGameplayTags::Ability_Behavior_SurvivesDeath);
+
+		/*AbilitySystemComponent->CancelAbilities(nullptr, &AbilityTypesToIgnore);
+		AbilitySystemComponent->ClearAbilityInput();
+		AbilitySystemComponent->RemoveAllGameplayCues();*/
+
+		if (AbilitySystemComponent->GetOwnerActor() != nullptr)
+		{
+			AbilitySystemComponent->SetAvatarActor(nullptr);
+		}
+		else
+		{
+			// If the ASC doesn't have a valid owner, we need to clear *all* actor info, not just the avatar pairing
+			AbilitySystemComponent->ClearActorInfo();
+		}
+
+		OnAbilitySystemUninitialized.Broadcast();
+	}
+
+	AbilitySystemComponent = nullptr;
+}
+
+void UMGPawnExtensionComponent::HandleControllerChanged()
+{
+	if (AbilitySystemComponent && (AbilitySystemComponent->GetAvatarActor() == GetPawnChecked<APawn>()))
+	{
+		ensure(AbilitySystemComponent->AbilityActorInfo->OwnerActor == AbilitySystemComponent->GetOwnerActor());
+		if (AbilitySystemComponent->GetOwnerActor() == nullptr)
+		{
+			UninitializeAbilitySystem();
+		}
+		else
+		{
+			AbilitySystemComponent->RefreshAbilityActorInfo();
+		}
+	}
+
+	CheckDefaultInitialization();
+}
+
+void UMGPawnExtensionComponent::OnAbilitySystemInitialized_RegisterAndCall(FSimpleMulticastDelegate::FDelegate Delegate)
+{
+    if (!OnAbilitySystemInitialized.IsBoundToObject(Delegate.GetUObject()))
+	{
+		OnAbilitySystemInitialized.Add(Delegate);
+	}
+
+	if (AbilitySystemComponent)
+	{
+		Delegate.Execute();
+	}
+}
+
+void UMGPawnExtensionComponent::OnAbilitySystemUninitialized_Register(FSimpleMulticastDelegate::FDelegate Delegate)
+{
+	if (!OnAbilitySystemUninitialized.IsBoundToObject(Delegate.GetUObject()))
+	{
+		OnAbilitySystemUninitialized.Add(Delegate);
+	}
+}
+
+void UMGPawnExtensionComponent::OnRegister()
+{
+	Super::OnRegister();
+	
+	const APawn* Pawn = GetPawn<APawn>();
+	ensureAlwaysMsgf((Pawn != nullptr), TEXT("MGPawnExtensionComponent on [%s] can only be added to Pawn actors."), *GetNameSafe(GetOwner()));
+
+	TArray<UActorComponent*> PawnExtensionComponents;
+	Pawn->GetComponents(UMGPawnExtensionComponent::StaticClass(), PawnExtensionComponents);
+	ensureAlwaysMsgf((PawnExtensionComponents.Num() == 1), TEXT("Only one MGPawnExtensionComponent should exist on [%s]."), *GetNameSafe(GetOwner()));
+
+	// Register with the init state system early, this will only work if this is a game world
+	RegisterInitStateFeature();
+}
+
+void UMGPawnExtensionComponent::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	// Listen for changes to all features
+	BindOnActorInitStateChanged(NAME_None, FGameplayTag(), false);
+
+	// Notifies state manager that we have spawned, then try rest of default initialization
+	ensure(TryToChangeInitState(MundusGranumGameplayTags::InitState_Spawned));
+	CheckDefaultInitialization();
+}
+
+void UMGPawnExtensionComponent::OnRep_PawnData()
+{
+	CheckDefaultInitialization();
 }
 
 

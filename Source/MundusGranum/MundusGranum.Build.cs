@@ -10,14 +10,15 @@ public class MundusGranum : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(new string[] { 
 			"Core",
-			"CoreUObject", 
-			"Engine", 
+			"CoreUObject",
+			"Engine",
 			"InputCore", 
-			"EnhancedInput", 
-			"GameplayAbilities", 
-			"ModularGameplay", 
-			"ProceduralMeshComponent", 
-			"GeometryCollectionEngine", 
+			"EnhancedInput",
+			"GameplayTasks",
+			"GameplayAbilities",
+			"ModularGameplay",
+			"ProceduralMeshComponent",
+			"GeometryCollectionEngine",
 			"UMG",
 			"GameFeatures"
 		});

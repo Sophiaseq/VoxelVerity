@@ -7,7 +7,7 @@ class UEnhancedInputLocalPlayerSubsystem;
 class UInputAction;
 class UObject;
 
-UCLASS()
+UCLASS(Config=Input)
 class MUNDUSGRANUM_API UMGInputComponent : public UEnhancedInputComponent
 {
 	GENERATED_BODY()
