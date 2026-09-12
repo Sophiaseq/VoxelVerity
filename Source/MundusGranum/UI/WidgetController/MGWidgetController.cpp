@@ -8,7 +8,7 @@ void UMGWidgetController::SetWidgetControllerParams(const FWidgetControllerParam
 	PlayerController = WCParams.PlayerController;
 	PlayerState = WCParams.PlayerState;
 	AbilitySystemComponent = WCParams.AbilitySystemComponent;
-	AttributeSet = WCParams.AttributeSet;
+	Attributes = WCParams.PlayerAttributes;
 }
 
 void UMGWidgetController::BroadcastInitialValues()

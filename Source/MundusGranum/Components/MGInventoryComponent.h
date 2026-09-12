@@ -12,7 +12,7 @@ struct FMGInventorySlot;
 class UMGItemDefinition;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMGInventoryChanged, int32, SlotIndex);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMGSelectedSlotChanged, int32, NewIndex);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMGSelectedSlotChanged, UMGItemDefinition*, NewItem);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class UMGInventoryComponent : public UActorComponent
@@ -21,35 +21,7 @@ class UMGInventoryComponent : public UActorComponent
 public:
 	UMGInventoryComponent();
 	virtual void BeginPlay() override;
-
-	// 总槽位数（例如 36）
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory")
-	int32 SlotCount = 36;
-
-	// 快捷栏起始索引（假设前9格为快捷栏）
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory")
-	int32 HotbarStartIndex = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory")
-	int32 HotbarSize = 9;
-
-	// 当前选中的快捷栏槽位索引（0~HotbarSize-1）
-	UPROPERTY(BlueprintReadOnly, Category = "Inventory")
-	int32 SelectedSlotIndex = 0;
-
-	// 某个槽位内容发生变化时广播（参数为槽位索引）
-	UPROPERTY(BlueprintAssignable, Category = "Inventory")
-	FMGInventoryChanged OnInventoryChanged;
-
-	// 选中槽位切换时广播（参数为新的快捷栏索引）
-	UPROPERTY(BlueprintAssignable, Category = "Inventory")
-	FMGSelectedSlotChanged OnSelectedSlotChanged;
-
-protected:
-	UPROPERTY(BlueprintReadOnly, Category = "Inventory")
-	TArray<FMGInventorySlot> Slots;
-
-public:
+	
 	// 初始化所有槽位为空
 	void InitializeSlots();
 
@@ -94,4 +66,31 @@ public:
 	// 使用当前主手物品（触发使用逻辑）
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void UseSelectedItem(AActor* Target = nullptr);
+
+	// 某个槽位内容发生变化时广播（参数为槽位索引）
+	UPROPERTY(BlueprintAssignable, Category = "Inventory")
+	FMGInventoryChanged OnInventoryChanged;
+
+	// 选中槽位切换时广播（参数为新的快捷栏索引）
+	UPROPERTY(BlueprintAssignable, Category = "Inventory")
+	FMGSelectedSlotChanged OnSelectedSlotChanged;
+
+protected:
+	UPROPERTY(BlueprintReadOnly, Category = "Inventory")
+	TArray<FMGInventorySlot> Slots;
+
+	// 总槽位数（例如 36）
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory")
+	int32 SlotCount = 36;
+
+	// 快捷栏起始索引（假设前9格为快捷栏）
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory")
+	int32 HotbarStartIndex = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory")
+	int32 HotbarSize = 9;
+
+	// 当前选中的快捷栏槽位索引（0~HotbarSize-1）
+	UPROPERTY(BlueprintReadOnly, Category = "Inventory")
+	int32 SelectedSlotIndex = 0;
 };

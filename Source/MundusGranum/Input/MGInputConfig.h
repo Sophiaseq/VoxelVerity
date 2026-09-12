@@ -41,5 +41,5 @@ public:
 	const UInputAction* FindAbilityInputActionForTag(const FGameplayTag& InputTag, bool bLogNotFound = true) const;
 	
 	UFUNCTION(BlueprintCallable, Category = "MundusGranum|Pawn")
-	const UInputAction* FindActionByTag(const FGameplayTag& InputTag, bool bLogMissing = false) const;
+	const UInputAction* FindActionByTag(const FGameplayTag& InputTag, bool bLogMissing = true) const;
 };

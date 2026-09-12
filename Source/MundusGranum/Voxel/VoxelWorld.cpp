@@ -1,6 +1,8 @@
 // Copyright MundusGranum. All Rights Reserved.
 
 #include "Voxel/VoxelWorld.h"
+#include "Serialization/MemoryWriter.h"
+#include "Serialization/MemoryReader.h"
 
 FVoxelChunkedWorld::FVoxelChunkedWorld(int32 InChunkSize, const FVoxelMaterialTable& InMaterials)
 	: ChunkSize(FMath::Max(2, InChunkSize))
@@ -60,6 +62,9 @@ void FVoxelChunkedWorld::Set(const FIntVector& WorldVoxel, FMaterialId Material)
 	Chunk->Voxels.Set(WorldVoxel - Coord * ChunkSize, Material);
 	Chunk->bDirty = true;
 
+	// 记录编辑（存档 = 编辑层，基础层靠 seed 重放）。
+	Edits.FindOrAdd(WorldVoxel) = Material;
+
 	// 该体素出现在 1 体素 halo 内的所有区块（27 邻域）都需要重网格化。
 	for (int32 dz = -1; dz <= 1; ++dz)
 	for (int32 dy = -1; dy <= 1; ++dy)
@@ -89,7 +94,7 @@ void FVoxelChunkedWorld::SetChunkVoxels(const FIntVector& Coord, const FVoxelGri
 	}
 }
 
-void FVoxelChunkedWorld::RemeshChunk(FVoxelChunk& Chunk)
+FVoxelGrid FVoxelChunkedWorld::BuildMeshingGrid(const FVoxelChunk& Chunk) const
 {
 	const int32 L = FMath::Clamp(Chunk.LOD, 0, GetMaxLOD());
 	const int32 Stride = 1 << L;
@@ -106,26 +111,11 @@ void FVoxelChunkedWorld::RemeshChunk(FVoxelChunk& Chunk)
 		const FIntVector World = Origin + FIntVector(x - 1, y - 1, z - 1) * Stride;
 		MeshingGrid.Set(FIntVector(x, y, z), Get(World));
 	}
+	return MeshingGrid;
+}
 
-	// 单元格保留判定（粗网格坐标）：内部单元格（1..CS-1）、+ 边界单元格（=CS）以及
-	// - 边界单元格（=0）都保留。保留 cell 0（其值 = 负邻居的 cell CS，顶点由相同体素密度算出、
-	// 焊接后重合）使本块能用 cell0+cell1 发出完整的负方向边界多边形，接缝因此 watertight。
-	const FIntVector Coord = Chunk.Coord;
-	const FCellPredicate KeepCell = [this, CS, Coord](const FIntVector& Cell) -> bool
-	{
-		for (int32 Axis = 0; Axis < 3; ++Axis)
-		{
-			const int32 C = Cell[Axis];
-			const bool bKeep = (C >= 0 && C <= CS);
-			if (!bKeep)
-			{
-				return false;
-			}
-		}
-		return true;
-	};
-
-	// 跨 LOD 过渡：每个轴 ± 方向邻居是否更粗（LOD 更大）。
+FTransitionSpec FVoxelChunkedWorld::MakeTransition(const FIntVector& Coord, int32 LOD) const
+{
 	FTransitionSpec Transition;
 	for (int32 Axis = 0; Axis < 3; ++Axis)
 	{
@@ -135,9 +125,80 @@ void FVoxelChunkedWorld::RemeshChunk(FVoxelChunk& Chunk)
 		Minus[Axis] -= 1;
 		const FVoxelChunk* PlusChunk = Chunks.Find(Plus);
 		const FVoxelChunk* MinusChunk = Chunks.Find(Minus);
-		Transition.CoarsePlus[Axis] = PlusChunk && PlusChunk->LOD > Chunk.LOD;
-		Transition.CoarseMinus[Axis] = MinusChunk && MinusChunk->LOD > Chunk.LOD;
+		Transition.CoarsePlus[Axis] = PlusChunk && PlusChunk->LOD > LOD;
+		Transition.CoarseMinus[Axis] = MinusChunk && MinusChunk->LOD > LOD;
 	}
+	return Transition;
+}
+
+void FVoxelChunkedWorld::ApplyMesh(const FIntVector& Coord, const FReconstructedMesh& Mesh)
+{
+	if (FVoxelChunk* Chunk = Chunks.Find(Coord))
+	{
+		Chunk->Mesh = Mesh;
+		Chunk->bDirty = false;
+	}
+}
+
+void FVoxelChunkedWorld::RemoveChunk(const FIntVector& Coord)
+{
+	Chunks.Remove(Coord);
+}
+
+TArray<FIntVector> FVoxelChunkedWorld::GetDirtyChunks() const
+{
+	TArray<FIntVector> Result;
+	for (const auto& Pair : Chunks)
+	{
+		if (Pair.Value.bDirty)
+		{
+			Result.Add(Pair.Key);
+		}
+	}
+	return Result;
+}
+
+void FVoxelChunkedWorld::SaveEdits(TArray<uint8>& OutBytes) const
+{
+	OutBytes.Reset();
+	FMemoryWriter Writer(OutBytes);
+	int32 Count = Edits.Num();
+	Writer << Count;
+	for (const auto& Pair : Edits)
+	{
+		FIntVector Key = Pair.Key;
+		FMaterialId Value = Pair.Value;
+		Writer << Key.X << Key.Y << Key.Z;
+		Writer << Value;
+	}
+}
+
+void FVoxelChunkedWorld::LoadEdits(const TArray<uint8>& Bytes)
+{
+	FMemoryReader Reader(Bytes);
+	int32 Count = 0;
+	Reader << Count;
+	for (int32 i = 0; i < Count; ++i)
+	{
+		FIntVector Key;
+		FMaterialId Value = 0;
+		Reader << Key.X << Key.Y << Key.Z;
+		Reader << Value;
+		Set(Key, Value); // 回放编辑（记录进 Edits + 更新体素 + 标 dirty）
+	}
+}
+
+void FVoxelChunkedWorld::RemeshChunk(FVoxelChunk& Chunk)
+{
+	const int32 CS = ChunkSize >> FMath::Clamp(Chunk.LOD, 0, GetMaxLOD());
+
+	const FVoxelGrid MeshingGrid = BuildMeshingGrid(Chunk);
+	const FTransitionSpec Transition = MakeTransition(Chunk.Coord, Chunk.LOD);
+	// 单元格保留判定：cell 0..CS 全保留（含 ± 边界，靠顶点焊接接缝，见 ADR/注释）。
+	const FCellPredicate KeepCell = [CS](const FIntVector& Cell) -> bool
+	{
+		return Cell.X >= 0 && Cell.X <= CS && Cell.Y >= 0 && Cell.Y <= CS && Cell.Z >= 0 && Cell.Z <= CS;
+	};
 
 	Chunk.Mesh = ReconstructSurface(MeshingGrid, Materials, KeepCell, Transition);
 	++RemeshCount;

@@ -9,16 +9,6 @@
 
 UMGHealthSet::UMGHealthSet()
 {
-	InitHealth(100.0f);
-	InitMaxHealth(100.0f);
-
-	// 法力相关
-	InitMana(50.0f);
-	InitMaxMana(50.0f);
-
-	// 体力相关
-	InitStamina(80.0f);
-	InitMaxStamina(80.0f);
 }
 
 void UMGHealthSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -227,3 +217,4 @@ void UMGHealthSet::OnRep_MaxStamina(const FGameplayAttributeData& OldValue)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UMGHealthSet, MaxStamina, OldValue);
 }
+

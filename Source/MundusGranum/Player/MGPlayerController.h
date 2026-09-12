@@ -2,10 +2,12 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+#include "ModularPlayerController.h"
 #include "GameFramework/PlayerController.h"
 #include "MGPlayerController.generated.h"
 
+class UMGAbilitySystemComponent;
+class AMGPlayerState;
 struct FInputActionValue;
 class UMGInputConfig;
 class UInputMappingContext;
@@ -13,12 +15,18 @@ class UInputMappingContext;
  * 
  */
 UCLASS(Config = Game, Meta = (ShortTooltip = "The base player controller class used by this project."))
-class MUNDUSGRANUM_API AMGPlayerController : public APlayerController
+class MUNDUSGRANUM_API AMGPlayerController : public AModularPlayerController
 {
 	GENERATED_BODY()
 	
 public:
 	AMGPlayerController();
+	
+	UFUNCTION(BlueprintCallable, Category = "MundusGranum|PlayerController")
+	AMGPlayerState* GetMGPlayerState() const;
+	
+	UFUNCTION(BlueprintCallable, Category = "MundusGranum|PlayerController")
+	UMGAbilitySystemComponent* GetMGAbilitySystemComponent() const;
 	
 	//~AController interface
 	virtual void InitPlayerState() override;
@@ -26,6 +34,10 @@ public:
 	virtual void OnRep_PlayerState() override;
 	//~End of AController interface
 
+	//~APlayerController interface
+	virtual void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
+	//~End of APlayerController interface
+	
 protected:
 	virtual void BeginPlay() override;
 	

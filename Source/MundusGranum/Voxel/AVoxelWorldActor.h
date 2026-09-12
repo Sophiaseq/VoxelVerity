@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Async/Future.h"
 #include "Voxel/VoxelWorld.h"
+#include "Voxel/WorldGenerator.h"
 #include "AVoxelWorldActor.generated.h"
 
 class UProceduralMeshComponent;
@@ -24,8 +26,17 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Voxel")
 	int32 ChunkSize = 16;
 
+	/** 在焦点周围此切比雪夫距离（chunk 数）内生成地形。 */
 	UPROPERTY(EditAnywhere, Category = "Voxel")
-	int32 ExtentInChunks = 4;
+	int32 StreamRadiusChunks = 4;
+
+	/** 超过此切比雪夫距离（chunk 数）的区块被卸载。 */
+	UPROPERTY(EditAnywhere, Category = "Voxel")
+	int32 UnloadRadiusChunks = 6;
+
+	/** 每帧最多生成的 chunk 数（分摊生成开销，避免卡顿）。 */
+	UPROPERTY(EditAnywhere, Category = "Voxel")
+	int32 GenerationBudgetPerTick = 4;
 
 	/** 确定性生成种子。 */
 	UPROPERTY(EditAnywhere, Category = "Voxel")
@@ -66,14 +77,23 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	virtual void Tick(float DeltaSeconds) override;
 
 private:
-	void RebuildTerrain();
+	void TickStreaming();
+	void KickAsyncRemesh();
+	void ApplyAsyncResults();
 	void UpdateChunkMesh(const FIntVector& ChunkCoord);
+	void FrustumCull();
 	void AutoDigDemo();
 
 	TUniquePtr<FVoxelChunkedWorld> World;
 	FVoxelMaterialTable Materials;
+	FWorldGenParams GenParams;
 	TMap<FIntVector, UProceduralMeshComponent*> ChunkMeshes;
 	FTimerHandle AutoDigTimer;
+
+	/** 后台重网格化的结果（游戏线程 Tick 里消费）。 */
+	TFuture<TMap<FIntVector, FReconstructedMesh>> RemeshFuture;
+	bool bRemeshInFlight = false;
 };

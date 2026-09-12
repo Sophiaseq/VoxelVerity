@@ -41,6 +41,15 @@ public:
 	/** 直接写入一个区块的体素（生成入口），并标记 27 邻块 dirty。 */
 	void SetChunkVoxels(const FIntVector& Coord, const FVoxelGrid& Voxels);
 
+	/** 编辑层：稀疏 (世界体素 → 材质) 差异。存档 = 编辑层（ADR-0001：基础层靠确定性重放）。 */
+	const TMap<FIntVector, FMaterialId>& GetEdits() const { return Edits; }
+
+	/** 序列化编辑层到字节（供存档）。 */
+	void SaveEdits(TArray<uint8>& OutBytes) const;
+
+	/** 从字节反序列化编辑层并回放到世界（调用前需已生成基础层）。 */
+	void LoadEdits(const TArray<uint8>& Bytes);
+
 	/** 设置区块 LOD（0=全分辨率），变化则标 dirty。 */
 	void SetChunkLOD(const FIntVector& Coord, int32 LOD);
 
@@ -55,6 +64,21 @@ public:
 
 	/** 重网格化全部区块。 */
 	void RemeshAll();
+
+	/** 构建某区块的重网格化网格（含 1 体素 halo，从世界采样）。游戏线程调用，纯读取世界。 */
+	FVoxelGrid BuildMeshingGrid(const FVoxelChunk& Chunk) const;
+
+	/** 计算某区块的跨 LOD 过渡描述（值类型，可跨线程传递）。 */
+	FTransitionSpec MakeTransition(const FIntVector& Coord, int32 LOD) const;
+
+	/** 应用重建结果到区块（游戏线程调用），并清除 dirty 标记。 */
+	void ApplyMesh(const FIntVector& Coord, const FReconstructedMesh& Mesh);
+
+	/** 移除一个区块（流式卸载）。 */
+	void RemoveChunk(const FIntVector& Coord);
+
+	/** 返回所有 dirty 区块坐标（供异步重网格化）。 */
+	TArray<FIntVector> GetDirtyChunks() const;
 
 	const FVoxelChunk* FindChunk(const FIntVector& Coord) const;
 
@@ -75,5 +99,6 @@ private:
 	int32 ChunkSize;
 	FVoxelMaterialTable Materials;
 	TMap<FIntVector, FVoxelChunk> Chunks;
+	TMap<FIntVector, FMaterialId> Edits;
 	int32 RemeshCount = 0;
 };

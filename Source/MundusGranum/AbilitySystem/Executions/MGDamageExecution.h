@@ -1,5 +1,4 @@
-﻿/*
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -9,7 +8,7 @@
 
 /**
  * 
- #1#
+ */
 UCLASS()
 class MUNDUSGRANUM_API UMGDamageExecution : public UGameplayEffectExecutionCalculation
 {
@@ -17,13 +16,6 @@ class MUNDUSGRANUM_API UMGDamageExecution : public UGameplayEffectExecutionCalcu
 	
 public:
 	UMGDamageExecution();
-	virtual float CalculateBaseMagnitude_Implementation(
-		const FGameplayEffectSpec& Spec,
-		const FGameplayTagContainer* SourceTags,
-		const FGameplayTagContainer* TargetTags,
-		const FAggregatorEvaluateParameters& SourceAttributes,
-		const FAggregatorEvaluateParameters& TargetAttributes
-	) const override;
 
 protected:
 	// ================================================================
@@ -36,19 +28,19 @@ protected:
 	//   - bSnapshot：是否快照（true=使用GE应用时的值，false=使用计算时的值）
 	// ================================================================
 
-	/** 捕获：攻击者的攻击力属性 #1#
+	/** 捕获：攻击者的攻击力属性 */
 	UPROPERTY(EditDefaultsOnly, Category = "Calculation|Capture")
 	FGameplayEffectAttributeCaptureDefinition AttackPowerCapture;
  
-	/** 捕获：防御者的防御力属性 #1#
+	/** 捕获：防御者的防御力属性 */
 	UPROPERTY(EditDefaultsOnly, Category = "Calculation|Capture")
 	FGameplayEffectAttributeCaptureDefinition DefensePowerCapture;
 
-	/** 捕获：攻击者的暴击率属性 #1#
+	/** 捕获：攻击者的暴击率属性 */
 	UPROPERTY(EditDefaultsOnly, Category = "Calculation|Capture")
 	FGameplayEffectAttributeCaptureDefinition CriticalRateCapture;
 
-	/** 捕获：攻击者的暴击伤害倍率属性 #1#
+	/** 捕获：攻击者的暴击伤害倍率属性 */
 	UPROPERTY(EditDefaultsOnly, Category = "Calculation|Capture")
 	FGameplayEffectAttributeCaptureDefinition CriticalDamageCapture;
 
@@ -61,9 +53,8 @@ protected:
 	 * 公式：减免率 = Defense / (Defense + DefenseCoefficient)
 	 * 默认100：当防御力=100时，减免率为50%
 	 * 降低此值会使防御力的效果更明显
-	 #1#
+	 */
 	UPROPERTY(EditDefaultsOnly, Category = "Calculation|Formula")
 	float DefenseCoefficient;
 };
-*/
-#pragma once
+

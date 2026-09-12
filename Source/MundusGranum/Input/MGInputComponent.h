@@ -38,6 +38,7 @@ void UMGInputComponent::BindNativeAction(const UMGInputConfig* InputConfig, cons
 	}
 }
 
+
 template<class UserClass, typename PressedFuncType, typename ReleasedFuncType>
 void UMGInputComponent::BindAbilityActions(const UMGInputConfig* InputConfig, UserClass* Object, PressedFuncType PressedFunc, ReleasedFuncType ReleasedFunc, TArray<uint32>& BindHandles)
 {

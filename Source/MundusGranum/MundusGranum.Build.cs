@@ -20,6 +20,8 @@ public class MundusGranum : ModuleRules
 			"ProceduralMeshComponent",
 			"GeometryCollectionEngine",
 			"UMG",
+			"NetCore",
+			"ModularGameplayActors",
 			"GameFeatures"
 		});
 

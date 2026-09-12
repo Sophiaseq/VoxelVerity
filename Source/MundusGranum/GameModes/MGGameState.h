@@ -3,7 +3,7 @@
 #pragma once
 
 #include "AbilitySystemInterface.h"
-#include "GameFramework/GameStateBase.h"
+#include "ModularGameState.h"
 
 #include "MGGameState.generated.h"
 
@@ -24,7 +24,7 @@ struct FFrame;
  *	The base game state class used by this project.
  */
 UCLASS(Config = Game)
-class AMGGameState : public AGameStateBase, public IAbilitySystemInterface
+class AMGGameState : public AModularGameStateBase, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 

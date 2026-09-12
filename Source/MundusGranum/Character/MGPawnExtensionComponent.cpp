@@ -2,6 +2,7 @@
 
 
 #include "MGPawnExtensionComponent.h"
+#include "MGLogChannels.h"
 
 #include "MundusGranumGameplayTags.h"
 #include "AbilitySystem/MGAbilitySystemComponent.h"
@@ -126,7 +127,7 @@ bool UMGPawnExtensionComponent::CanChangeInitState(UGameFrameworkComponentManage
 
 void UMGPawnExtensionComponent::HandleChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState, FGameplayTag DesiredState)
 {
-	UE_LOG(LogTemp, Log, TEXT("PawnExtension的当前状态 = %s"), *CurrentState.GetTagName().ToString());
+	UE_LOG(LogMG, Warning, TEXT("[Init] PawnExtension HandleChangeInitState: %s → %s"), *CurrentState.ToString(), *DesiredState.ToString());
 	if (DesiredState == MundusGranumGameplayTags::InitState_DataInitialized)
 	{
 		// This is currently all handled by other components listening to this state change
@@ -184,12 +185,16 @@ void UMGPawnExtensionComponent::InitializeAbilitySystem(UMGAbilitySystemComponen
 	AbilitySystemComponent = InASC;
 	AbilitySystemComponent->InitAbilityActorInfo(InOwnerActor, Pawn);
 
-	/*if (ensure(PawnData))
+	if (ensure(PawnData))
 	{
 		InASC->SetTagRelationshipMapping(PawnData->TagRelationshipMapping);
-	}*/
+	}
 
 	OnAbilitySystemInitialized.Broadcast();
+	
+	//绑定AbilitySystemComponent中的委托
+	if (UMGAbilitySystemComponent* MGASC = Cast<UMGAbilitySystemComponent>(GetMGAbilitySystemComponent()))
+		MGASC->AbilityActorInfoSet();
 }
 
 void UMGPawnExtensionComponent::UninitializeAbilitySystem()

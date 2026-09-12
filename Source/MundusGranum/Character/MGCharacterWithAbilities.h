@@ -23,10 +23,15 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	void SetHealthSet(const TObjectPtr<const UMGHealthSet>& InHealthSet){this->HealthSet = InHealthSet;}
 	void SetCombatSet(const TObjectPtr<const UMGCombatSet>& InCombatSet){this->CombatSet = InCombatSet;}
+	float GetNonPlayerLevel() const {return NonPlayerLevel;}
+	
+	//~Begin ICombatInterface
+	virtual float GetCharacterLevel() override;
+	//~End ICombatInterface
 	
 private:
 	// The ability system component sub-object used by player characters.
-	UPROPERTY(VisibleAnywhere, Category = "MundusGranum|PlayerState")
+	UPROPERTY(VisibleAnywhere, Category = "MundusGranum|NonPlayerState")
 	TObjectPtr<UMGAbilitySystemComponent> AbilitySystemComponent;
 	
 	// Health attribute set used by this actor.
@@ -36,5 +41,8 @@ private:
 	// Combat attribute set used by this actor.
 	UPROPERTY()
 	TObjectPtr<const UMGCombatSet> CombatSet;
+	
+	UPROPERTY(VisibleAnywhere, Category = "MundusGranum|NonPlayerState")
+	float NonPlayerLevel = 1;
 	
 };

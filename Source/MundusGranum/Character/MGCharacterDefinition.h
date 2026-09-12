@@ -4,6 +4,7 @@
 #include "Engine/DataAsset.h"
 #include "MGCharacterDefinition.generated.h"
 
+class UMGAbilityTagRelationshipMapping;
 class UMGInputConfig;
 class UMGItemDefinition;
 
@@ -37,17 +38,14 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "MundusGranum|Input")
 	TObjectPtr<UMGInputConfig> InputConfig;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TSoftObjectPtr<USkeletalMesh> SkeletalMesh;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TSoftClassPtr<UAnimInstance> AnimBlueprintClass;
+	/*UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "MundusGranum|Abilities")
+	TArray<TObjectPtr<UMGAbilitySet>> AbilitySets;*/
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "MundusGranum|Abilities")
+	TObjectPtr<UMGAbilityTagRelationshipMapping> TagRelationshipMapping;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TArray<TSoftObjectPtr<UMGItemDefinition>> DropItemOnDeath;
-	
-	UPROPERTY(EditAnywhere, Category = "Collision")
-	FCapsuleCollisionConfig HitCapsule;
 	
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override
 	{

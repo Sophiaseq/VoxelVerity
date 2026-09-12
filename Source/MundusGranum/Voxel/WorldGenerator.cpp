@@ -93,15 +93,15 @@ namespace NoiseInternal
 
 FMaterialId SampleBaseLayer(const FIntVector& WorldVoxel, const FWorldGenParams& Params)
 {
-	// 2D 高度图打底。
+	// 2D 高度图打底：高度在 (X, Y) 平面变化，Z 为竖直轴（UE 的 up）。
 	const float H = Params.TerrainHeight
 		+ Params.TerrainAmplitude * NoiseInternal::FBM2D(
 			float(WorldVoxel.X) * Params.TerrainScale,
-			float(WorldVoxel.Z) * Params.TerrainScale,
+			float(WorldVoxel.Y) * Params.TerrainScale,
 			Params.Seed, Params.Octaves);
 
-	const float Y = float(WorldVoxel.Y);
-	if (Y > H)
+	const float Z = float(WorldVoxel.Z);
+	if (Z > H)
 	{
 		return 0; // 空气
 	}
@@ -109,16 +109,16 @@ FMaterialId SampleBaseLayer(const FIntVector& WorldVoxel, const FWorldGenParams&
 	// 3D 噪声挖洞穴（留表层不挖，避免地表穿孔）。
 	const float Cave = NoiseInternal::FBM3D(
 		float(WorldVoxel.X) * Params.CaveScale,
-		Y * Params.CaveScale,
-		float(WorldVoxel.Z) * Params.CaveScale,
+		float(WorldVoxel.Y) * Params.CaveScale,
+		Z * Params.CaveScale,
 		Params.Seed ^ 0x9E3779B9u, Params.Octaves);
-	if (Cave > Params.CaveThreshold && Y < H - 1.0f)
+	if (Cave > Params.CaveThreshold && Z < H - 1.0f)
 	{
 		return 0;
 	}
 
 	// 表层 / 深层分层。
-	return Y > H - Params.SurfaceThickness ? Params.SurfaceMaterial : Params.DeepMaterial;
+	return Z > H - Params.SurfaceThickness ? Params.SurfaceMaterial : Params.DeepMaterial;
 }
 
 FVoxelGrid GenerateChunkVoxels(const FIntVector& ChunkCoord, int32 ChunkSize, const FWorldGenParams& Params)

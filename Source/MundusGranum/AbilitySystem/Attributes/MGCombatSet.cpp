@@ -7,10 +7,6 @@
 
 UMGCombatSet::UMGCombatSet()
 {
-	InitAttackPower(10.0f);
-	InitDefensePower(5.0f);
-	InitCriticalRate(0.05f);
-	InitCriticalDamage(1.5f);
 }
 
 void UMGCombatSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

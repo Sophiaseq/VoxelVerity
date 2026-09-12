@@ -1,4 +1,5 @@
 ﻿#include "MGHeroComponent.h"
+#include "MGLogChannels.h"
 #include "EnhancedInputSubsystems.h"
 #include "MGCharacterDefinition.h"
 #include "MGPawnExtensionComponent.h"
@@ -11,7 +12,9 @@
 #include "Player/MGPlayerState.h"
 #include "UserSettings/EnhancedInputUserSettings.h"
 #include "InputMappingContext.h"
+#include "AbilitySystem/MGAbilitySystemComponent.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Misc/UObjectToken.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(MGHeroComponent)
@@ -115,7 +118,7 @@ bool UMGHeroComponent::CanChangeInitState(UGameFrameworkComponentManager* Manage
 
 void UMGHeroComponent::HandleChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState, FGameplayTag DesiredState)
 {
-	UE_LOG(LogTemp, Log, TEXT("Hero的当前状态 = %s"), *CurrentState.GetTagName().ToString());
+	UE_LOG(LogMG, Warning, TEXT("[Init] Hero HandleChangeInitState: %s → %s"), *CurrentState.ToString(), *DesiredState.ToString());
 	if (CurrentState == MundusGranumGameplayTags::InitState_DataAvailable && DesiredState == MundusGranumGameplayTags::InitState_DataInitialized)
 	{
 		APawn* Pawn = GetPawn<APawn>();
@@ -303,23 +306,18 @@ void UMGHeroComponent::InitializePlayerInput(UInputComponent* PlayerInputCompone
 					// This is where we actually bind and input action to a gameplay tag, which means that Gameplay Ability Blueprints will
 					// be triggered directly by these input actions Triggered events. 
 					TArray<uint32> BindHandles;
-					//@HACK MGIC->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, /*out*/ BindHandles);
+					MGIC->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, /*out*/ BindHandles);
 
 					MGIC->BindNativeAction(InputConfig, MundusGranumGameplayTags::InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::Input_Move, /*bLogIfNotFound=*/ false);
 					MGIC->BindNativeAction(InputConfig, MundusGranumGameplayTags::InputTag_Look_Mouse, ETriggerEvent::Triggered, this, &ThisClass::Input_LookMouse, /*bLogIfNotFound=*/ false);
-					MGIC->BindNativeAction(InputConfig, MundusGranumGameplayTags::InputTag_Jump, ETriggerEvent::Triggered, this, &ThisClass::Input_Jump, /*bLogIfNotFound=*/ false);
 					MGIC->BindNativeAction(InputConfig, MundusGranumGameplayTags::InputTag_Sprint, ETriggerEvent::Started, this, &ThisClass::Input_SprintPressed, /*bLogIfNotFound=*/ false);
 					MGIC->BindNativeAction(InputConfig, MundusGranumGameplayTags::InputTag_Sprint, ETriggerEvent::Completed, this, &ThisClass::Input_SprintReleased, /*bLogIfNotFound=*/ false);
-					MGIC->BindNativeAction(InputConfig, MundusGranumGameplayTags::InputTag_Pickup, ETriggerEvent::Triggered, this, &ThisClass::Input_Pickup, /*bLogIfNotFound=*/ false);
-					MGIC->BindNativeAction(InputConfig, MundusGranumGameplayTags::InputTag_SelectItem, ETriggerEvent::Triggered, this, &ThisClass::Input_SelectItem, /*bLogIfNotFound=*/ false);
 					MGIC->BindNativeAction(InputConfig, MundusGranumGameplayTags::InputTag_SlowWalk, ETriggerEvent::Triggered, this, &ThisClass::Input_SlowWalk, /*bLogIfNotFound=*/ false);
-					MGIC->BindNativeAction(InputConfig, MundusGranumGameplayTags::InputTag_UseLeftHandItem, ETriggerEvent::Triggered, this, &ThisClass::Input_UseLeftHandItem, /*bLogIfNotFound=*/ false);
-					MGIC->BindNativeAction(InputConfig, MundusGranumGameplayTags::InputTag_UseRightHandItem, ETriggerEvent::Triggered, this, &ThisClass::Input_UseRightHandItem, /*bLogIfNotFound=*/ false);
 				}
 			}
 		}
 	}
-	UE_LOG(LogTemp, Warning, TEXT("[DEBUG] InitializePlayerInput 跑到了，准备广播 BindInputsNow"));
+	UE_LOG(LogMG, Warning, TEXT("[Init] Hero InitializePlayerInput → 广播 BindInputsNow"));
 
 	if (ensure(!bReadyToBindInputs))
 	{
@@ -328,6 +326,37 @@ void UMGHeroComponent::InitializePlayerInput(UInputComponent* PlayerInputCompone
  
 	UGameFrameworkComponentManager::SendGameFrameworkComponentExtensionEvent(const_cast<APlayerController*>(PC), NAME_BindInputsNow);
 	UGameFrameworkComponentManager::SendGameFrameworkComponentExtensionEvent(const_cast<APawn*>(Pawn), NAME_BindInputsNow);
+}
+
+void UMGHeroComponent::Input_AbilityInputTagPressed(FGameplayTag InputTag)
+{
+	if (const APawn* Pawn = GetPawn<APawn>())
+	{
+		if (const UMGPawnExtensionComponent* PawnExtComp = UMGPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
+		{
+			if (UMGAbilitySystemComponent* MGASC = PawnExtComp->GetMGAbilitySystemComponent())
+			{
+				MGASC->AbilityInputTagPressed(InputTag);
+			}
+		}	
+	}
+}
+
+void UMGHeroComponent::Input_AbilityInputTagReleased(FGameplayTag InputTag)
+{
+	const APawn* Pawn = GetPawn<APawn>();
+	if (!Pawn)
+	{
+		return;
+	}
+
+	if (const UMGPawnExtensionComponent* PawnExtComp = UMGPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
+	{
+		if (UMGAbilitySystemComponent* MGASC = PawnExtComp->GetMGAbilitySystemComponent())
+		{
+			MGASC->AbilityInputTagReleased(InputTag);
+		}
+	}
 }
 
 void UMGHeroComponent::Input_Move(const FInputActionValue& InputActionValue)
@@ -374,41 +403,25 @@ void UMGHeroComponent::Input_LookMouse(const FInputActionValue& InputActionValue
 	}
 }
 
-void UMGHeroComponent::Input_Jump()
-{
-	if (ACharacter* Character = GetPawn<ACharacter>())
-	{
-		Character->Jump();
-	}
-}
-
-void UMGHeroComponent::Input_Pickup()
-{
-}
-
 void UMGHeroComponent::Input_SprintPressed()
 {
-	
+	ACharacter* Character = Cast<ACharacter>(GetPawn<APawn>());
+	if (!Character) return;
+	Character->GetCharacterMovement()->MaxWalkSpeed = 600;
 }
 
 void UMGHeroComponent::Input_SprintReleased()
 {
-	
-}
-
-void UMGHeroComponent::Input_UseLeftHandItem()
-{
-}
-
-void UMGHeroComponent::Input_UseRightHandItem()
-{
-}
-
-void UMGHeroComponent::Input_SelectItem(const FInputActionValue& Value)
-{
+	ACharacter* Character = Cast<ACharacter>(GetPawn<APawn>());
+	if (!Character) return;
+	Character->GetCharacterMovement()->MaxWalkSpeed = 230;
 }
 
 void UMGHeroComponent::Input_SlowWalk()
+{
+}
+
+void UMGHeroComponent::InputTag_SelectItem(const FInputActionValue& Value)
 {
 }
 

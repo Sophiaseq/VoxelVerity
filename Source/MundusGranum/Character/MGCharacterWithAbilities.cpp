@@ -34,3 +34,8 @@ UAbilitySystemComponent* AMGCharacterWithAbilities::GetAbilitySystemComponent() 
 	return AbilitySystemComponent;
 }
 
+float AMGCharacterWithAbilities::GetCharacterLevel()
+{
+	return GetNonPlayerLevel();
+}
+

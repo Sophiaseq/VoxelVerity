@@ -81,7 +81,6 @@ void AMGDroppedItemActor::InitializeDroppedItemActor(UMGItemDefinition* InItemDe
 	if (ItemDef->DropMesh)
 	{
 		MeshComponent->SetStaticMesh(ItemDef->DropMesh);
-		MeshComponent->SetWorldScale3D(ItemDef->DropMeshScale);
 	}
 }
 

@@ -56,12 +56,18 @@ FReconstructedMesh ReconstructSurface(const FVoxelGrid& Grid, const FVoxelMateri
 	// 组合密度场：几何 SDF 减去 per-material 圆角，等值面在 0。
 	auto Density = [&Sdf](const FIntVector& C) -> float
 	{
-		return Sdf.Sample(ToVec(C)) - Sdf.SampleRoundness(ToVec(C));
+		// 单元格角是体素下标，surface nets 采样在体素中心（C + 0.5）。
+		// 若直接 Sample(整数角)，会在 halo 边界处做跨块插值（越界 clamp），
+		// 使相邻 chunk 对同一 corner 用不同体素集合 → 密度不一致 → 接缝裂缝。
+		const FVector P = ToVec(C) + FVector(0.5f, 0.5f, 0.5f);
+		return Sdf.Sample(P) - Sdf.SampleRoundness(P);
 	};
 
 	auto DensityAt = [&Sdf](const FVector& P) -> float
 	{
-		return Sdf.Sample(P) - Sdf.SampleRoundness(P);
+		// 与 Density 保持一致：采样体素中心（P + 0.5），否则梯度/法线/绕序会偏移 0.5。
+		const FVector Q = P + FVector(0.5f, 0.5f, 0.5f);
+		return Sdf.Sample(Q) - Sdf.SampleRoundness(Q);
 	};
 
 	auto DensityGradient = [&DensityAt](const FVector& P) -> FVector
@@ -337,7 +343,9 @@ FReconstructedMesh ReconstructSurface(const FVoxelGrid& Grid, const FVoxelMateri
 			const FVector& V2 = Mesh.Vertices[Cells[Sorted[(i + 2) % N]].Vertex];
 			FaceN += FVector::CrossProduct(V1 - V0, V2 - V0);
 		}
-		const bool bFlip = FVector::DotProduct(FaceN, Outward) < 0.0f;
+		// UE 前置面为顺时针绕序（DirectX 式左手系），而 FVector::CrossProduct 是右手定则、
+		// 对顺时针三角形给出的法线指向内（与 Outward 相反）。故 FaceN 与 Outward 同向时应翻转。
+		const bool bFlip = FVector::DotProduct(FaceN, Outward) > 0.0f;
 
 		for (int32 i = 0; i < N - 2; ++i)
 		{

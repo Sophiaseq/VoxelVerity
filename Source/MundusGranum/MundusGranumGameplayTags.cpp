@@ -20,19 +20,37 @@ namespace MundusGranumGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_Unequipped, "CharacterState.Unequipped", "未手持物品");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_OneHandedEquipped, "CharacterState.OneHandedEquipped", "单手持武器");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_TwoHandedEquipped, "CharacterState.TwoHandedEquipped", "双手持武器");
-	
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(ActionState_Unoccupied, "ActionState.Unoccupied", "可主动打断当前动作");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(ActionState_Occupied, "ActionState.Occupied", "只可被动打断当前动作");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_Rigidity, "CharacterState.Rigidity", "僵直状态，动作时附加，只能被受击动作打断");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_Hit, "ActionState.Hit", "被攻击时施加的状态");
 	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(ItemCategory_Block, "ItemCategory.Block", "方块物品");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(ItemCategory_Tool, "ItemCategory.Tool", "工具物品");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(ItemCategory_Melee, "ItemCategory.Melee", "近战武器");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(ItemCategory_Weapon, "ItemCategory.Weapon", "近战武器");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(ItemCategory_Consumable, "ItemCategory.Consumable", "消耗物品");
 	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InitState_Spawned, "InitState.Spawned", "1: Actor/component has initially spawned and can be extended");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InitState_DataAvailable, "InitState.DataAvailable", "2: All required data has been loaded/replicated and is ready for initialization");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InitState_DataInitialized, "InitState.DataInitialized", "3: The available data has been initialized for this actor/component, but it is not ready for full gameplay");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InitState_GameplayReady, "InitState.GameplayReady", "4: The actor/component is fully ready for active gameplay");
+
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Attribute_Primary_Strength, "Attributes.Primary.Strength", "力量");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Attribute_Primary_Dexterity, "Attributes.Primary.Dexterity", "敏捷");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Attribute_Primary_Constitution, "Attributes.Primary.Constitution", "体质");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Attribute_Primary_Intelligence, "Attributes.Primary.Intelligence", "智力");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Attribute_Primary_Perception, "Attributes.Primary.Perception", "感知");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Attribute_Primary_Luck, "Attributes.Primary.Luck", "运气");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Attribute_Vital_Health, "Attributes.Vital.Health", "当前生命值");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Attribute_Vital_MaxHealth, "Attributes.Vital.MaxHealth", "最大生命值");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Attribute_Vital_Mana, "Attributes.Vital.Mana", "当前法力值");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Attribute_Vital_MaxMana, "Attributes.Vital.MaxMana", "最大法力值");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Attribute_Vital_Stamina, "Attributes.Vital.Stamina", "当前体力值");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Attribute_Vital_MaxStamina, "Attributes.Vital.MaxStamina", "最大体力值");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Attribute_Combat_AttackPower, "Attributes.Combat.AttackPower", "攻击力");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Attribute_Combat_DefensePower, "Attributes.Combat.DefensePower", "防御力");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Attribute_Combat_CriticalRate, "Attributes.Combat.CriticalRate", "暴击率（0~1）");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Attribute_Combat_CriticalDamage, "Attributes.Combat.CriticalDamage", "暴击伤害倍率");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Attribute_Combat_IncomingDamage, "Attributes.Meta.IncomingDamage", "本次受到的伤害（meta 缓冲）");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Attribute_Combat_IncomingHealing, "Attributes.Meta.IncomingHealing", "本次受到的治疗（meta 缓冲）");
 	
 	const TMap<uint8, FGameplayTag> MovementModeTagMap =
 	{

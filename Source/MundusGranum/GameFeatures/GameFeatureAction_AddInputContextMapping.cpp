@@ -11,7 +11,7 @@
 #include "InputMappingContext.h"
 #include "Character/MGHeroComponent.h"
 #include "UserSettings/EnhancedInputUserSettings.h"
-//@TODO #include "System/MGAssetManager.h"
+#include "System/MGAssetManager.h"
 
 #if WITH_EDITOR
 #include "Misc/DataValidation.h"
@@ -92,8 +92,7 @@ void UGameFeatureAction_AddInputContextMapping::RegisterInputMappingContextsForL
 {
 	if (ensure(LocalPlayer))
 	{
-		//TODO UMGAssetManager& AssetManager = UMGAssetManager::Get();
-		UAssetManager& AssetManager = UAssetManager::Get();
+		UMGAssetManager& AssetManager = UMGAssetManager::Get();
 		
 		if (UEnhancedInputLocalPlayerSubsystem* EISubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(LocalPlayer))
 		{
@@ -108,9 +107,7 @@ void UGameFeatureAction_AddInputContextMapping::RegisterInputMappingContextsForL
 					}
 
 					// Register this IMC with the settings!
-					//TODO UInputMappingContext* IMC = AssetManager.GetAsset(Entry.InputMapping)
-					if (UInputMappingContext* IMC = Cast<UInputMappingContext>(
-						AssetManager.GetStreamableManager().LoadSynchronous(Entry.InputMapping.ToSoftObjectPath())))
+					if (UInputMappingContext* IMC = AssetManager.GetAsset(Entry.InputMapping))
 					{
 						Settings->RegisterInputMappingContext(IMC);
 					}

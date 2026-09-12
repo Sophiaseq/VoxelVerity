@@ -3,6 +3,8 @@
 
 #include "MGInputConfig.h"
 
+#include "MGLogChannels.h"
+
 UMGInputConfig::UMGInputConfig(const FObjectInitializer& ObjectInitializer)
 {
 }
@@ -19,7 +21,7 @@ const UInputAction* UMGInputConfig::FindAbilityInputActionForTag(const FGameplay
 
 	if (bLogNotFound)
 	{
-		UE_LOG(LogInput, Error, TEXT("Can't find AbilityInputAction for InputTag [%s] on InputConfig [%s]."), *InputTag.ToString(), *GetNameSafe(this));
+		UE_LOG(LogMG, Error, TEXT("Can't find AbilityInputAction for InputTag [%s] on InputConfig [%s]."), *InputTag.ToString(), *GetNameSafe(this));
 	}
 
 	return nullptr;
@@ -36,7 +38,7 @@ const UInputAction* UMGInputConfig::FindActionByTag(const FGameplayTag& InputTag
 	}
 	if (bLogMissing)
 	{
-		UE_LOG(LogInput, Error, TEXT("InputConfig 缺失Tag: %s"), *InputTag.ToString());
+		UE_LOG(LogMG, Error, TEXT("InputConfig 缺失Tag: %s"), *InputTag.ToString());
 	}
 	return nullptr;
 }

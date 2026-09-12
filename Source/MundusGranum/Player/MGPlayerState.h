@@ -4,13 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
+#include "MGPlayerAttributeSet.h"
+#include "ModularPlayerState.h"
 #include "Abilities/Tasks/AbilityTask.h"
-#include "GameFramework/PlayerState.h"
+#include "System/GameplayTagStack.h"
 #include "MGPlayerState.generated.h"
 
 /**
  * 
  */
+template<typename T>
+using TAttributeFuncPtr = TBaseStaticDelegateInstance<T, FDefaultDelegateUserPolicy>::FFuncPtr;
 
 class UMGExperienceDefinition;
 class UMGCharacterDefinition;
@@ -18,7 +22,7 @@ class UMGAbilitySystemComponent;
 class AMGPlayerController;
 
 UCLASS(Config = Game)
-class AMGPlayerState : public APlayerState, public IAbilitySystemInterface
+class AMGPlayerState : public AModularPlayerState, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 	
@@ -49,9 +53,27 @@ public:
 	
 	void SetPawnData(const UMGCharacterDefinition* InCharacterDefinition);
 	
-	void SetHealthSet(const TObjectPtr<UAttributeSet>& InHealthSet){this->HealthSet = InHealthSet;}
-	void SetCombatSet(const TObjectPtr<const UAttributeSet>& InCombatSet){this->CombatSet = InCombatSet;}
-	[[nodiscard]] TObjectPtr<UAttributeSet> GetHealth() const{return HealthSet;}
+	FORCEINLINE [[nodiscard]] float GetPlayerLevel() const { return PlayerLevel; }
+	
+	//属性标签对应的Get函数，可以移到Experience？
+	TMap<FGameplayTag, TAttributeFuncPtr<FGameplayAttribute()>> TagsToAttributes;
+	
+	// Adds a specified number of stacks to the tag (does nothing if StackCount is below 1)
+	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Teams)
+	void AddStatTagStack(FGameplayTag Tag, int32 StackCount);
+
+	// Removes a specified number of stacks from the tag (does nothing if StackCount is below 1)
+	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Teams)
+	void RemoveStatTagStack(FGameplayTag Tag, int32 StackCount);
+
+	// Returns the stack count of the specified tag (or 0 if the tag is not present)
+	UFUNCTION(BlueprintCallable, Category=Teams)
+	int32 GetStatTagStackCount(FGameplayTag Tag) const;
+
+	// Returns true if there is at least one stack of the specified tag
+	UFUNCTION(BlueprintCallable, Category=Teams)
+	bool HasStatTag(FGameplayTag Tag) const;
+
 
 protected:
 	UFUNCTION()
@@ -67,13 +89,23 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "MundusGranum|PlayerState")
 	TObjectPtr<UMGAbilitySystemComponent> AbilitySystemComponent;
 
-	// Health attribute set used by this actor.
-	//HACK 临时取消const
+	//所有的属性
 	UPROPERTY()
-	TObjectPtr<UAttributeSet> HealthSet;
-
-	// Combat attribute set used by this actor.
-	UPROPERTY()
-	TObjectPtr<const UAttributeSet> CombatSet;
+	FMGPlayerAttributeSet PlayerAttributes;
+	
+	UPROPERTY(Replicated)
+	FGameplayTagStackContainer StatTags;
+	
+	UPROPERTY(VisibleAnywhere, Category = "MundusGranum|PlayerState")
+	float PlayerLevel = 1;
+	
+public:
+	[[nodiscard]] FMGPlayerAttributeSet GetPlayerAttributes() const { return PlayerAttributes; }
+	void SetPrimarySet(const TObjectPtr<const UAttributeSet>& InPrimarySet){this->PlayerAttributes.PrimarySet = InPrimarySet;}
+	void SetHealthSet(const TObjectPtr<const UAttributeSet>& InHealthSet){this->PlayerAttributes.HealthSet = InHealthSet;}
+	void SetCombatSet(const TObjectPtr<const UAttributeSet>& InCombatSet){this->PlayerAttributes.CombatSet = InCombatSet;}
+	[[nodiscard]] TObjectPtr<const UAttributeSet> GetHealthSet() const { return PlayerAttributes.HealthSet; }
+	[[nodiscard]] TObjectPtr<const UAttributeSet> GetPrimarySet() const { return PlayerAttributes.PrimarySet; }
+	[[nodiscard]] TObjectPtr<const UAttributeSet> GetCombatSet() const { return PlayerAttributes.CombatSet; }
 	
 };

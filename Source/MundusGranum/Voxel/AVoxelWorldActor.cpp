@@ -2,13 +2,16 @@
 
 #include "Voxel/AVoxelWorldActor.h"
 #include "Voxel/WorldGenerator.h"
+#include "Async/Async.h"
 #include "ProceduralMeshComponent.h"
 #include "Components/SceneComponent.h"
 #include "TimerManager.h"
+#include "Engine/LocalPlayer.h"
+#include "SceneView.h"
 
 AVoxelWorldActor::AVoxelWorldActor()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	USceneComponent* Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	SetRootComponent(Root);
@@ -25,7 +28,9 @@ void AVoxelWorldActor::BeginPlay()
 
 	World = MakeUnique<FVoxelChunkedWorld>(ChunkSize, Materials);
 
-	RebuildTerrain();
+	GenParams.Seed = uint32(Seed);
+	GenParams.TerrainHeight = TerrainHeight;
+	GenParams.TerrainAmplitude = TerrainAmplitude;
 
 	if (bAutoDigDemo)
 	{
@@ -43,28 +48,65 @@ void AVoxelWorldActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	}
 }
 
-void AVoxelWorldActor::RebuildTerrain()
+void AVoxelWorldActor::TickStreaming()
 {
-	FWorldGenParams Params;
-	Params.Seed = uint32(Seed);
-	Params.TerrainHeight = TerrainHeight;
-	Params.TerrainAmplitude = TerrainAmplitude;
+	// 焦点 = actor 所在 chunk。
+	const FVector ActorLoc = GetActorLocation();
+	const FIntVector FocusChunk(
+		FMath::FloorToInt(ActorLoc.X / (ChunkSize * VoxelSize)),
+		FMath::FloorToInt(ActorLoc.Y / (ChunkSize * VoxelSize)),
+		FMath::FloorToInt(ActorLoc.Z / (ChunkSize * VoxelSize)));
 
-	for (int32 cz = 0; cz < ExtentInChunks; ++cz)
-	for (int32 cy = 0; cy < ExtentInChunks; ++cy)
-	for (int32 cx = 0; cx < ExtentInChunks; ++cx)
+	// 按切比雪夫距离从近到远生成缺失的 chunk（每帧预算内），让地形从焦点均匀向外扩展。
+	int32 Generated = 0;
+	for (int32 R = 0; R <= StreamRadiusChunks && Generated < GenerationBudgetPerTick; ++R)
 	{
-		const FIntVector Coord(cx, cy, cz);
-		World->SetChunkVoxels(Coord, GenerateChunkVoxels(Coord, ChunkSize, Params));
+		for (int32 dz = -R; dz <= R && Generated < GenerationBudgetPerTick; ++dz)
+		for (int32 dy = -R; dy <= R && Generated < GenerationBudgetPerTick; ++dy)
+		for (int32 dx = -R; dx <= R && Generated < GenerationBudgetPerTick; ++dx)
+		{
+			// 只生成本环（切比雪夫距离 == R），避免重复。
+			if (FMath::Max3(FMath::Abs(dx), FMath::Abs(dy), FMath::Abs(dz)) != R)
+			{
+				continue;
+			}
+			const FIntVector Coord = FocusChunk + FIntVector(dx, dy, dz);
+			if (World->FindChunk(Coord))
+			{
+				continue;
+			}
+			World->SetChunkVoxels(Coord, GenerateChunkVoxels(Coord, ChunkSize, GenParams));
+			++Generated;
+		}
 	}
 
-	// 自动 LOD：以世界中心块为焦点，越远越粗。
-	World->UpdateLODs(FIntVector(ExtentInChunks / 2, ExtentInChunks / 2, ExtentInChunks / 2), MaxLOD);
-
-	World->RemeshAll();
+	// 卸载 UnloadRadius 外的 chunk。
+	TArray<FIntVector> ToUnload;
 	for (const auto& Pair : World->GetChunks())
 	{
-		UpdateChunkMesh(Pair.Key);
+		const FIntVector D = Pair.Key - FocusChunk;
+		if (FMath::Max3(FMath::Abs(D.X), FMath::Abs(D.Y), FMath::Abs(D.Z)) > UnloadRadiusChunks)
+		{
+			ToUnload.Add(Pair.Key);
+		}
+	}
+	for (const FIntVector& C : ToUnload)
+	{
+		World->RemoveChunk(C);
+		if (UProceduralMeshComponent** Found = ChunkMeshes.Find(C))
+		{
+			(*Found)->DestroyComponent();
+			ChunkMeshes.Remove(C);
+		}
+	}
+
+	// 自动 LOD（以焦点为中心，越远越粗）。
+	World->UpdateLODs(FocusChunk, MaxLOD);
+
+	// 有 dirty chunk 且无在途重网格化时，踢后台重网格化。
+	if (!bRemeshInFlight && World->GetDirtyChunks().Num() > 0)
+	{
+		KickAsyncRemesh();
 	}
 }
 
@@ -109,6 +151,76 @@ void AVoxelWorldActor::UpdateChunkMesh(const FIntVector& ChunkCoord)
 	}
 }
 
+void AVoxelWorldActor::KickAsyncRemesh()
+{
+	struct FRemeshJob
+	{
+		FIntVector Coord;
+		FVoxelGrid Grid;
+		FTransitionSpec Transition;
+		int32 CS = 0;
+	};
+
+	// 游戏线程：只为 dirty 区块构建重网格化网格（读世界，便宜）。
+	TArray<FRemeshJob> Jobs;
+	for (const FIntVector& Coord : World->GetDirtyChunks())
+	{
+		const FVoxelChunk* Chunk = World->FindChunk(Coord);
+		if (!Chunk)
+		{
+			continue;
+		}
+		FRemeshJob Job;
+		Job.Coord = Coord;
+		Job.Grid = World->BuildMeshingGrid(*Chunk);
+		Job.Transition = World->MakeTransition(Coord, Chunk->LOD);
+		Job.CS = ChunkSize >> FMath::Clamp(Chunk->LOD, 0, World->GetMaxLOD());
+		Jobs.Add(MoveTemp(Job));
+	}
+
+	// 后台线程：只跑纯函数 ReconstructSurface（SDF + surface nets，最贵的一步）。
+	bRemeshInFlight = true;
+	const FVoxelMaterialTable MatCopy = Materials;
+	RemeshFuture = Async(EAsyncExecution::ThreadPool, [Jobs = MoveTemp(Jobs), MatCopy]()
+	{
+		TMap<FIntVector, FReconstructedMesh> Results;
+		for (const FRemeshJob& J : Jobs)
+		{
+			const FCellPredicate KeepCell = [CS = J.CS](const FIntVector& Cell)
+			{
+				return Cell.X >= 0 && Cell.X <= CS && Cell.Y >= 0 && Cell.Y <= CS && Cell.Z >= 0 && Cell.Z <= CS;
+			};
+			Results.Add(J.Coord, ReconstructSurface(J.Grid, MatCopy, KeepCell, J.Transition));
+		}
+		return Results;
+	});
+}
+
+void AVoxelWorldActor::ApplyAsyncResults()
+{
+	if (!RemeshFuture.IsValid() || !RemeshFuture.IsReady())
+	{
+		return;
+	}
+
+	TMap<FIntVector, FReconstructedMesh> Results = RemeshFuture.Get();
+	for (auto& R : Results)
+	{
+		World->ApplyMesh(R.Key, R.Value);
+		UpdateChunkMesh(R.Key);
+	}
+	RemeshFuture = TFuture<TMap<FIntVector, FReconstructedMesh>>();
+	bRemeshInFlight = false;
+}
+
+void AVoxelWorldActor::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	TickStreaming();
+	ApplyAsyncResults();
+	FrustumCull();
+}
+
 void AVoxelWorldActor::Dig(const FVector& WorldPosition, float Radius)
 {
 	if (!World)
@@ -143,20 +255,72 @@ void AVoxelWorldActor::Dig(const FVector& WorldPosition, float Radius)
 	}
 }
 
+void AVoxelWorldActor::FrustumCull()
+{
+	APlayerController* PC = GetWorld() ? GetWorld()->GetFirstPlayerController() : nullptr;
+	if (!PC)
+	{
+		return;
+	}
+	ULocalPlayer* LP = Cast<ULocalPlayer>(PC->GetLocalPlayer());
+	if (!LP || !LP->ViewportClient || !LP->ViewportClient->Viewport)
+	{
+		return;
+	}
+
+	FSceneViewFamilyContext ViewFamily(FSceneViewFamily::ConstructionValues(
+		LP->ViewportClient->Viewport, GetWorld()->Scene, FEngineShowFlags(ESFIM_Game)));
+	FVector ViewLocation;
+	FRotator ViewRotation;
+	FSceneView* SceneView = LP->CalcSceneView(&ViewFamily, ViewLocation, ViewRotation, LP->ViewportClient->Viewport);
+	if (!SceneView)
+	{
+		return;
+	}
+
+	const FConvexVolume& Frustum = SceneView->ViewFrustum;
+	const FVector ActorLoc = GetActorLocation();
+
+	for (const auto& Pair : World->GetChunks())
+	{
+		const FIntVector Coord = Pair.Key;
+		const FVoxelChunk& Chunk = Pair.Value;
+		UProceduralMeshComponent** Found = ChunkMeshes.Find(Coord);
+		if (!Found)
+		{
+			continue;
+		}
+
+		// 世界 AABB（与 UpdateChunkMesh 的映射一致）。
+		const int32 L = FMath::Clamp(Chunk.LOD, 0, 4);
+		const int32 CS = FMath::Max(2, ChunkSize >> L);
+		const float Scale = float(1 << L) * VoxelSize;
+		const FVector LocalMin(float(Coord.X * CS - 1), float(Coord.Y * CS - 1), float(Coord.Z * CS - 1));
+		const FVector LocalMax(float((Coord.X + 1) * CS), float((Coord.Y + 1) * CS), float((Coord.Z + 1) * CS));
+		const FVector Center = ActorLoc + (LocalMin + LocalMax) * 0.5f * Scale;
+		const FVector Extent = (LocalMax - LocalMin) * 0.5f * Scale;
+
+		(*Found)->SetVisibility(Frustum.IntersectBox(Center, Extent));
+	}
+}
+
 void AVoxelWorldActor::AutoDigDemo()
 {
-	const int32 Extent = ChunkSize * ExtentInChunks;
-	// 从中心向下找第一个实心体素（地表），在其附近挖洞。
-	FIntVector Solid(Extent / 2, Extent / 2, Extent / 2);
-	for (int32 y = Extent / 2; y >= 0; --y)
+	// 在 actor 正上方（体素柱 (0,0,z)）找地表并挖洞（演示局部重网格化）。
+	int32 SurfaceZ = -1;
+	for (int32 z = FMath::CeilToInt(TerrainHeight + TerrainAmplitude + 4.0f); z >= 0; --z)
 	{
-		if (World->Get(FIntVector(Extent / 2, y, Extent / 2)) != 0)
+		if (World->Get(FIntVector(0, 0, z)) != 0)
 		{
-			Solid.Y = y;
+			SurfaceZ = z;
 			break;
 		}
 	}
+	if (SurfaceZ < 0)
+	{
+		return;
+	}
 
-	const FVector WorldPos = GetActorLocation() + FVector(Solid.X + 0.5f, Solid.Y + 0.5f, Solid.Z + 0.5f) * VoxelSize;
+	const FVector WorldPos = GetActorLocation() + FVector(0.0f, 0.0f, float(SurfaceZ) + 0.5f) * VoxelSize;
 	Dig(WorldPos, ChunkSize * 0.5f * VoxelSize);
 }

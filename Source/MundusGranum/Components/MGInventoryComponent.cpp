@@ -193,7 +193,7 @@ void UMGInventoryComponent::SelectSlot(int32 NewIndex)
 	int32 NewSelected = (NewIndex % HotbarSize + HotbarSize) % HotbarSize;
 	if (NewSelected == SelectedSlotIndex) return;
 	SelectedSlotIndex = NewSelected;
-	OnSelectedSlotChanged.Broadcast(SelectedSlotIndex);
+	OnSelectedSlotChanged.Broadcast(Slots[SelectedSlotIndex].Item);
 }
 
 int32 UMGInventoryComponent::GetSelectedSlotIndex() const

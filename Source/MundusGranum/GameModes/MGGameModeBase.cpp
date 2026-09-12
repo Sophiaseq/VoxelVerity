@@ -5,6 +5,7 @@
 
 #include "GameMapsSettings.h"
 #include "MGExperienceManagerComponent.h"
+#include "MGLogChannels.h"
 #include "MGGameState.h"
 #include "Character/MGCharacter.h"
 #include "Character/MGPawnExtensionComponent.h"
@@ -61,7 +62,9 @@ const UMGCharacterDefinition* AMGGameModeBase::GetPawnDataForController(const AC
 void AMGGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
-	
+
+	UE_LOG(LogMGExperience, Warning, TEXT("[Init] GameMode::InitGame → 下帧 HandleMatchAssignmentIfNotExpectingOne"));
+
 	// Wait for the next frame to give time to initialize startup settings
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ThisClass::HandleMatchAssignmentIfNotExpectingOne);
 }
@@ -89,6 +92,8 @@ APawn* AMGGameModeBase::SpawnDefaultPawnAtTransform_Implementation(AController* 
 
 	if (UClass* PawnClass = GetDefaultPawnClassForController(NewPlayer))
 	{
+		UE_LOG(LogMG, Warning, TEXT("[Init] GameMode::SpawnDefaultPawnAtTransform → SpawnActor(%s)"), *GetNameSafe(PawnClass));
+
 		if (APawn* SpawnedPawn = GetWorld()->SpawnActor<APawn>(PawnClass, SpawnTransform, SpawnInfo))
 		{
 			if (UMGPawnExtensionComponent* PawnExtComp = UMGPawnExtensionComponent::FindPawnExtensionComponent(SpawnedPawn))
@@ -133,6 +138,8 @@ void AMGGameModeBase::InitGameState()
 
 void AMGGameModeBase::OnExperienceLoaded(const UMGExperienceDefinition* CurrentExperience)
 {
+	UE_LOG(LogMGExperience, Warning, TEXT("[Init] GameMode::OnExperienceLoaded → 遍历无 Pawn 的 PC RestartPlayer"));
+
 	// Spawn any players that are already attached
 	//@TODO: Here we're handling only *player* controllers, but in GetDefaultPawnClassForController_Implementation we skipped all controllers
 	// GetDefaultPawnClassForController_Implementation might only be getting called for players anyways

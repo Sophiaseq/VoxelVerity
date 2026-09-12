@@ -46,16 +46,15 @@ protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void InitializePlayerInput(UInputComponent* PlayerInputComponent);
 	
+	void Input_AbilityInputTagPressed(FGameplayTag InputTag);
+	void Input_AbilityInputTagReleased(FGameplayTag InputTag);
+	
 	void Input_Move(const FInputActionValue& Value);
 	void Input_LookMouse(const FInputActionValue& Value);
-	void Input_Jump();
-	void Input_Pickup();
 	void Input_SprintPressed();
 	void Input_SprintReleased();
-	void Input_UseLeftHandItem();
-	void Input_UseRightHandItem();
-	void Input_SelectItem(const FInputActionValue& Value);
 	void Input_SlowWalk();
+	void InputTag_SelectItem(const FInputActionValue& Value);
 	
 	UPROPERTY(EditAnywhere)
 	TArray<FInputMappingContextAndPriority> DefaultInputMappings;

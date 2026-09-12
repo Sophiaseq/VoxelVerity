@@ -3,6 +3,7 @@
 #include "MGGameInstance.h"
 
 #include "Components/GameFrameworkComponentManager.h"
+#include "MGLogChannels.h"
 #include "MundusGranumGameplayTags.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(MGGameInstance)
@@ -10,6 +11,8 @@
 void UMGGameInstance::Init()
 {
 	Super::Init();
+
+	UE_LOG(LogMG, Warning, TEXT("[Init] GameInstance::Init — 注册 InitState 四态顺序"));
 
 	// 关键：注册 InitState 四态的先后顺序。
 	// UGameFrameworkComponentManager::IsInitStateAfterOrEqual 靠这个顺序判断"谁在前谁在后"，

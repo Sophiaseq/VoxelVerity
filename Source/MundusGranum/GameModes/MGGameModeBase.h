@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameModeBase.h"
+#include "ModularGameMode.h"
 #include "Character/MGCharacterDefinition.h"
 #include "MGGameModeBase.generated.h"
 
@@ -12,7 +12,7 @@ class UMGExperienceDefinition;
  * 
  */
 UCLASS(Config=Game)
-class MUNDUSGRANUM_API AMGGameModeBase : public AGameModeBase
+class MUNDUSGRANUM_API AMGGameModeBase : public AModularGameModeBase
 {
 	GENERATED_BODY()
 	

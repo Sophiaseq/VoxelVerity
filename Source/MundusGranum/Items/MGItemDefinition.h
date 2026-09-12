@@ -13,7 +13,7 @@ USTRUCT(BlueprintType)
 struct FItemBaseData
 {
 	GENERATED_BODY()
-public:
+
 	UPROPERTY(EditDefaultsOnly)
 	FText ItemName;
 
@@ -29,7 +29,7 @@ USTRUCT(BlueprintType)
 struct FEquipDisplayData
 {
 	GENERATED_BODY()
-public:
+
 	// 手持时的静态网格
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<UStaticMesh> StaticMesh;
@@ -62,10 +62,6 @@ public:
 	// 丢在地上时显示的 3D 网格体（静态模型，如石头、木头）
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<UStaticMesh> DropMesh;
-
-	// 地面拾取时的缩放比例
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FVector DropMeshScale = FVector(1.0f);
 	
 	// 手持时的显示数据（静态或骨骼网格 + 偏移 + 动画类）
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
