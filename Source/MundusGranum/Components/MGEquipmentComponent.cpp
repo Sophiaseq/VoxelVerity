@@ -8,6 +8,7 @@
 #include "GameFramework/Actor.h"
 #include "Items/MGItemDefinition.h"
 #include "MGInventoryComponent.h"
+#include "MGLogChannels.h"
 
 UMGEquipmentComponent::UMGEquipmentComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -35,6 +36,7 @@ void UMGEquipmentComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	if (BoundInventory)
 	{
 		BoundInventory->OnSelectedSlotChanged.RemoveDynamic(this, &UMGEquipmentComponent::HandleSelectedItemChanged);
+		BoundInventory->OnInventoryChanged.RemoveDynamic(this, &UMGEquipmentComponent::HandleInventoryChanged);
 		BoundInventory = nullptr;
 	}
 	Super::EndPlay(EndPlayReason);
@@ -71,6 +73,7 @@ void UMGEquipmentComponent::BindToInventory(UMGInventoryComponent* InInventory)
 	if (BoundInventory)
 	{
 		BoundInventory->OnSelectedSlotChanged.RemoveDynamic(this, &UMGEquipmentComponent::HandleSelectedItemChanged);
+		BoundInventory->OnInventoryChanged.RemoveDynamic(this, &UMGEquipmentComponent::HandleInventoryChanged);
 	}
 
 	BoundInventory = InInventory;
@@ -78,6 +81,7 @@ void UMGEquipmentComponent::BindToInventory(UMGInventoryComponent* InInventory)
 	if (BoundInventory)
 	{
 		BoundInventory->OnSelectedSlotChanged.AddDynamic(this, &UMGEquipmentComponent::HandleSelectedItemChanged);
+		BoundInventory->OnInventoryChanged.AddDynamic(this, &UMGEquipmentComponent::HandleInventoryChanged);
 
 		// 同步一次当前选中的物品，保证初始化状态一致
 		UpdateEquippedItem(BoundInventory->GetSelectedItem());
@@ -91,6 +95,15 @@ void UMGEquipmentComponent::BindToInventory(UMGInventoryComponent* InInventory)
 void UMGEquipmentComponent::HandleSelectedItemChanged(UMGItemDefinition* NewItem)
 {
 	UpdateEquippedItem(NewItem);
+}
+
+void UMGEquipmentComponent::HandleInventoryChanged(int32 SlotIndex)
+{
+	// 只有当前选中槽位内容变化才刷新手持显示
+	if (BoundInventory && SlotIndex == BoundInventory->GetSelectedSlotIndex())
+	{
+		UpdateEquippedItem(BoundInventory->GetSelectedItem());
+	}
 }
 
 void UMGEquipmentComponent::UpdateEquippedItem(UMGItemDefinition* NewItem)
@@ -192,9 +205,33 @@ void UMGEquipmentComponent::ShowSkeletalMesh(USkeletalMesh* Mesh, const FTransfo
 
 void UMGEquipmentComponent::ShowStaticMesh(UStaticMesh* Mesh, const FTransform& Transform)
 {
-	if (!Mesh || !EquippedStaticMeshComp)
+	if (!Mesh)
 	{
 		return;
+	}
+
+	AActor* Owner = GetOwner();
+	if (!Owner)
+	{
+		return;
+	}
+
+	// 懒创建（仅第一次，避免依赖外部 SetupEquipMeshes）
+	if (!EquippedStaticMeshComp)
+	{
+		EquippedStaticMeshComp = NewObject<UStaticMeshComponent>(GetOuter(), TEXT("EquippedStaticMesh"));
+		EquippedStaticMeshComp->SetupAttachment(Owner->GetRootComponent());
+		EquippedStaticMeshComp->RegisterComponent();
+		EquippedStaticMeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		// 挂到手部插槽
+		if (USkeletalMeshComponent* CharacterMesh = Owner->FindComponentByClass<USkeletalMeshComponent>())
+		{
+			EquippedStaticMeshComp->AttachToComponent(
+				CharacterMesh,
+				FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+				HandSocketName);
+		}
 	}
 
 	EquippedStaticMeshComp->SetStaticMesh(Mesh);
@@ -222,6 +259,13 @@ UMeshComponent* UMGEquipmentComponent::GetPriorityMeshComponent() const
 		return EquippedStaticMeshComp;
 	}
 	return nullptr;
+}
+
+void UMGEquipmentComponent::InitializeComponent()
+{
+	Super::InitializeComponent();
+	
+	UE_LOG(LogMG, Log, TEXT("InitializeEquipmentComponent, Owner is [%s]"), *GetOwner()->GetName());
 }
 
 // ------------------------------------------------------------------ //

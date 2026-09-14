@@ -6,6 +6,7 @@
 #include "UObject/Interface.h"
 #include "CombatInterface.generated.h"
 
+class UMGWeaponItemDefinition;
 // This class does not need to be modified.
 UINTERFACE()
 class UCombatInterface : public UInterface
@@ -22,5 +23,9 @@ class MUNDUSGRANUM_API ICombatInterface
 	
 public:
 	virtual float GetCharacterLevel() = 0;
+	
+	virtual UMGWeaponItemDefinition* GetCurrentWeapon() const = 0;
+	
+	virtual FVector GetSocketLocation() const = 0;
 
 };

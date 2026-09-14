@@ -4,6 +4,7 @@
 #include "MGHealthSet.h"
 
 #include "GameplayEffectExtension.h"
+#include "MGLogChannels.h"
 #include "GameFramework/Character.h"
 #include "Net/UnrealNetwork.h"
 
@@ -80,7 +81,7 @@ void UMGHealthSet::PostAttributeChange(const FGameplayAttribute& Attribute, floa
 void UMGHealthSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
     Super::PostGameplayEffectExecute(Data);
-
+    
     // --- 第一步：获取上下文信息 ---
     // Data.EvaluatedData.Attribute 告诉你哪个属性被修改了
     // Data.EvaluatedData.Magnitude 告诉你修改量是多少
@@ -105,6 +106,7 @@ void UMGHealthSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackDat
 
             // 设置新生命值（PreAttributeChange会自动钳制到0~MaxHealth范围）
             SetHealth(FMath::Clamp(NewHealth, 0.0f, GetMaxHealth()));
+            UE_LOG(LogMGAbilitySystem, Warning, TEXT("Changed Health on %s, Health: %f"), *Data.Target.GetAvatarActor()->GetName(), GetHealth())
 
             // === 在这里实现死亡判定 ===
             // ✅ 正确位置：PostGameplayEffectExecute

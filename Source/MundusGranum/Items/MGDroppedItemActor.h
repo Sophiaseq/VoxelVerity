@@ -3,21 +3,22 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "MGItemDefinition.h"
+#include "Pickupable.h"
 #include "MGDroppedItemActor.generated.h"
 
 class USphereComponent;
 
 UCLASS(Blueprintable)
-class MUNDUSGRANUM_API AMGDroppedItemActor : public AActor
+class MUNDUSGRANUM_API AMGDroppedItemActor : public AActor, public IPickupable
 {
 	GENERATED_BODY()
 
 public:
 	AMGDroppedItemActor();
-
-	// 初始化函数，由背包系统调用
-	UFUNCTION(BlueprintCallable)
-	void InitializeDroppedItemActor(UMGItemDefinition* InItemDef);
+	
+	// ~Begin IPickupable
+	virtual int32 TryPickup_Implementation(AActor* Picker) override;
+	// ~End IPickupable
 	
 #if WITH_EDITOR
 	UFUNCTION(CallInEditor, Category = "Editor Preview")
@@ -61,14 +62,15 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UMGItemDefinition> ItemDef;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)//ReplicatedUsing = OnRep_Count, 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly) 
 	int32 Count = 1;
+	
+private:
+	UPROPERTY(EditAnywhere, Category="Pickup")
+	float PickupRetryCooldown = 0.5f;
 
-	/*UFUNCTION()
-	void OnRep_ItemDef();
-
-	// 重写复制规则
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;*/
+	double LastPickupAttemptTime = -100.0;
+	
 public:
 	FORCEINLINE [[nodiscard]] TObjectPtr<UMGItemDefinition> GetItemDef() const{return ItemDef;}
 	FORCEINLINE void SetItemDef(const TObjectPtr<UMGItemDefinition>& Def){this->ItemDef = Def;}

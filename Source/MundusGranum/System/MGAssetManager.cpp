@@ -3,6 +3,7 @@
 
 #include "MGAssetManager.h"
 
+#include "AbilitySystemGlobals.h"
 #include "MGLogChannels.h"
 
 UMGAssetManager::UMGAssetManager()
@@ -22,6 +23,14 @@ UMGAssetManager& UMGAssetManager::Get()
 
 	// Fatal error above prevents this from being called.
 	return *NewObject<UMGAssetManager>();
+}
+
+void UMGAssetManager::StartInitialLoading()
+{
+	Super::StartInitialLoading();
+	
+	//TODO 早期版本的重要步骤，可能需要，需确认
+	UAbilitySystemGlobals::Get().InitGlobalData();
 }
 
 UObject* UMGAssetManager::SynchronousLoadAsset(const FSoftObjectPath& AssetPath)

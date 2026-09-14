@@ -117,9 +117,9 @@ void UMGAbilitySet::GiveToAbilitySystem(UMGAbilitySystemComponent* MGASC, FMGAbi
 		AbilitySpec.SourceObject = SourceObject;
 		
 		// --------------------------------------
-		//	GetDynamicSpecSourceTags().AddTag(AbilityToGrant.InputTag)
+		//	GetDynamicSpecSourceTags().AppendTags(AbilityToGrant.InputTags)
 		// --------------------------------------
-		AbilitySpec.GetDynamicSpecSourceTags().AddTag(AbilityToGrant.InputTag);
+		AbilitySpec.GetDynamicSpecSourceTags().AppendTags(AbilityToGrant.InputTags);
 
 		const FGameplayAbilitySpecHandle AbilitySpecHandle = MGASC->GiveAbility(AbilitySpec);
 

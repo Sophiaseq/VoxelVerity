@@ -1,11 +1,10 @@
 ﻿// PickupActor.cpp
 #include "MGDroppedItemActor.h"
 
-#include "Interaction/MGInteractionReceiver.h"
+#include "Components/ItemContainer.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
 #include "Items/Weapons/MGWeaponItemDefinition.h"
-#include "Net/UnrealNetwork.h"
 
 AMGDroppedItemActor::AMGDroppedItemActor()
 {
@@ -20,8 +19,7 @@ AMGDroppedItemActor::AMGDroppedItemActor()
 	MeshComponent->SetSimulatePhysics(false);
 	MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
-	// 重要：为了网络复制
-	//bReplicates = true;
+	bReplicates = true;
 }
 
 void AMGDroppedItemActor::BeginPlay()
@@ -29,59 +27,75 @@ void AMGDroppedItemActor::BeginPlay()
 	Super::BeginPlay();
 	PickupSphere->OnComponentBeginOverlap.AddDynamic(this,&AMGDroppedItemActor::OnSphereOverlap);
 	PickupSphere->OnComponentEndOverlap.AddDynamic(this,&AMGDroppedItemActor::SphereOverlapEnd);
-	if (ItemDef)
+	if (ItemDef && ItemDef->DropMesh)
 	{
-		InitializeDroppedItemActor(ItemDef);
+		MeshComponent->SetStaticMesh(ItemDef->DropMesh);
 	}
 }
 
 void AMGDroppedItemActor::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (IMGInteractionReceiver* InteractionReceiver = Cast<IMGInteractionReceiver>(OtherActor))
-	{
-		InteractionReceiver->AddNearbyDrop(this, OtherActor);
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(1,30.f,FColor::Blue,FString("Ending Overlap with") + OtherActor->GetName());
-		}
-	}
-	//直接拾取的逻辑
-	/*int32 Remain = IMGInteractionReceiver::Execute_AttemptPickup(OtherActor, ItemDef, Count);
-	if (Remain == 0)
-	{
-		Destroy(); // 全部拾取，销毁自身www
-	}
-	else if (Remain < Count)
-	{
-		Count = Remain; // 只捡走一部分（背包满了），更新数量
-		// 可在此更新 3D 悬浮文字显示 "x5"
-	}
-	// Remain == Count 时什么都没发生，留着*/
+	if (!OtherActor || OtherActor == this) return;
+
+	// 只处理 Pawn（避免掉落物之间、子弹等误触发）
+	APawn* Pawn = Cast<APawn>(OtherActor);
+	if (!Pawn) return;
+
+	// 拾取是服务器权威逻辑
+	if (!HasAuthority()) return;
+
+	// 冷却：背包满时不至于每帧刷
+	const double Now = GetWorld()->GetTimeSeconds();
+	if (Now - LastPickupAttemptTime < PickupRetryCooldown) return;
+	LastPickupAttemptTime = Now;
+
+	// 走接口尝试拾取（实际拾取逻辑在 TryPickup_Implementation 里：找 Picker 身上的 IItemContainer 并 AddItemToContainer）
+	IPickupable::Execute_TryPickup(this, Pawn);
 }
 
 void AMGDroppedItemActor::SphereOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if (IMGInteractionReceiver* InteractionReceiver = Cast<IMGInteractionReceiver>(OtherActor))
-	{
-		InteractionReceiver->RemoveNearbyDrop(this, OtherActor);
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(1,30.f,FColor::Blue,FString("Ending Overlap with") + OtherActor->GetName());
-		}
-	}
 }
 
-void AMGDroppedItemActor::InitializeDroppedItemActor(UMGItemDefinition* InItemDef)
+int32 AMGDroppedItemActor::TryPickup_Implementation(AActor* Picker)
 {
-	if (!InItemDef) return;
+	if (!HasAuthority() || !Picker || !ItemDef || Count <= 0) return 0;
 
-	ItemDef = InItemDef;
-	if (ItemDef->DropMesh)
+	// 从 Picker 上找任意实现了 IItemContainer 的对象
+	UObject* ContainerObj = nullptr;
+
+	// 优先找组件
+	TArray<UActorComponent*> Components;
+	Picker->GetComponents(Components);
+	for (UActorComponent* Comp : Components)
 	{
-		MeshComponent->SetStaticMesh(ItemDef->DropMesh);
+		if (Comp && Comp->Implements<UItemContainer>())
+		{
+			ContainerObj = Comp;
+			break;
+		}
 	}
+	// 再退而求其次，看 Picker 自身是不是容器
+	if (!ContainerObj && Picker->Implements<UItemContainer>())
+	{
+		ContainerObj = Picker;
+	}
+
+	if (!ContainerObj) return 0;
+
+	const int32 Remain = IItemContainer::Execute_AddItemToContainer(ContainerObj, ItemDef, Count);
+	const int32 PickedUp = Count - Remain;
+
+	if (PickedUp <= 0) return 0;
+
+	Count = Remain;
+	if (Count <= 0)
+	{
+		Destroy();
+	}
+	return PickedUp;
 }
 
 #if WITH_EDITOR

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/PawnComponent.h"
+#include "Items/Weapons/MGWeaponItemDefinition.h"
 #include "MGEquipmentComponent.generated.h"
 
 class UMGInventoryComponent;
@@ -43,15 +44,22 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	UMGItemDefinition* GetCurrentItem() const { return CurrentItem; }
+	
+	UMGWeaponItemDefinition* GetCurrentWeapon() const {return GetCurrentItem() ? Cast<UMGWeaponItemDefinition>(GetCurrentItem()) : nullptr; }
 
 	/** 返回当前优先使用的网格组件（骨骼优先，其次静态） */
 	UFUNCTION(BlueprintPure)
 	UMeshComponent* GetPriorityMeshComponent() const;
 
 protected:
+	virtual void InitializeComponent() override;
 	/** Inventory 选中物品变化回调 */
 	UFUNCTION()
 	void HandleSelectedItemChanged(UMGItemDefinition* NewItem);
+
+	/** Inventory 槽位内容变化回调（拾取/消耗后，若发生在选中槽则刷新手持） */
+	UFUNCTION()
+	void HandleInventoryChanged(int32 SlotIndex);
 
 	// ========== 内部辅助 ==========
 	void ClearEquippedDisplay();
@@ -73,10 +81,8 @@ private:
 	UPROPERTY(Transient)
 	TObjectPtr<UMGInventoryComponent> BoundInventory;
 
-	// ========== 配置 ==========
-	/** 手部插槽名称（通常是角色骨骼上的 HandGrip_R / HandGrip_L） */
 	UPROPERTY(EditDefaultsOnly, Category = "Equipment")
-	FName HandSocketName = TEXT("HandGrip_R");
+	FName HandSocketName = TEXT("HandRightSocket");
 
 #if WITH_EDITORONLY_DATA
 	// ========== 编辑器预览 ==========

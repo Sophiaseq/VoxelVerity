@@ -3,13 +3,13 @@
 
 #include "MeleeCombos.h"
 
-bool UMeleeCombos::FindMatchingCombos(const FGameplayTagContainer& InputTags, TArray<FMeleeCombo>& OutCombos) const
+bool UMeleeCombos::FindMatchingCombos(const TArray<FGameplayTag>& InputTags, TArray<FMeleeCombo>& OutCombos) const
 {
-	if (!InputTags.IsValid()) return false;
+	if (InputTags.Num() == 0) return false;
 
 	for (int32 i = 0; i < InputTags.Num(); ++i)
 	{
-		const FGameplayTag InputTag = InputTags.GetByIndex(i);
+		const FGameplayTag InputTag = InputTags[i];
 
 		for (int32 j = OutCombos.Num() - 1; j >= 0; --j)
 		{
@@ -23,13 +23,31 @@ bool UMeleeCombos::FindMatchingCombos(const FGameplayTagContainer& InputTags, TA
 	return !OutCombos.IsEmpty();
 }
 
-bool UMeleeCombos::GetComboSection(const FGameplayTagContainer& InputTags, TArray<FMeleeCombo>& InCombos, FMeleeComboSection& OutSection) const
+bool UMeleeCombos::GetSectionForSequence(const TArray<FGameplayTag>& InputSequence, FMeleeComboSection& OutSection) const
 {
-	TArray<FMeleeCombo> MeleeCombos = Combos;
-	if (FindMatchingCombos(InputTags, MeleeCombos))
+	const int32 SequenceLen = InputSequence.Num();
+	if (SequenceLen <= 0)
 	{
-		OutSection = MeleeCombos[0].Combo[InputTags.Num()];
-		return true;
+		return false;
 	}
+
+	// 过滤出“前 SequenceLen 个输入标签全部匹配”的连招
+	TArray<FMeleeCombo> Matching = Combos;
+	if (!FindMatchingCombos(InputSequence, Matching))
+	{
+		return false;
+	}
+
+	// 返回“最后一次输入”对应的片段（索引 = 序列长度 - 1）
+	const int32 SectionIndex = SequenceLen - 1;
+	for (const FMeleeCombo& Combo : Matching)
+	{
+		if (Combo.Combo.IsValidIndex(SectionIndex))
+		{
+			OutSection = Combo.Combo[SectionIndex];
+			return true;
+		}
+	}
+
 	return false;
 }

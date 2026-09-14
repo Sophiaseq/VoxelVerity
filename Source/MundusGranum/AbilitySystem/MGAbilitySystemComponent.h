@@ -34,6 +34,9 @@ public:
 	void AbilityInputTagPressed(const FGameplayTag& InputTag);
 	void AbilityInputTagReleased(const FGameplayTag& InputTag);
 
+	/** 本帧被按下的输入标签（保序、可重复），供激活中的技能读取（如近战连招分支） */
+	const TArray<FGameplayTag>& GetPressedInputTags() const { return PressedInputTags; }
+
 protected:
 	void EffectApplied(UAbilitySystemComponent* AbilitySystemComponent, const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle ActiveEffectHandle);
 
@@ -53,5 +56,8 @@ protected:
 	// Number of abilities running in each activation group.
 	//TODO 为激活的技能分类并写成数组
 	int32 ActivationGroupCounts;
-	
+
+	// 本帧按下的输入标签缓存（保序、可重复；ProcessAbilityInput 结束时清空）
+	TArray<FGameplayTag> PressedInputTags;
+
 };

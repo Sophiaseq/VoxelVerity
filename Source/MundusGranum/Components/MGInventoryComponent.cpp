@@ -6,8 +6,11 @@
 #include "Items/MGItemDefinition.h"
 
 // Sets default values for this component's properties
-UMGInventoryComponent::UMGInventoryComponent()
+UMGInventoryComponent::UMGInventoryComponent(const FObjectInitializer& ObjectInitializer)
+    : Super(ObjectInitializer)
 {
+	SetIsReplicatedByDefault(true);
+	bWantsInitializeComponent = true;
 }
 
 void UMGInventoryComponent::BeginPlay()
@@ -51,6 +54,23 @@ bool UMGInventoryComponent::SetSlot(int32 Index, const FMGInventorySlot& NewSlot
 	//背包数据发生变化，广播通知UI刷新和手持刷新
 	OnInventoryChanged.Broadcast(Index);
 	return true;
+}
+
+int32 UMGInventoryComponent::AddItemToContainer_Implementation(UMGItemDefinition* Item, int32 Count)
+{
+	// 掉落物拾取走 PickupItem：优先放进当前选中槽位，实现“捡到即上手”
+	return PickupItem(Item, Count);
+}
+
+bool UMGInventoryComponent::CanAcceptItem_Implementation(UMGItemDefinition* Item) const
+{
+	if (!Item) return false;
+	for (const FMGInventorySlot& Slot : Slots)
+	{
+		if (Slot.IsEmpty()) return true;
+		if (Slot.Item == Item && Slot.GetRemainingSpace() > 0) return true;
+	}
+	return false;
 }
 
 int32 UMGInventoryComponent::AddItem(UMGItemDefinition* Item, int32 Count)
@@ -193,7 +213,7 @@ void UMGInventoryComponent::SelectSlot(int32 NewIndex)
 	int32 NewSelected = (NewIndex % HotbarSize + HotbarSize) % HotbarSize;
 	if (NewSelected == SelectedSlotIndex) return;
 	SelectedSlotIndex = NewSelected;
-	OnSelectedSlotChanged.Broadcast(Slots[SelectedSlotIndex].Item);
+	OnSelectedSlotChanged.Broadcast(GetSelectedItem());
 }
 
 int32 UMGInventoryComponent::GetSelectedSlotIndex() const

@@ -13,6 +13,8 @@
 #include "UserSettings/EnhancedInputUserSettings.h"
 #include "InputMappingContext.h"
 #include "AbilitySystem/MGAbilitySystemComponent.h"
+#include "Components/MGEquipmentComponent.h"
+#include "Components/MGInventoryComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Misc/UObjectToken.h"
@@ -313,6 +315,7 @@ void UMGHeroComponent::InitializePlayerInput(UInputComponent* PlayerInputCompone
 					MGIC->BindNativeAction(InputConfig, MundusGranumGameplayTags::InputTag_Sprint, ETriggerEvent::Started, this, &ThisClass::Input_SprintPressed, /*bLogIfNotFound=*/ false);
 					MGIC->BindNativeAction(InputConfig, MundusGranumGameplayTags::InputTag_Sprint, ETriggerEvent::Completed, this, &ThisClass::Input_SprintReleased, /*bLogIfNotFound=*/ false);
 					MGIC->BindNativeAction(InputConfig, MundusGranumGameplayTags::InputTag_SlowWalk, ETriggerEvent::Triggered, this, &ThisClass::Input_SlowWalk, /*bLogIfNotFound=*/ false);
+					MGIC->BindNativeAction(InputConfig, MundusGranumGameplayTags::InputTag_SelectItem, ETriggerEvent::Triggered, this, &ThisClass::InputTag_SelectItem, /*bLogIfNotFound=*/ false);
 				}
 			}
 		}
@@ -361,6 +364,11 @@ void UMGHeroComponent::Input_AbilityInputTagReleased(FGameplayTag InputTag)
 
 void UMGHeroComponent::Input_Move(const FInputActionValue& InputActionValue)
 {
+	UAbilitySystemComponent* ASC = GetPlayerState<AMGPlayerState>()->GetAbilitySystemComponent();
+	if (ASC && ASC->HasMatchingGameplayTag(MundusGranumGameplayTags::CharacterState_Rigidity))
+	{
+		return;
+	}
 	APawn* Pawn = GetPawn<APawn>();
 	AController* Controller = Pawn ? Pawn->GetController() : nullptr;
 	if (Controller != nullptr)
@@ -423,6 +431,12 @@ void UMGHeroComponent::Input_SlowWalk()
 
 void UMGHeroComponent::InputTag_SelectItem(const FInputActionValue& Value)
 {
+	UMGInventoryComponent* InventoryComponent = GetOwner()->FindComponentByClass<UMGInventoryComponent>();
+	if (!InventoryComponent) return;
+	const float Axis = Value.Get<float>();
+	if (FMath::IsNearlyZero(Axis)) return;
+	const int32 Delta = Axis > 0.f ? 1 : -1;
+	InventoryComponent->SelectSlot(InventoryComponent->GetSelectedSlotIndex() + Delta);
 }
 
 

@@ -57,9 +57,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TArray<FMeleeCombo> Combos;
 
-	bool FindMatchingCombos(const FGameplayTagContainer& InputTags, TArray<FMeleeCombo>& OutCombos) const;
+	bool FindMatchingCombos(const TArray<FGameplayTag>& InputTags, TArray<FMeleeCombo>& OutCombos) const;
 	
-	// 获取指定连招在指定索引处的片段
-	UFUNCTION(BlueprintPure, Category = "Melee")
-	bool GetComboSection(const FGameplayTagContainer& InputTags, TArray<FMeleeCombo>& InCombos, FMeleeComboSection& OutSection) const;
+	// 给定输入标签序列，返回“最后一次输入”对应的连招片段（序列长度=1 时返回第一个片段）
+	bool GetSectionForSequence(const TArray<FGameplayTag>& InputSequence, FMeleeComboSection& OutSection) const;
 };

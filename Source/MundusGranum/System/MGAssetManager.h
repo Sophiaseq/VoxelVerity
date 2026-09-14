@@ -19,6 +19,8 @@ public:
 	
 	static UMGAssetManager& Get();
 	
+	virtual void StartInitialLoading() override;
+	
 	// Returns the asset referenced by a TSoftObjectPtr.  This will synchronously load the asset if it's not already loaded.
 	template<typename AssetType>
 	static AssetType* GetAsset(const TSoftObjectPtr<AssetType>& AssetPointer, bool bKeepInMemory = true);

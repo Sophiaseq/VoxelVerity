@@ -53,8 +53,8 @@ public:
 	FWeaponAttributes WeaponAttributes;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSoftObjectPtr<UAnimMontage> Montage;
+	TObjectPtr<UAnimMontage> Montage;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSoftObjectPtr<UMeleeCombos> MeleeCombos;
+	TObjectPtr<UMeleeCombos> MeleeCombos;
 };

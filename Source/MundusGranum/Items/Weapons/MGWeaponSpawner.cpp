@@ -22,8 +22,15 @@ AMGWeaponSpawner::AMGWeaponSpawner()
 void AMGWeaponSpawner::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	Sphere->OnComponentBeginOverlap.AddDynamic(this,&AMGWeaponSpawner::OnSphereOverlap);
 	Sphere->OnComponentEndOverlap.AddDynamic(this,&AMGWeaponSpawner::SphereOverlapEnd);
+	if (!WeaponItemDefinition)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("没有WeaponItemDefinition"));
+		return;
+	}
+	WeaponMesh->SetStaticMesh(WeaponItemDefinition->EquipDisplayData.StaticMesh);
 }
 
 void AMGWeaponSpawner::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -40,6 +47,8 @@ void AMGWeaponSpawner::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent,
 		WeaponMesh->AttachToComponent(CharacterBase->GetMesh(), AttachmentTransformRules, FName("hand_r"));
 		SetActorEnableCollision(false);
 		DisableComponentsSimulatePhysics();
+		
+		OnWeaponAttached.Broadcast(WeaponItemDefinition);
 	}
 }
 

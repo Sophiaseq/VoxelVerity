@@ -3,7 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
+#include "ItemContainer.h"
+#include "Components/PawnComponent.h"
 #include "Delegates/Delegate.h"
 #include "MGInventoryComponent.generated.h"
 
@@ -15,11 +16,11 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMGInventoryChanged, int32, SlotInde
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMGSelectedSlotChanged, UMGItemDefinition*, NewItem);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class UMGInventoryComponent : public UActorComponent
+class UMGInventoryComponent : public UPawnComponent, public IItemContainer
 {
 	GENERATED_BODY()
 public:
-	UMGInventoryComponent();
+	UMGInventoryComponent(const FObjectInitializer& ObjectInitializer);
 	virtual void BeginPlay() override;
 	
 	// 初始化所有槽位为空
@@ -32,16 +33,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	bool SetSlot(int32 Index, const FMGInventorySlot& NewSlot);
 
-	// 添加物品（自动堆叠，返回剩余数量）
-	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	// ~Begin IItemContainer
+	virtual int32 AddItemToContainer_Implementation(UMGItemDefinition* Item, int32 Count) override;
+	virtual bool CanAcceptItem_Implementation(UMGItemDefinition* Item) const override;
+	// ~End IItemContainer
+	
 	int32 AddItem(UMGItemDefinition* Item, int32 Count);
-
-	// 拾取落位：优先当前选中槽，其次快捷栏空槽，最后走通用 AddItem（返回剩余数量）
-	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	int32 PickupItem(UMGItemDefinition* Item, int32 Count);
-
-	// 移除指定槽位中的物品
-	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	bool RemoveItem(int32 Index, int32 Count);
 
 	// 交换两个槽位
@@ -51,9 +49,7 @@ public:
 	// 快捷栏操作
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void SelectSlot(int32 NewIndex); // 循环取模
-
-	// 获取当前选中槽的实际索引（HotbarStartIndex + SelectedSlotIndex）
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Inventory")
+	
 	int32 GetSelectedSlotIndex() const;
 
 	// 获取当前主手物品（当前选中的快捷栏槽位）
@@ -93,4 +89,5 @@ protected:
 	// 当前选中的快捷栏槽位索引（0~HotbarSize-1）
 	UPROPERTY(BlueprintReadOnly, Category = "Inventory")
 	int32 SelectedSlotIndex = 0;
+
 };

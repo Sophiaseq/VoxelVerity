@@ -24,10 +24,15 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "MundusGranum|PlayerState")
 	UMGAbilitySystemComponent* GetMGAbilitySystemComponent() const;
+	
+	//~Begin IAbilitySystemInterface
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	//~End IAbilitySystemInterface
 	
 	//~Begin ICombatInterface
 	virtual float GetCharacterLevel() override;
+	virtual UMGWeaponItemDefinition* GetCurrentWeapon() const override;//TODO 或许可以改成通过GameplayTag
+	virtual FVector GetSocketLocation() const override;
 	//~End ICombatInterface
 	
 protected:

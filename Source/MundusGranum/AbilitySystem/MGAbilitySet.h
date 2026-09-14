@@ -37,9 +37,9 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	int32 AbilityLevel = 1;
 
-	// Tag used to process input for the ability.
+	// Tags used to process input for the ability（多个输入标签 = 多个按键触发同一技能，如左右键攻击）
 	UPROPERTY(EditDefaultsOnly, Meta = (Categories = "InputTag"))
-	FGameplayTag InputTag;
+	FGameplayTagContainer InputTags;
 };
 
 

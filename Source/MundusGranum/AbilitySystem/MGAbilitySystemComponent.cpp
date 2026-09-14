@@ -116,6 +116,7 @@ void UMGAbilitySystemComponent::ProcessAbilityInput(float DeltaTime, bool bGameP
 	//
 	InputPressedSpecHandles.Reset();
 	InputReleasedSpecHandles.Reset();
+	PressedInputTags.Reset();
 }
 
 void UMGAbilitySystemComponent::ClearAbilityInput()
@@ -123,12 +124,15 @@ void UMGAbilitySystemComponent::ClearAbilityInput()
 	InputPressedSpecHandles.Reset();
 	InputReleasedSpecHandles.Reset();
 	InputHeldSpecHandles.Reset();
+	PressedInputTags.Reset();
 }
 
 void UMGAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& InputTag)
 {
 	if (InputTag.IsValid())
 	{
+		PressedInputTags.Add(InputTag);
+
 		for (const FGameplayAbilitySpec& AbilitySpec : ActivatableAbilities.Items)
 		{
 			if (AbilitySpec.Ability && (AbilitySpec.GetDynamicSpecSourceTags().HasTagExact(InputTag)))

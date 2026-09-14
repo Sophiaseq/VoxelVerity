@@ -3,12 +3,12 @@
 
 #include "MGCharacter.h"
 #include "MGLogChannels.h"
-
 #include "MGPawnExtensionComponent.h"
+#include "MundusGranum.h"
 #include "AbilitySystem/MGAbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/MGEquipmentComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/PlayerState.h"
 #include "Player/MGPlayerState.h"
 
 // Sets default values
@@ -19,12 +19,15 @@ AMGCharacter::AMGCharacter()
 	UCapsuleComponent* CapsuleComp = GetCapsuleComponent();
 	check(CapsuleComp);
 	CapsuleComp->InitCapsuleSize(40.0f, 90.0f);
-	//CapsuleComp->SetCollisionProfileName(NAME_LyraCharacterCollisionProfile_Capsule);
+	CapsuleComp->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+	CapsuleComp->SetGenerateOverlapEvents(false);
 
 	USkeletalMeshComponent* MeshComp = GetMesh();
 	check(MeshComp);
-	MeshComp->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));  // Rotate mesh to be X forward since it is exported as Y forward.
-	//MeshComp->SetCollisionProfileName(NAME_LyraCharacterCollisionProfile_Mesh);
+	MeshComp->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
+	MeshComp->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+	MeshComp->SetCollisionResponseToChannel(ECC_Projectile, ECR_Overlap);
+	MeshComp->SetGenerateOverlapEvents(true);
 
 	UCharacterMovementComponent* MoveComp = GetCharacterMovement();
 	MoveComp->MaxWalkSpeed = 230.0f;
@@ -51,7 +54,6 @@ AMGCharacter::AMGCharacter()
 void AMGCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 void AMGCharacter::PossessedBy(AController* NewController)
@@ -136,6 +138,16 @@ float AMGCharacter::GetCharacterLevel()
 	if (const AMGPlayerState* MGPlayerState = Cast<AMGPlayerState>(GetPlayerState()))
 		return MGPlayerState->GetPlayerLevel();
 	return 0.0f;
+}
+
+UMGWeaponItemDefinition* AMGCharacter::GetCurrentWeapon() const
+{
+	return FindComponentByClass<UMGEquipmentComponent>() ? FindComponentByClass<UMGEquipmentComponent>()->GetCurrentWeapon() : nullptr;
+}
+
+FVector AMGCharacter::GetSocketLocation() const
+{
+	return GetMesh()->GetSocketLocation(FName("HandRightSocket"));
 }
 
 void AMGCharacter::OnAbilitySystemInitialized()
