@@ -28,11 +28,25 @@ public:
 	ATTRIBUTE_ACCESSORS_BASIC(UMGHealthSet, MaxStamina)
 	ATTRIBUTE_ACCESSORS_BASIC(UMGHealthSet, IncomingDamage)
 	ATTRIBUTE_ACCESSORS_BASIC(UMGHealthSet, IncomingHealing)
+	
+	// Delegate when health changes due to damage/healing, some information may be missing on the client
+	mutable FMGAttributeEvent OnHealthChanged;
+
+	// Delegate when max health changes
+	mutable FMGAttributeEvent OnMaxHealthChanged;
+
+	// Delegate to broadcast when the health attribute reaches zero
+	mutable FMGAttributeEvent OnOutOfHealth;
+	
+	mutable FMGAttributeEvent OnStaminaChanged;
+	mutable FMGAttributeEvent OnMaxStaminaChanged;
+	mutable FMGAttributeEvent OnOutOfStamina;
 
 protected:
 	// 属性修改前回调 —— 用于Clamp（限制值域）
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 
+	virtual bool PreGameplayEffectExecute(struct FGameplayEffectModCallbackData& Data) override;
 	// GE执行后回调 —— 用于处理"死亡的连锁反应"等
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
@@ -83,6 +97,19 @@ private:
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Vital|Stamina", ReplicatedUsing = OnRep_MaxStamina, meta = (AllowPrivateAccess))
 	FGameplayAttributeData MaxStamina;
+	
+	// Used to track when the health reaches 0.
+	bool bOutOfHealth;
+
+	// Store the health before any changes 
+	float MaxHealthBeforeAttributeChange;
+	float HealthBeforeAttributeChange;
+	
+	bool bOutOfStamina;
+
+	// Store the health before any changes 
+	float MaxStaminaBeforeAttributeChange;
+	float StaminaBeforeAttributeChange;
 		
 	UPROPERTY(BlueprintReadOnly, Category = "Meta", meta = (AllowPrivateAccess))
 	FGameplayAttributeData IncomingDamage;

@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "MGCharacter.h"
+#include "UI/UI_MVVM/HealthBarComponent.h"
 #include "MGCharacterWithAbilities.generated.h"
 
 class UMGHealthSet;
@@ -19,30 +19,27 @@ class MUNDUSGRANUM_API AMGCharacterWithAbilities : public AMGCharacter
 public:
 	AMGCharacterWithAbilities();
 	virtual void PostInitializeComponents() override;
+	virtual void BeginPlay() override;
 	
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-	void SetHealthSet(const TObjectPtr<const UMGHealthSet>& InHealthSet){this->HealthSet = InHealthSet;}
-	void SetCombatSet(const TObjectPtr<const UMGCombatSet>& InCombatSet){this->CombatSet = InCombatSet;}
-	float GetNonPlayerLevel() const {return NonPlayerLevel;}
 	
 	//~Begin ICombatInterface
 	virtual float GetCharacterLevel() override;
 	//~End ICombatInterface
+	
+	void SetPawnData() const;
 	
 private:
 	// The ability system component sub-object used by player characters.
 	UPROPERTY(VisibleAnywhere, Category = "MundusGranum|NonPlayerState")
 	TObjectPtr<UMGAbilitySystemComponent> AbilitySystemComponent;
 	
-	// Health attribute set used by this actor.
-	UPROPERTY()
-	TObjectPtr<const UMGHealthSet> HealthSet;
-
-	// Combat attribute set used by this actor.
-	UPROPERTY()
-	TObjectPtr<const UMGCombatSet> CombatSet;
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UHealthBarComponent> HealthBarComponent;
 	
 	UPROPERTY(VisibleAnywhere, Category = "MundusGranum|NonPlayerState")
 	float NonPlayerLevel = 1;
 	
+public:
+	float GetNonPlayerLevel() const {return NonPlayerLevel;}
 };

@@ -33,6 +33,11 @@ void UMGAssetManager::StartInitialLoading()
 	UAbilitySystemGlobals::Get().InitGlobalData();
 }
 
+const UMGCharacterDefinition* UMGAssetManager::GetDefaultPawnData() const
+{
+	return GetAsset(DefaultPawnData);
+}
+
 UObject* UMGAssetManager::SynchronousLoadAsset(const FSoftObjectPath& AssetPath)
 {
 	if (AssetPath.IsValid())

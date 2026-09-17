@@ -7,6 +7,7 @@
 #include "MGPlayerAttributeSet.h"
 #include "ModularPlayerState.h"
 #include "Abilities/Tasks/AbilityTask.h"
+#include "Interaction/CombatInterface.h"
 #include "System/GameplayTagStack.h"
 #include "MGPlayerState.generated.h"
 
@@ -22,7 +23,7 @@ class UMGAbilitySystemComponent;
 class AMGPlayerController;
 
 UCLASS(Config = Game)
-class AMGPlayerState : public AModularPlayerState, public IAbilitySystemInterface
+class AMGPlayerState : public AModularPlayerState, public IAbilitySystemInterface, public ICombatInterface
 {
 	GENERATED_BODY()
 	
@@ -40,6 +41,8 @@ public:
 	virtual void PreInitializeComponents() override;
 	virtual void PostInitializeComponents() override;
 	//~End of AActor interface
+	
+	virtual float GetCharacterLevel() override { return PlayerLevel; };
 	
 	//~APlayerState interface
 	virtual void Reset() override;

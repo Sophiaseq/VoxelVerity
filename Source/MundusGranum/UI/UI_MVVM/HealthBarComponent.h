@@ -7,16 +7,12 @@
 #include "HealthBarComponent.generated.h"
 
 
+class UMVVMViewModelBase;
 class UHealthBar;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class MUNDUSGRANUM_API UHealthBarComponent : public UWidgetComponent
 {
 	GENERATED_BODY()
-
-public:
-	void SetHealthPercent(float Percent);
 	
-private:
-
 };

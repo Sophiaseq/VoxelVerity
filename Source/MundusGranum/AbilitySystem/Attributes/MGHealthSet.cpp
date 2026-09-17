@@ -5,6 +5,7 @@
 
 #include "GameplayEffectExtension.h"
 #include "MGLogChannels.h"
+#include "AbilitySystem/MGAbilitySystemComponent.h"
 #include "GameFramework/Character.h"
 #include "Net/UnrealNetwork.h"
 
@@ -47,6 +48,24 @@ void UMGHealthSet::PreAttributeChange(const FGameplayAttribute& Attribute, float
     // ✅ 正确：在PostGameplayEffectExecute中处理死亡逻辑
 }
 
+bool UMGHealthSet::PreGameplayEffectExecute(struct FGameplayEffectModCallbackData& Data)
+{
+    if (!Super::PreGameplayEffectExecute(Data))
+    {
+        return false;
+    }
+    
+    //TODO: 加一些GameplayTag和无敌机制
+    
+    // Save the current health and Stamina
+    StaminaBeforeAttributeChange = GetStamina();
+    MaxStaminaBeforeAttributeChange= GetMaxStamina();
+    HealthBeforeAttributeChange = GetHealth();
+    MaxHealthBeforeAttributeChange = GetMaxHealth();
+
+    return true;
+}
+
 // ====================================================================
 // PreAttributeBaseChange — BaseValue被修改前调用
 // ====================================================================
@@ -73,6 +92,23 @@ void UMGHealthSet::PreAttributeBaseChange(const FGameplayAttribute& Attribute, f
 void UMGHealthSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
 {
     Super::PostAttributeChange(Attribute, OldValue, NewValue);
+    
+    if (Attribute == GetMaxHealthAttribute())
+    {
+        // Make sure current health is not greater than the new max health.
+        if (GetHealth() > NewValue)
+        {
+            UMGAbilitySystemComponent* MGASC = GetMGAbilitySystemComponent();
+            check(MGASC);
+
+            MGASC->ApplyModToAttribute(GetHealthAttribute(), EGameplayModOp::Override, NewValue);
+        }
+    }
+
+    if (bOutOfHealth && (GetHealth() > 0.0f))
+    {
+        bOutOfHealth = false;
+    }
 }
 
 // ====================================================================
@@ -89,6 +125,8 @@ void UMGHealthSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackDat
 
     const FGameplayEffectContextHandle ContextHandle = Data.EffectSpec.GetContext();
     const FGameplayAttribute& ModifiedAttribute = Data.EvaluatedData.Attribute;
+    AActor* Instigator = ContextHandle.GetOriginalInstigator();
+    AActor* Causer = ContextHandle.GetEffectCauser();
 
     // --- 第二步：处理临时属性（IncomingDamage）---
     if (ModifiedAttribute == GetIncomingDamageAttribute())
@@ -106,51 +144,42 @@ void UMGHealthSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackDat
 
             // 设置新生命值（PreAttributeChange会自动钳制到0~MaxHealth范围）
             SetHealth(FMath::Clamp(NewHealth, 0.0f, GetMaxHealth()));
+            SetIncomingDamage(0.0f);
             UE_LOG(LogMGAbilitySystem, Warning, TEXT("Changed Health on %s, Health: %f"), *Data.Target.GetAvatarActor()->GetName(), GetHealth())
-
-            // === 在这里实现死亡判定 ===
-            // ✅ 正确位置：PostGameplayEffectExecute
-            if (GetHealth() <= 0.0f && LocalIncomingDamage > 0.0f)
-            {
-                // 获取受伤的角色
-                AActor* TargetActor = Data.Target.GetOwner();
-                if (ACharacter* TargetCharacter = Cast<ACharacter>(TargetActor))
-                {
-                    // 通过ASC广播死亡事件
-                    // 实战中可以通过GameplayEvent或委托通知
-                    UE_LOG(LogTemp, Warning, TEXT("RPGAttributeSet: Character Died! Health reached 0"));
-
-                    // 可选：发送GameplayEvent来触发死亡技能
-                    // FGameplayEventData EventData;
-                    // EventData.Instigator = Data.EffectSpec.GetContext().GetInstigator();
-                    // UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
-                    //     TargetCharacter,
-                    //     FGameplayTag::RequestGameplayTag("Event.Death"),
-                    //     EventData
-                    // );
-                }
-            }
         }
-
-        // 重置临时属性，为下一个GE做准备
-        SetIncomingDamage(0.0f);
     }
-
-    // --- 第三步：处理临时属性（IncomingHealing）---
-    else if (ModifiedAttribute == GetIncomingHealingAttribute())
+    else if (Data.EvaluatedData.Attribute == GetIncomingHealingAttribute())
     {
-        const float LocalIncomingHealing = GetIncomingHealing();
-
-        if (LocalIncomingHealing > 0.0f)
-        {
-            // 治疗不能超过最大生命值
-            const float NewHealth = GetHealth() + LocalIncomingHealing;
-            SetHealth(FMath::Clamp(NewHealth, 0.0f, GetMaxHealth()));
-        }
-
-        // 重置临时属性
+        // Convert into +Health and then clamo
+        SetHealth(FMath::Clamp(GetHealth() + GetIncomingHealing(), 0.0f, GetMaxHealth()));
         SetIncomingHealing(0.0f);
     }
+    else if (Data.EvaluatedData.Attribute == GetHealthAttribute())
+    {
+        // Clamp and fall into out of health handling below
+        SetHealth(FMath::Clamp(GetHealth(), 0.0f, GetMaxHealth()));
+    }
+    else if (Data.EvaluatedData.Attribute == GetMaxHealthAttribute())
+    {
+        // TODO clamp current health?
+
+        // Notify on any requested max health changes
+        OnMaxHealthChanged.Broadcast(Instigator, Causer, &Data.EffectSpec, Data.EvaluatedData.Magnitude, MaxHealthBeforeAttributeChange, GetMaxHealth());
+    }
+
+    // If health has actually changed activate callbacks
+    if (GetHealth() != HealthBeforeAttributeChange)
+    {
+        OnHealthChanged.Broadcast(Instigator, Causer, &Data.EffectSpec, Data.EvaluatedData.Magnitude, HealthBeforeAttributeChange, GetHealth());
+    }
+
+    if ((GetHealth() <= 0.0f) && !bOutOfHealth)
+    {
+        OnOutOfHealth.Broadcast(Instigator, Causer, &Data.EffectSpec, Data.EvaluatedData.Magnitude, HealthBeforeAttributeChange, GetHealth());
+    }
+
+    // Check health again in case an event above changed it.
+    bOutOfHealth = (GetHealth() <= 0.0f);
 }
 
 // ====================================================================
@@ -168,10 +197,7 @@ void UMGHealthSet::ResetMetaAttributes()
 void UMGHealthSet::ClampVitalAttribute(const FGameplayAttribute& Attribute, float& NewValue,
     const FGameplayAttributeData& MaxValueAttribute)
 {
-    // 钳制逻辑：
-    // 1. 当前值不能超过最大值
-    // 2. 当前值不能低于0
-
+    // 钳制逻辑：当前值不能超过最大值,当前值不能低于0
     const float MaxValue = MaxValueAttribute.GetCurrentValue();
 
     if (NewValue > MaxValue)
@@ -193,11 +219,28 @@ void UMGHealthSet::OnRep_Health(const FGameplayAttributeData& OldValue)
 {
 	// 通知GAS系统Health属性已变化（内部处理UI绑定等）
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UMGHealthSet, Health, OldValue);
+    
+    const float CurrentHealth = GetHealth();
+    const float EstimatedMagnitude = CurrentHealth - OldValue.GetCurrentValue();
+    
+    // Call the change callback, but without an instigator
+    // This could be changed to an explicit RPC in the future
+    // These events on the client should not be changing attributes
+    OnHealthChanged.Broadcast(nullptr, nullptr, nullptr, EstimatedMagnitude, OldValue.GetCurrentValue(), CurrentHealth);
+
+    if (!bOutOfHealth && CurrentHealth <= 0.0f)
+    {
+        OnOutOfHealth.Broadcast(nullptr, nullptr, nullptr, EstimatedMagnitude, OldValue.GetCurrentValue(), CurrentHealth);
+    }
+
+    bOutOfHealth = (CurrentHealth <= 0.0f);
 }
 
 void UMGHealthSet::OnRep_MaxHealth(const FGameplayAttributeData& OldValue)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UMGHealthSet, MaxHealth, OldValue);
+    
+    OnMaxHealthChanged.Broadcast(nullptr, nullptr, nullptr, GetMaxHealth() - OldValue.GetCurrentValue(), OldValue.GetCurrentValue(), GetMaxHealth());
 }
 
 void UMGHealthSet::OnRep_Mana(const FGameplayAttributeData& OldValue)
@@ -213,10 +256,23 @@ void UMGHealthSet::OnRep_MaxMana(const FGameplayAttributeData& OldValue)
 void UMGHealthSet::OnRep_Stamina(const FGameplayAttributeData& OldValue)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UMGHealthSet, Stamina, OldValue);
+    
+    const float CurrentStamina = GetStamina();
+    const float EstimatedMagnitude = CurrentStamina - OldValue.GetCurrentValue();
+    OnHealthChanged.Broadcast(nullptr, nullptr, nullptr, EstimatedMagnitude, OldValue.GetCurrentValue(), CurrentStamina);
+
+    if (!bOutOfStamina && CurrentStamina <= 0.0f)
+    {
+        OnOutOfStamina.Broadcast(nullptr, nullptr, nullptr, EstimatedMagnitude, OldValue.GetCurrentValue(), CurrentStamina);
+    }
+
+    bOutOfStamina = (CurrentStamina <= 0.0f);
 }
 
 void UMGHealthSet::OnRep_MaxStamina(const FGameplayAttributeData& OldValue)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UMGHealthSet, MaxStamina, OldValue);
+    
+    OnMaxHealthChanged.Broadcast(nullptr, nullptr, nullptr, GetMaxStamina() - OldValue.GetCurrentValue(), OldValue.GetCurrentValue(), GetMaxStamina());
 }
 

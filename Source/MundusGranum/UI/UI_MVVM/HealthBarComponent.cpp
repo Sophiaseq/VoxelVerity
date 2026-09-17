@@ -3,11 +3,8 @@
 
 #include "HealthBarComponent.h"
 
+#include "MVVMViewModelBase.h"
+#include "View/MVVMView.h"
 
 
 
-
-void UHealthBarComponent::SetHealthPercent(float Percent)
-{
-	
-}

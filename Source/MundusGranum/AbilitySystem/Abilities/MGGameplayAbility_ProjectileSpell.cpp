@@ -5,6 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "MundusGranumGameplayTags.h"
 #include "Actors/MGProjectile.h"
 #include "Interaction/CombatInterface.h"
 
@@ -24,7 +25,7 @@ void UMGGameplayAbility_ProjectileSpell::SpawnProjectile(const FVector& Projecti
 	const ICombatInterface* CombatInterface = Cast<ICombatInterface>(GetAvatarActorFromActorInfo());
 	if (CombatInterface)
 	{
-		const FVector SocketLocation = CombatInterface->GetSocketLocation();
+		const FVector SocketLocation = CombatInterface->GetSocketLocation(FName(), FName());
 		FRotator Rotation = (ProjectileTargetLocation - SocketLocation).Rotation();
 		Rotation.Pitch = 0.0f;
 		
@@ -37,6 +38,7 @@ void UMGGameplayAbility_ProjectileSpell::SpawnProjectile(const FVector& Projecti
 
 		const UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
 		const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), SourceASC->MakeEffectContext());
+		UAbilitySystemBlueprintLibrary::AssignSetByCallerMagnitude(SpecHandle, MundusGranumGameplayTags::Damage.GetModuleName(), 20);
 		Projectile->DamageEffectSpecHandle = SpecHandle;
 		
 		Projectile->FinishSpawning(SpawnTransform);

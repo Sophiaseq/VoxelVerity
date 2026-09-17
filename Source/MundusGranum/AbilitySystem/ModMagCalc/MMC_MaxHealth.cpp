@@ -3,7 +3,6 @@
 
 #include "MMC_MaxHealth.h"
 
-#include "AbilitySystem/Attributes/MGHealthSet.h"
 #include "AbilitySystem/Attributes/MGPrimarySet.h"
 #include "Interaction/CombatInterface.h"
 
@@ -30,6 +29,16 @@ float UMMC_MaxHealth::CalculateBaseMagnitude_Implementation(const FGameplayEffec
 	GetCapturedAttributeMagnitude(ConstitutionDef, Spec, EvaluateParameters, Constitution);
 	Constitution = FMath::Max(Constitution, 0.0f);
 	
-	ICombatInterface* CombatInterface = Cast<ICombatInterface>(Spec.GetContext().GetSourceObject());
-	return Constitution*10 + CombatInterface->GetCharacterLevel()*10;
+	/*
+	 *MGPlayerState中的SetPawnData调用AbilitySet->GiveToAbilitySystem(AbilitySystemComponent, nullptr)，
+	 *此时InstigatorAbilitySystemComponent的Owner为MGPlayerState，但AvatarActor为null,只能从PlayerState中获取MGCharacterLevel
+	 *这样让MGPlayerState也继承了ICombatInterface
+	 */
+	//TODO: 或许有不需要MGPlayerState继承ICombatInterface的方法
+	float Level = 0.0f;
+	if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(Spec.GetContext().GetInstigator()))
+	{
+		Level = CombatInterface->GetCharacterLevel();
+	}
+	return Constitution*10 + Level*10;
 }

@@ -14,6 +14,7 @@
 #include "MundusGranumGameplayTags.h"
 #include "CollisionQueryParams.h"
 #include "CollisionShape.h"
+#include "AbilitySystem/AbilityTasks/AbilityTask_MeleeTrace.h"
 #include "Engine/World.h"
 
 UMGGameplayAbility_MeleeAttack::UMGGameplayAbility_MeleeAttack()
@@ -30,10 +31,10 @@ bool UMGGameplayAbility_MeleeAttack::CanActivateAbility(const FGameplayAbilitySp
 	{
 		return false;
 	}
-
-	// 僵直状态下不能发起攻击（只能被受击打断）
+	
+	// 僵直状态下不能发起攻击
 	if (ActorInfo && ActorInfo->AbilitySystemComponent.IsValid() &&
-		ActorInfo->AbilitySystemComponent->HasMatchingGameplayTag(MundusGranumGameplayTags::CharacterState_Rigidity))
+		ActorInfo->AbilitySystemComponent->HasMatchingGameplayTag(MundusGranumGameplayTags::CharacterState_Rigidity_SelfAction.GetTag().RequestDirectParent()))
 	{
 		return false;
 	}
@@ -45,6 +46,15 @@ void UMGGameplayAbility_MeleeAttack::ActivateAbility(const FGameplayAbilitySpecH
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
 	const FGameplayEventData* TriggerEventData)
 {
+	if (UMGAbilitySystemComponent* MGASC = Cast<UMGAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo()))
+	{
+		for (auto& InputTag : MGASC->GetCachedInputTag())
+		{
+			MeleeInputTags.Add(InputTag);
+			MGASC->RemoveTagFromCachedInputTag(InputTag);
+		}
+	}
+	
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 	// 1. 拿到当前武器定义（蒙太奇 + 连招数据）
@@ -56,14 +66,13 @@ void UMGGameplayAbility_MeleeAttack::ActivateAbility(const FGameplayAbilitySpecH
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		return;
 	}
-
+	
 	MeleeCombos = WeaponDef->MeleeCombos;
 	AttackMontage = WeaponDef->Montage;
 
-	// 2. 读取本次激活所按下的输入标签（左右键 -> UseLeftHandItem / UseRightHandItem）
-	MeleeInputTags.Reset();
-	AppendPressedInputTag();
-
+	UAbilityTask_MeleeTrace* MeleeTask = UAbilityTask_MeleeTrace::MeleeTrace(this, MundusGranumGameplayTags::CharacterState_Rigidity_SelfAction, FVector(5,5,0));
+	MeleeTask->ReadyForActivation();
+	
 	// 3. 用初始输入序列播放第一段（失败则直接结束）
 	if (!TryAdvanceCombo())
 	{
@@ -75,23 +84,26 @@ void UMGGameplayAbility_MeleeAttack::InputPressed(const FGameplayAbilitySpecHand
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
 {
 	if (!MeleeCombos || !AttackMontage)
-	{
+    {
 		return;
 	}
 
 	// 僵直状态下不能继续连招（不接受 MontageJumpToSection），只能被受击打断
-	if (const UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo())
+	if (UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo())
 	{
-		if (ASC->HasMatchingGameplayTag(MundusGranumGameplayTags::CharacterState_Rigidity))
+		if (ASC->HasMatchingGameplayTag(MundusGranumGameplayTags::CharacterState_Rigidity_SelfAction.GetTag().RequestDirectParent()))
 		{
 			return;
 		}
-	}
-
-	// 追加本帧按下的、与本技能输入相关的标签（左右键 -> UseLeftHandItem / UseRightHandItem）
-	if (!AppendPressedInputTag())
-	{
-		return;
+		if (UMGAbilitySystemComponent* MGASC = Cast<UMGAbilitySystemComponent>(ASC))
+		{
+			FGameplayTagContainer Tags = MGASC->GetCachedInputTag();
+			for (auto& InputTag : Tags)
+			{
+				MeleeInputTags.Add(InputTag);
+				MGASC->RemoveTagFromCachedInputTag(InputTag);
+			}
+		}
 	}
 
 	// 用新的输入序列推进连招（成功则跳到下一段）
@@ -110,30 +122,6 @@ void UMGGameplayAbility_MeleeAttack::EndAbility(const FGameplayAbilitySpecHandle
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
-bool UMGGameplayAbility_MeleeAttack::AppendPressedInputTag()
-{
-	const FGameplayAbilitySpec* Spec = GetCurrentAbilitySpec();
-	const UMGAbilitySystemComponent* MGASC = Cast<UMGAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo());
-	if (!Spec || !MGASC)
-	{
-		return false;
-	}
-
-	// 本技能允许的输入标签集合（AbilitySet 里授权的 InputTags）
-	const FGameplayTagContainer& AbilityInputTags = Spec->GetDynamicSpecSourceTags();
-	bool bAppended = false;
-	for (const FGameplayTag& PressedTag : MGASC->GetPressedInputTags())
-	{
-		if (AbilityInputTags.HasTagExact(PressedTag))
-		{
-			MeleeInputTags.Add(PressedTag);
-			bAppended = true;
-		}
-	}
-
-	return bAppended;
-}
-
 bool UMGGameplayAbility_MeleeAttack::TryAdvanceCombo()
 {
 	FMeleeComboSection NextSection;
@@ -149,16 +137,15 @@ bool UMGGameplayAbility_MeleeAttack::TryAdvanceCombo()
 	}
 	else
 	{
-		// 后续：链接“当前段结束 -> 下一段”，让蒙太奇在当前段播完后自动衔接（预输入缓冲）
-		MontageSetNextSectionName(CurrentSection.SectionName, NextSection.SectionName);
+		MontageJumpToSection(NextSection.SectionName);
 	}
 
 	// 记录下一段为“当前”，并结算该段命中（简化：排队时即结算）
 	CurrentSection = NextSection;
-	PerformMeleeTrace(NextSection);
 
 	return true;
 }
+
 
 void UMGGameplayAbility_MeleeAttack::PlaySection(const FMeleeComboSection& Section)
 {
@@ -172,57 +159,6 @@ void UMGGameplayAbility_MeleeAttack::PlaySection(const FMeleeComboSection& Secti
 	MontageTask->OnCancelled.AddDynamic(this, &UMGGameplayAbility_MeleeAttack::HandleMontageCancelled);
 
 	MontageTask->ReadyForActivation();
-}
-
-void UMGGameplayAbility_MeleeAttack::PerformMeleeTrace(const FMeleeComboSection& Section)
-{
-	AMGCharacter* Character = GetMGCharacterFromActorInfo();
-	if (!Character || !Section.DamageEffectClass)
-	{
-		return;
-	}
-
-	UWorld* World = GetWorld();
-	if (!World)
-	{
-		return;
-	}
-
-	UAbilitySystemComponent* SourceASC = GetAbilitySystemComponentFromActorInfo();
-	if (!SourceASC)
-	{
-		return;
-	}
-
-	const FVector Start = Character->GetActorLocation();
-	const FVector End = Start + Character->GetActorForwardVector() * Section.TraceLength;
-
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(Character);
-
-	TArray<FHitResult> Hits;
-	World->SweepMultiByChannel(Hits, Start, End, FQuat::Identity, ECC_Pawn,
-		FCollisionShape::MakeSphere(Section.TraceRadius), Params);
-
-	for (const FHitResult& Hit : Hits)
-	{
-		AActor* Victim = Hit.GetActor();
-		if (!Victim || Victim == Character)
-		{
-			continue;
-		}
-
-		UAbilitySystemComponent* TargetASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(Victim);
-		if (!TargetASC)
-		{
-			continue;
-		}
-
-		FGameplayEffectContextHandle Context = SourceASC->MakeEffectContext();
-		Context.AddSourceObject(Character);
-		const FGameplayEffectSpecHandle Spec = SourceASC->MakeOutgoingSpec(Section.DamageEffectClass, GetAbilityLevel(), Context);
-		SourceASC->ApplyGameplayEffectSpecToTarget(*Spec.Data.Get(), TargetASC);
-	}
 }
 
 void UMGGameplayAbility_MeleeAttack::HandleMontageBlendOut()

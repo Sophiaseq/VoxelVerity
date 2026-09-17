@@ -76,7 +76,8 @@ protected:
 	/** Delegate fired when our pawn is removed as the ability system's avatar actor */
 	FSimpleMulticastDelegate OnAbilitySystemUninitialized;
 	
-	UPROPERTY(EditInstanceOnly, ReplicatedUsing = OnRep_PawnData, Category = "MundusGranum|Pawn")
+	//临时将EditInstanceOnly改为EditAnywhere,NPC暂时无法由数据驱动生成到世界中
+	UPROPERTY(EditAnywhere, ReplicatedUsing = OnRep_PawnData, Category = "MundusGranum|Pawn")
 	TObjectPtr<const UMGCharacterDefinition> PawnData;
 	
 	UPROPERTY(Transient)

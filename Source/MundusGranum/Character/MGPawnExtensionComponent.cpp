@@ -191,10 +191,6 @@ void UMGPawnExtensionComponent::InitializeAbilitySystem(UMGAbilitySystemComponen
 	}
 
 	OnAbilitySystemInitialized.Broadcast();
-	
-	//绑定AbilitySystemComponent中的委托
-	if (UMGAbilitySystemComponent* MGASC = Cast<UMGAbilitySystemComponent>(GetMGAbilitySystemComponent()))
-		MGASC->AbilityActorInfoSet();
 }
 
 void UMGPawnExtensionComponent::UninitializeAbilitySystem()

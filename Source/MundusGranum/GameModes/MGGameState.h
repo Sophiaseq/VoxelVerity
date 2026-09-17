@@ -82,7 +82,7 @@ private:
 	TObjectPtr<UMGExperienceManagerComponent> ExperienceManagerComponent;
 
 	// The ability system component subobject for game-wide things (primarily gameplay cues)
-	UPROPERTY(VisibleAnywhere, Category = "MG|GameState")
+	UPROPERTY(VisibleAnywhere, Category = "MundusGranum|GameState")
 	TObjectPtr<UMGAbilitySystemComponent> AbilitySystemComponent;
 
 protected:

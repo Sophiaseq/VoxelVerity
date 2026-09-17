@@ -9,6 +9,7 @@
 #include "Interaction/CombatInterface.h"
 #include "MGCharacter.generated.h"
 
+class UMGHealthComponent;
 class UMGAbilitySystemComponent;
 class UMGPawnExtensionComponent;
 
@@ -32,10 +33,11 @@ public:
 	//~Begin ICombatInterface
 	virtual float GetCharacterLevel() override;
 	virtual UMGWeaponItemDefinition* GetCurrentWeapon() const override;//TODO 或许可以改成通过GameplayTag
-	virtual FVector GetSocketLocation() const override;
+	virtual FVector GetSocketLocation(FName TagName, FName SocketName) const override;
 	//~End ICombatInterface
 	
 protected:
+	void InitializeGameplayTags();
 	virtual void OnAbilitySystemInitialized();
 	virtual void OnAbilitySystemUninitialized();
 	
@@ -47,18 +49,13 @@ protected:
 	virtual void OnRep_Controller() override;
 ;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-	
-	//TODO 由Experience来做
-	void SetupInitialAttribute() const;
-	
-	//TODO 移交给Experience，将HealthSet交给HealthComponent
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attribute", meta = (ToolTip = "将PrimaryAttribute放在最开始"))
-	TArray<TSubclassOf<UGameplayEffect>> DefaultAttributes;
 
-private:
+	//暂时没用
 	void SetupAttributeByLevel(TSubclassOf<UGameplayEffect> AttributeEffect, float Level) const;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MundusGranum|Character", Meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UMGPawnExtensionComponent> PawnExtComponent;
+	TObjectPtr<UMGHealthComponent> HealthComponent;
 	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MundusGranum|Character", Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UMGPawnExtensionComponent> PawnExtComponent;
 };

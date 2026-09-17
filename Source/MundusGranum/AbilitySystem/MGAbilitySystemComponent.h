@@ -23,9 +23,6 @@ public:
 	
 	UMGAbilitySystemComponent();
 	
-	//绑定AbilitySystemComponent中的一些委托
-	void AbilityActorInfoSet();
-	
 	void SetTagRelationshipMapping(UMGAbilityTagRelationshipMapping* NewMapping);
 	
 	void ProcessAbilityInput(float DeltaTime, bool bGamePaused);
@@ -34,8 +31,7 @@ public:
 	void AbilityInputTagPressed(const FGameplayTag& InputTag);
 	void AbilityInputTagReleased(const FGameplayTag& InputTag);
 
-	/** 本帧被按下的输入标签（保序、可重复），供激活中的技能读取（如近战连招分支） */
-	const TArray<FGameplayTag>& GetPressedInputTags() const { return PressedInputTags; }
+	void RemoveTagFromCachedInputTag(const FGameplayTag& InputTag);
 
 protected:
 	void EffectApplied(UAbilitySystemComponent* AbilitySystemComponent, const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle ActiveEffectHandle);
@@ -53,11 +49,11 @@ protected:
 	// Handles to abilities that have their input held.
 	TArray<FGameplayAbilitySpecHandle> InputHeldSpecHandles;
 
+	FGameplayTagContainer CachedInputTag;
 	// Number of abilities running in each activation group.
 	//TODO 为激活的技能分类并写成数组
 	int32 ActivationGroupCounts;
-
-	// 本帧按下的输入标签缓存（保序、可重复；ProcessAbilityInput 结束时清空）
-	TArray<FGameplayTag> PressedInputTags;
-
+	
+public:
+	const FGameplayTagContainer& GetCachedInputTag() const { return CachedInputTag; }
 };

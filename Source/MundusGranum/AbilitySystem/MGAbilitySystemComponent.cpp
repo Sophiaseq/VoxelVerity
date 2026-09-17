@@ -9,11 +9,7 @@ UMGAbilitySystemComponent::UMGAbilitySystemComponent()
 	InputPressedSpecHandles.Reset();
 	InputReleasedSpecHandles.Reset();
 	InputHeldSpecHandles.Reset();
-}
-
-void UMGAbilitySystemComponent::AbilityActorInfoSet()
-{
-	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &UMGAbilitySystemComponent::EffectApplied);
+	CachedInputTag.Reset();
 }
 
 void UMGAbilitySystemComponent::SetTagRelationshipMapping(UMGAbilityTagRelationshipMapping* NewMapping)
@@ -44,7 +40,7 @@ void UMGAbilitySystemComponent::ProcessAbilityInput(float DeltaTime, bool bGameP
 			if (AbilitySpec->Ability && !AbilitySpec->IsActive())
 			{
 				const UMGGameplayAbility* MGAbilityCDO = Cast<UMGGameplayAbility>(AbilitySpec->Ability);
-				if (MGAbilityCDO) //&& MGAbilityCDO->GetActivationPolicy() == EMGAbilityActivationPolicy::WhileInputActive)
+				if (MGAbilityCDO && MGAbilityCDO->GetActivationPolicy() == EMGAbilityActivationPolicy::WhileInputActive)
 				{
 					AbilitiesToActivate.AddUnique(AbilitySpec->Handle);
 				}
@@ -72,7 +68,7 @@ void UMGAbilitySystemComponent::ProcessAbilityInput(float DeltaTime, bool bGameP
 				{
 					const UMGGameplayAbility* MGAbilityCDO = Cast<UMGGameplayAbility>(AbilitySpec->Ability);
 
-					if (MGAbilityCDO) //&& MGAbilityCDO->GetActivationPolicy() == EMGAbilityActivationPolicy::OnInputTriggered)
+					if (MGAbilityCDO && MGAbilityCDO->GetActivationPolicy() == EMGAbilityActivationPolicy::OnInputTriggered)
 					{
 						AbilitiesToActivate.AddUnique(AbilitySpec->Handle);
 					}
@@ -116,7 +112,7 @@ void UMGAbilitySystemComponent::ProcessAbilityInput(float DeltaTime, bool bGameP
 	//
 	InputPressedSpecHandles.Reset();
 	InputReleasedSpecHandles.Reset();
-	PressedInputTags.Reset();
+	CachedInputTag.Reset();
 }
 
 void UMGAbilitySystemComponent::ClearAbilityInput()
@@ -124,15 +120,13 @@ void UMGAbilitySystemComponent::ClearAbilityInput()
 	InputPressedSpecHandles.Reset();
 	InputReleasedSpecHandles.Reset();
 	InputHeldSpecHandles.Reset();
-	PressedInputTags.Reset();
+	CachedInputTag.Reset();
 }
 
 void UMGAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& InputTag)
 {
 	if (InputTag.IsValid())
 	{
-		PressedInputTags.Add(InputTag);
-
 		for (const FGameplayAbilitySpec& AbilitySpec : ActivatableAbilities.Items)
 		{
 			if (AbilitySpec.Ability && (AbilitySpec.GetDynamicSpecSourceTags().HasTagExact(InputTag)))
@@ -140,6 +134,7 @@ void UMGAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& Input
 				GEngine->AddOnScreenDebugMessage(1, 2, FColor::Green, *InputTag.ToString());
 				InputPressedSpecHandles.AddUnique(AbilitySpec.Handle);
 				InputHeldSpecHandles.AddUnique(AbilitySpec.Handle);
+				CachedInputTag.AddTag(InputTag);
 			}
 		}
 	}
@@ -156,9 +151,15 @@ void UMGAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& Inpu
 				GEngine->AddOnScreenDebugMessage(2, 2, FColor::Blue, FString::Printf(TEXT("Released: [%s]"), *InputTag.ToString()));
 				InputReleasedSpecHandles.AddUnique(AbilitySpec.Handle);
 				InputHeldSpecHandles.Remove(AbilitySpec.Handle);
+				CachedInputTag.RemoveTag(InputTag);
 			}
 		}
 	}
+}
+
+void UMGAbilitySystemComponent::RemoveTagFromCachedInputTag(const FGameplayTag& InputTag)
+{
+	CachedInputTag.RemoveTag(InputTag);
 }
 
 void UMGAbilitySystemComponent::EffectApplied(UAbilitySystemComponent* AbilitySystemComponent,

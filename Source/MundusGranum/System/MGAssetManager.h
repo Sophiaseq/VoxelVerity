@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Character/MGCharacterDefinition.h"
 #include "Engine/AssetManager.h"
 #include "MGAssetManager.generated.h"
 
@@ -25,6 +26,7 @@ public:
 	template<typename AssetType>
 	static AssetType* GetAsset(const TSoftObjectPtr<AssetType>& AssetPointer, bool bKeepInMemory = true);
 	
+	const UMGCharacterDefinition* GetDefaultPawnData() const;
 	
 protected:
 	static UObject* SynchronousLoadAsset(const FSoftObjectPath& AssetPath);
@@ -32,6 +34,9 @@ protected:
 	
 	// Thread safe way of adding a loaded asset to keep in memory.
 	void AddLoadedAsset(const UObject* Asset);
+	
+	UPROPERTY(Config)
+	TSoftObjectPtr<UMGCharacterDefinition> DefaultPawnData;
 	
 private:
 	// Assets loaded and tracked by the asset manager.

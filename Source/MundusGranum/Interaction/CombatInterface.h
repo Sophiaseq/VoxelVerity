@@ -24,8 +24,8 @@ class MUNDUSGRANUM_API ICombatInterface
 public:
 	virtual float GetCharacterLevel() = 0;
 	
-	virtual UMGWeaponItemDefinition* GetCurrentWeapon() const = 0;
+	virtual UMGWeaponItemDefinition* GetCurrentWeapon() const {return nullptr;};
 	
-	virtual FVector GetSocketLocation() const = 0;
+	virtual FVector GetSocketLocation(FName TagName, FName SocketName) const {return FVector();};
 
 };

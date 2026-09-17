@@ -15,6 +15,7 @@ UMGGameplayAbility_Jump::UMGGameplayAbility_Jump(const FObjectInitializer& Objec
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
+	ActivationPolicy = EMGAbilityActivationPolicy::OnInputTriggered;
 }
 
 bool UMGGameplayAbility_Jump::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const

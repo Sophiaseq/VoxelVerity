@@ -180,6 +180,7 @@ void UMGEquipmentComponent::ShowSkeletalMesh(USkeletalMesh* Mesh, const FTransfo
 		EquippedMeshComp->SetupAttachment(GetOwner()->GetRootComponent(), HandSocketName);
 		EquippedMeshComp->RegisterComponent();
 		EquippedMeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		EquippedStaticMeshComp->ComponentTags.Add(FName("Component.Mesh.Weapon"));
 
 		// 挂到手部插槽
 		if (USkeletalMeshComponent* CharacterMesh = Owner->FindComponentByClass<USkeletalMeshComponent>())
@@ -223,6 +224,7 @@ void UMGEquipmentComponent::ShowStaticMesh(UStaticMesh* Mesh, const FTransform& 
 		EquippedStaticMeshComp->SetupAttachment(Owner->GetRootComponent());
 		EquippedStaticMeshComp->RegisterComponent();
 		EquippedStaticMeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		EquippedStaticMeshComp->ComponentTags.Add(FName("Component.Mesh.Weapon"));
 
 		// 挂到手部插槽
 		if (USkeletalMeshComponent* CharacterMesh = Owner->FindComponentByClass<USkeletalMeshComponent>())

@@ -34,15 +34,15 @@ struct FEquipDisplayData
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<UStaticMesh> StaticMesh;
 
-	// 手持时的骨骼网格（武器等）
+	// 手持时的骨骼网格
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<USkeletalMesh> SkeletalMesh;
 
-	// 手持偏移（位置/旋转/缩放）
+	// 手持偏移
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FTransform EquippedTransform = FTransform::Identity;
 
-	// 该物品专用的动画蓝图（本次暂不消费，字段先保留）
+	// 该物品专用的动画蓝图（暂不使用）
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UAnimInstance> EquipAnimClass;
 };

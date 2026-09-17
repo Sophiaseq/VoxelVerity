@@ -365,7 +365,7 @@ void UMGHeroComponent::Input_AbilityInputTagReleased(FGameplayTag InputTag)
 void UMGHeroComponent::Input_Move(const FInputActionValue& InputActionValue)
 {
 	UAbilitySystemComponent* ASC = GetPlayerState<AMGPlayerState>()->GetAbilitySystemComponent();
-	if (ASC && ASC->HasMatchingGameplayTag(MundusGranumGameplayTags::CharacterState_Rigidity))
+	if (ASC && ASC->HasMatchingGameplayTag(MundusGranumGameplayTags::CharacterState_Rigidity_SelfAction.GetTag().RequestDirectParent()))
 	{
 		return;
 	}

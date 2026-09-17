@@ -13,6 +13,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Player/MGPlayerController.h"
 #include "Player/MGPlayerState.h"
+#include "System/MGAssetManager.h"
 #include "UI/HUD/MGHUD.h"
 
 AMGGameModeBase::AMGGameModeBase()
@@ -52,7 +53,7 @@ const UMGCharacterDefinition* AMGGameModeBase::GetPawnDataForController(const AC
 		}
 
 		// Experience is loaded and there's still no pawn data, fall back to the default for now
-		return nullptr;//UMGAssetManager::Get().GetDefaultPawnData();
+		return UMGAssetManager::Get().GetDefaultPawnData();
 	}
 
 	// Experience not loaded yet, so there is no pawn data to be had

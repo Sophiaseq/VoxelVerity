@@ -20,8 +20,17 @@ namespace MundusGranumGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_Unequipped, "CharacterState.Unequipped", "未手持物品");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_OneHandedEquipped, "CharacterState.OneHandedEquipped", "单手持武器");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_TwoHandedEquipped, "CharacterState.TwoHandedEquipped", "双手持武器");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_Rigidity, "CharacterState.Rigidity", "僵直状态，动作时附加，只能被受击动作打断");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_Hit, "ActionState.Hit", "被攻击时施加的状态");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_Rigidity_SelfAction, "CharacterState.Rigidity.SelfAction", "僵直状态，动作时附加，只能被受击动作打断");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_Rigidity_Hit, "ActionState.Rigidity.Hit", "被攻击时施加的状态");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_Death, "Status.Death", "Target has the death status.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_Death_Dying, "Status.Death.Dying", "Target has begun the death process.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_Death_Dead, "Status.Death.Dead", "Target has finished the death process.");
+	
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayEvent_Death, "GameplayEvent.Death", "Event that fires on death. This event only fires on the server.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayEvent_Reset, "GameplayEvent.Reset", "Event that fires once a player reset is executed.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayEvent_RequestReset, "GameplayEvent.RequestReset", "Event to request a player's pawn to be instantly replaced with a new one at a valid spawn location.");
+	
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Damage, "Damage", "伤害");
 	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(ItemCategory_Block, "ItemCategory.Block", "方块物品");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(ItemCategory_Tool, "ItemCategory.Tool", "工具物品");
@@ -33,6 +42,8 @@ namespace MundusGranumGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InitState_DataInitialized, "InitState.DataInitialized", "3: The available data has been initialized for this actor/component, but it is not ready for full gameplay");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InitState_GameplayReady, "InitState.GameplayReady", "4: The actor/component is fully ready for active gameplay");
 
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Component_Mesh_Weapon, "Component.Mesh.Weapon", "武器网格的组件标签")
+	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Attribute_Primary_Strength, "Attributes.Primary.Strength", "力量");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Attribute_Primary_Dexterity, "Attributes.Primary.Dexterity", "敏捷");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Attribute_Primary_Constitution, "Attributes.Primary.Constitution", "体质");

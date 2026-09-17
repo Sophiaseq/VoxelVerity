@@ -17,6 +17,9 @@ class UMGHeroComponent : public UPawnComponent, public IGameFrameworkInitStateIn
 public:
 	UMGHeroComponent(const FObjectInitializer& ObjectInitializer);
 	
+	UFUNCTION(BlueprintPure, Category = "MundusGranum|Hero")
+	static UMGHeroComponent* FindHeroComponent(const AActor* Actor) { return (Actor ? Actor->FindComponentByClass<UMGHeroComponent>() : nullptr); }
+	
 	/** Adds mode-specific input config */
 	void AddAdditionalInputConfig(const UMGInputConfig* InputConfig);
 

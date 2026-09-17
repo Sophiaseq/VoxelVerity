@@ -2,9 +2,12 @@
 
 
 #include "MGCharacter.h"
+
+#include "MGHealthComponent.h"
 #include "MGLogChannels.h"
 #include "MGPawnExtensionComponent.h"
 #include "MundusGranum.h"
+#include "MundusGranumGameplayTags.h"
 #include "AbilitySystem/MGAbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/MGEquipmentComponent.h"
@@ -49,6 +52,7 @@ AMGCharacter::AMGCharacter()
 	PawnExtComponent->OnAbilitySystemInitialized_RegisterAndCall(FSimpleMulticastDelegate::FDelegate::CreateUObject(this, &ThisClass::OnAbilitySystemInitialized));
 	PawnExtComponent->OnAbilitySystemUninitialized_Register(FSimpleMulticastDelegate::FDelegate::CreateUObject(this, &ThisClass::OnAbilitySystemUninitialized));
 
+	HealthComponent = CreateDefaultSubobject<UMGHealthComponent>(TEXT("HealthComponent"));
 }
 
 void AMGCharacter::BeginPlay()
@@ -97,15 +101,6 @@ void AMGCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PawnExtComponent->SetupPlayerInputComponent();
 }
 
-void AMGCharacter::SetupInitialAttribute() const
-{
-	if (!DefaultAttributes.IsEmpty())
-	{
-		for (TSubclassOf<UGameplayEffect> DefaultAttribute : DefaultAttributes)
-		SetupAttributeByLevel(DefaultAttribute, 1.f);
-	}
-}
-
 void AMGCharacter::SetupAttributeByLevel(TSubclassOf<UGameplayEffect> AttributeEffect, float Level) const
 {
 	check(IsValid(GetAbilitySystemComponent()));
@@ -145,22 +140,53 @@ UMGWeaponItemDefinition* AMGCharacter::GetCurrentWeapon() const
 	return FindComponentByClass<UMGEquipmentComponent>() ? FindComponentByClass<UMGEquipmentComponent>()->GetCurrentWeapon() : nullptr;
 }
 
-FVector AMGCharacter::GetSocketLocation() const
+FVector AMGCharacter::GetSocketLocation(FName TagName, FName SocketName) const
 {
-	return GetMesh()->GetSocketLocation(FName("HandRightSocket"));
+	if (UActorComponent* Comp = FindComponentByTag(UPrimitiveComponent::StaticClass(), TagName))
+ 		if (const USceneComponent* SceneComp = Cast<USceneComponent>(Comp))
+ 			return SceneComp->GetSocketLocation(SocketName);
+ 	return FVector::ZeroVector;
+}
+
+void AMGCharacter::InitializeGameplayTags()
+{
+	if (UMGAbilitySystemComponent* MGASC = GetMGAbilitySystemComponent())
+	{
+		for (const TPair<uint8, FGameplayTag>& TagMapping : MundusGranumGameplayTags::MovementModeTagMap)
+		{
+			if (TagMapping.Value.IsValid())
+			{
+				MGASC->SetLooseGameplayTagCount(TagMapping.Value, 0);
+			}
+		}
+
+		//暂时不需要
+		/*for (const TPair<uint8, FGameplayTag>& TagMapping : MundusGranumGameplayTags::CustomMovementModeTagMap)
+		{
+			if (TagMapping.Value.IsValid())
+			{
+				MGASC->SetLooseGameplayTagCount(TagMapping.Value, 0);
+			}
+		}*/
+
+		/*UMGCharacterMovementComponent* MGMoveComp = CastChecked<UMGCharacterMovementComponent>(GetCharacterMovement());
+		SetMovementModeTag(MGMoveComp->MovementMode, MGMoveComp->CustomMovementMode, true);*/
+	}
 }
 
 void AMGCharacter::OnAbilitySystemInitialized()
 {
-	UE_LOG(LogMGAbilitySystem, Warning, TEXT("[Init] Character::OnAbilitySystemInitialized → 应用初始属性"));
+	UMGAbilitySystemComponent* MGASC = GetMGAbilitySystemComponent();
+	check(MGASC);
 
-	SetupInitialAttribute();
-	//HealthComponent
+	HealthComponent->InitializeWithAbilitySystem(MGASC);
+
+	InitializeGameplayTags();
 }
 
 void AMGCharacter::OnAbilitySystemUninitialized()
 {
-	//HealthComponent
+	HealthComponent->UninitializeFromAbilitySystem();
 }
 
 void AMGCharacter::PostInitializeComponents()

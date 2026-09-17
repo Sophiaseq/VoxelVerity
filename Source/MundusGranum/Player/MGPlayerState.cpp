@@ -4,6 +4,7 @@
 #include "MGPlayerState.h"
 #include "MGLogChannels.h"
 #include "MundusGranumGameplayTags.h"
+#include "AbilitySystem/MGAbilitySet.h"
 #include "Player/MGPlayerController.h"
 #include "AbilitySystem/MGAbilitySystemComponent.h"
 #include "AbilitySystem/Attributes/MGCombatSet.h"
@@ -80,17 +81,16 @@ void AMGPlayerState::SetPawnData(const UMGCharacterDefinition* InCharacterDefini
           return;
      }
 
-     //MARK_PROPERTY_DIRTY_FROM_NAME(ThisClass, PawnData, this);
+     MARK_PROPERTY_DIRTY_FROM_NAME(ThisClass, PawnData, this);
      PawnData = InCharacterDefinition;
      
-     //TODO Ability
-     /*for (const UMGAbilitySet* AbilitySet : PawnData->AbilitySets)
+     for (const UMGAbilitySet* AbilitySet : PawnData->AbilitySets)
      {
           if (AbilitySet)
           {
                AbilitySet->GiveToAbilitySystem(AbilitySystemComponent, nullptr);
           }
-     }*/
+     }
 
      UE_LOG(LogMGAbilitySystem, Warning, TEXT("[Init] PlayerState::SetPawnData → 授予能力 + 广播 MGAbilitiesReady"));
 
