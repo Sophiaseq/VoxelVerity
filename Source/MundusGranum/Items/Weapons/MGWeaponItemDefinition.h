@@ -35,9 +35,9 @@ struct FWeaponAttributes
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float Sharpness = 10.0f;
 	
-	//质量(攻击造成的僵直)
+	//质量(攻击造成的僵直和伤害提升)
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	float Quality = 1.0f;
+	float Quality = 2.0f;
 };
 
 UCLASS(BlueprintType)
@@ -49,7 +49,7 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	FBoxCollisionInfo CollisionTransform;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FWeaponAttributes WeaponAttributes;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

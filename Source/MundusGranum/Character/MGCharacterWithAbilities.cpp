@@ -2,7 +2,7 @@
 
 #include "MGCharacterWithAbilities.h"
 
-#include "MGCharacterDefinition.h"
+#include "MGPawnData.h"
 #include "MGHealthComponent.h"
 #include "MGPawnExtensionComponent.h"
 #include "AbilitySystem/MGAbilitySet.h"
@@ -68,7 +68,7 @@ void AMGCharacterWithAbilities::SetPawnData() const
 		return;
 	}
 	
-	const UMGCharacterDefinition* CharacterDef = PawnExtComponent->GetPawnData<UMGCharacterDefinition>();
+	const UMGPawnData* CharacterDef = PawnExtComponent->GetPawnData<UMGPawnData>();
 	
 	if (!CharacterDef)
 	{

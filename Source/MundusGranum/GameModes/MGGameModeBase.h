@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "ModularGameMode.h"
-#include "Character/MGCharacterDefinition.h"
+#include "Character/MGPawnData.h"
 #include "MGGameModeBase.generated.h"
 
 class UMGExperienceDefinition;
@@ -20,7 +20,7 @@ public:
 	AMGGameModeBase();
 	
 	UFUNCTION(BlueprintCallable, Category = "MundusGranum|Pawn")
-	const UMGCharacterDefinition* GetPawnDataForController(const AController* InController) const;
+	const UMGPawnData* GetPawnDataForController(const AController* InController) const;
 	
 	//~AGameModeBase interface
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;

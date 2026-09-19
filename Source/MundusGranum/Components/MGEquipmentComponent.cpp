@@ -9,12 +9,29 @@
 #include "Items/MGItemDefinition.h"
 #include "MGInventoryComponent.h"
 #include "MGLogChannels.h"
+#include "Character/MGHealthComponent.h"
 
 UMGEquipmentComponent::UMGEquipmentComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	SetIsReplicatedByDefault(true);
 	bWantsInitializeComponent = true;
+}
+
+void UMGEquipmentComponent::HandleCharacterDeath(AActor* OwningActor)
+{
+	if (EquippedStaticMeshComp)
+	{
+		EquippedStaticMeshComp->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+		EquippedStaticMeshComp->SetSimulatePhysics(true);
+		EquippedStaticMeshComp->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	}
+	else if (EquippedMeshComp)
+	{
+		EquippedMeshComp->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+		EquippedMeshComp->SetSimulatePhysics(true);
+		EquippedMeshComp->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	}
 }
 
 void UMGEquipmentComponent::BeginPlay()
@@ -27,6 +44,14 @@ void UMGEquipmentComponent::BeginPlay()
 		if (UMGInventoryComponent* Inventory = Owner->FindComponentByClass<UMGInventoryComponent>())
 		{
 			BindToInventory(Inventory);
+		}
+	}
+	
+	if (AActor* Owner = GetOwner())
+	{
+		if (UMGHealthComponent* HealComp = Owner->FindComponentByClass<UMGHealthComponent>())
+		{
+			HealComp->OnDeathStarted.AddDynamic(this, &UMGEquipmentComponent::HandleCharacterDeath);
 		}
 	}
 }

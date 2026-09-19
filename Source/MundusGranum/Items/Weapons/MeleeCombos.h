@@ -60,5 +60,6 @@ public:
 	bool FindMatchingCombos(const TArray<FGameplayTag>& InputTags, TArray<FMeleeCombo>& OutCombos) const;
 	
 	// 给定输入标签序列，返回“最后一次输入”对应的连招片段（序列长度=1 时返回第一个片段）
+	UFUNCTION(BlueprintCallable)
 	bool GetSectionForSequence(const TArray<FGameplayTag>& InputSequence, FMeleeComboSection& OutSection) const;
 };

@@ -4,10 +4,8 @@
 #include "MGGameplayAbility_MeleeAttack.h"
 
 #include "AbilitySystemComponent.h"
-#include "AbilitySystemGlobals.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "AbilitySystem/MGAbilitySystemComponent.h"
-#include "Character/MGCharacter.h"
 #include "Interaction/CombatInterface.h"
 #include "Items/Weapons/MGWeaponItemDefinition.h"
 #include "MGLogChannels.h"
@@ -56,8 +54,7 @@ void UMGGameplayAbility_MeleeAttack::ActivateAbility(const FGameplayAbilitySpecH
 	}
 	
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-
-	// 1. 拿到当前武器定义（蒙太奇 + 连招数据）
+	
 	ICombatInterface* CombatInterface = Cast<ICombatInterface>(GetAvatarActorFromActorInfo());
 	UMGWeaponItemDefinition* WeaponDef = CombatInterface ? CombatInterface->GetCurrentWeapon() : nullptr;
 	if (!WeaponDef || !WeaponDef->Montage || !WeaponDef->MeleeCombos)
@@ -70,14 +67,13 @@ void UMGGameplayAbility_MeleeAttack::ActivateAbility(const FGameplayAbilitySpecH
 	MeleeCombos = WeaponDef->MeleeCombos;
 	AttackMontage = WeaponDef->Montage;
 
-	UAbilityTask_MeleeTrace* MeleeTask = UAbilityTask_MeleeTrace::MeleeTrace(this, MundusGranumGameplayTags::CharacterState_Rigidity_SelfAction, FVector(5,5,0));
+	/*UAbilityTask_MeleeTrace* MeleeTask = UAbilityTask_MeleeTrace::MeleeTrace(this, MundusGranumGameplayTags::CharacterState_Rigidity_SelfAction, FVector(5,5,0));
 	MeleeTask->ReadyForActivation();
 	
-	// 3. 用初始输入序列播放第一段（失败则直接结束）
 	if (!TryAdvanceCombo())
 	{
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
-	}
+	}*/
 }
 
 void UMGGameplayAbility_MeleeAttack::InputPressed(const FGameplayAbilitySpecHandle Handle,
@@ -130,11 +126,11 @@ bool UMGGameplayAbility_MeleeAttack::TryAdvanceCombo()
 		return false;
 	}
 
-	if (!MontageTask)
+	/*if (!MontageTask)
 	{
 		// 首次：直接从该段开始播放
 		PlaySection(NextSection);
-	}
+	}*/
 	else
 	{
 		MontageJumpToSection(NextSection.SectionName);
@@ -159,6 +155,14 @@ void UMGGameplayAbility_MeleeAttack::PlaySection(const FMeleeComboSection& Secti
 	MontageTask->OnCancelled.AddDynamic(this, &UMGGameplayAbility_MeleeAttack::HandleMontageCancelled);
 
 	MontageTask->ReadyForActivation();
+}
+
+void UMGGameplayAbility_MeleeAttack::SetSetByCallerMagnitudes(FGameplayEffectSpecHandle InSpecHandle, const FWeaponAttributes& WeaponAttributes, UAbilitySystemComponent* TargetASC)
+{
+	UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
+	InSpecHandle.Data->SetSetByCallerMagnitude("Damage.Melee.Sharpness", WeaponAttributes.Sharpness);
+	InSpecHandle.Data->SetSetByCallerMagnitude("Damage.Melee.Quality", WeaponAttributes.Quality);
+	ASC->ApplyGameplayEffectSpecToTarget(*InSpecHandle.Data, TargetASC);
 }
 
 void UMGGameplayAbility_MeleeAttack::HandleMontageBlendOut()

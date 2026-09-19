@@ -7,6 +7,8 @@
 #include "MundusGranumGameplayTags.h"
 #include "AbilitySystem/MGAbilitySystemComponent.h"
 #include "AbilitySystem/Attributes/MGHealthSet.h"
+#include "Net/UnrealNetwork.h"
+#include "UI/UI_MVVM/HealthBarComponent.h"
 
 
 UMGHealthComponent::UMGHealthComponent(const FObjectInitializer& ObjectInitializer)
@@ -16,14 +18,23 @@ UMGHealthComponent::UMGHealthComponent(const FObjectInitializer& ObjectInitializ
 	PrimaryComponentTick.bCanEverTick = false;
 
 	SetIsReplicatedByDefault(true);
+	
+	DeathState = EMGDeathState::NotDead;
+}
+
+void UMGHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UMGHealthComponent, DeathState);
 }
 
 void UMGHealthComponent::ClearGameplayTags()
 {
 	if (AbilitySystemComponent)
 	{
-		AbilitySystemComponent->SetLooseGameplayTagCount(MundusGranumGameplayTags::Status_Death_Dying, 0);
-		AbilitySystemComponent->SetLooseGameplayTagCount(MundusGranumGameplayTags::Status_Death_Dead, 0);
+		AbilitySystemComponent->SetLooseGameplayTagCount(MundusGranumGameplayTags::CharacterState_Death_Dying, 0);
+		AbilitySystemComponent->SetLooseGameplayTagCount(MundusGranumGameplayTags::CharacterState_Death_Dead, 0);
 	}
 }
 
@@ -89,11 +100,100 @@ void UMGHealthComponent::UninitializeFromAbilitySystem()
 	AbilitySystemComponent = nullptr;
 }
 
+void UMGHealthComponent::StartDeath()
+{
+	if (DeathState != EMGDeathState::NotDead)
+	{
+		return;
+	}
+
+	DeathState = EMGDeathState::DeathStarted;
+
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->SetLooseGameplayTagCount(MundusGranumGameplayTags::CharacterState_Death_Dying, 1);
+	}
+
+	AActor* Owner = GetOwner();
+	check(Owner);
+
+	OnDeathStarted.Broadcast(Owner);
+	
+	Owner->ForceNetUpdate();
+}
+
+void UMGHealthComponent::FinishDeath()
+{
+	if (DeathState != EMGDeathState::DeathStarted)
+	{
+		return;
+	}
+
+	DeathState = EMGDeathState::DeathFinished;
+
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->SetLooseGameplayTagCount(MundusGranumGameplayTags::CharacterState_Death_Dead, 1);
+	}
+
+	AActor* Owner = GetOwner();
+	check(Owner);
+
+	OnDeathFinished.Broadcast(Owner);
+
+	Owner->ForceNetUpdate();
+}
+
 void UMGHealthComponent::OnUnregister()
 {
 	UninitializeFromAbilitySystem();
 	
 	Super::OnUnregister();
+}
+
+void UMGHealthComponent::OnRep_DeathState(EMGDeathState OldDeathState)
+{
+	const EMGDeathState NewDeathState = DeathState;
+
+	// Revert the death state for now since we rely on StartDeath and FinishDeath to change it.
+	DeathState = OldDeathState;
+
+	if (OldDeathState > NewDeathState)
+	{
+		// The server is trying to set us back but we've already predicted past the server state.
+		UE_LOG(LogMG, Warning, TEXT("MGHealthComponent: Predicted past server death state [%d] -> [%d] for owner [%s]."), (uint8)OldDeathState, (uint8)NewDeathState, *GetNameSafe(GetOwner()));
+		return;
+	}
+
+	if (OldDeathState == EMGDeathState::NotDead)
+	{
+		if (NewDeathState == EMGDeathState::DeathStarted)
+		{
+			StartDeath();
+		}
+		else if (NewDeathState == EMGDeathState::DeathFinished)
+		{
+			StartDeath();
+			FinishDeath();
+		}
+		else
+		{
+			UE_LOG(LogMG, Error, TEXT("MGHealthComponent: Invalid death transition [%d] -> [%d] for owner [%s]."), (uint8)OldDeathState, (uint8)NewDeathState, *GetNameSafe(GetOwner()));
+		}
+	}
+	else if (OldDeathState == EMGDeathState::DeathStarted)
+	{
+		if (NewDeathState == EMGDeathState::DeathFinished)
+		{
+			FinishDeath();
+		}
+		else
+		{
+			UE_LOG(LogMG, Error, TEXT("MGHealthComponent: Invalid death transition [%d] -> [%d] for owner [%s]."), (uint8)OldDeathState, (uint8)NewDeathState, *GetNameSafe(GetOwner()));
+		}
+	}
+
+	ensureMsgf((DeathState == NewDeathState), TEXT("MGHealthComponent: Death transition failed [%d] -> [%d] for owner [%s]."), (uint8)OldDeathState, (uint8)NewDeathState, *GetNameSafe(GetOwner()));
 }
 
 void UMGHealthComponent::HandleHealthChanged(AActor* DamageInstigator, AActor* DamageCauser,
@@ -132,11 +232,11 @@ void UMGHealthComponent::HandleOutOfHealth(AActor* DamageInstigator, AActor* Dam
 
 		// Send a standardized verb message that other systems can observe
 		/*{
-			FLyraVerbMessage Message;
-			Message.Verb = TAG_Lyra_Elimination_Message;
+			FMGVerbMessage Message;
+			Message.Verb = TAG_MG_Elimination_Message;
 			Message.Instigator = DamageInstigator;
 			Message.InstigatorTags = *DamageEffectSpec->CapturedSourceTags.GetAggregatedTags();
-			Message.Target = ULyraVerbMessageHelpers::GetPlayerStateFromObject(AbilitySystemComponent->GetAvatarActor());
+			Message.Target = UMGVerbMessageHelpers::GetPlayerStateFromObject(AbilitySystemComponent->GetAvatarActor());
 			Message.TargetTags = *DamageEffectSpec->CapturedTargetTags.GetAggregatedTags();
 			//@TODO: Fill out context tags, and any non-ability-system source/instigator tags
 			//@TODO: Determine if it's an opposing team kill, self-own, team kill, etc...

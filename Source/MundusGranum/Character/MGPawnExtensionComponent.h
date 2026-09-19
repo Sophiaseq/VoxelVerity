@@ -10,7 +10,7 @@
 
 
 class UMGAbilitySystemComponent;
-class UMGCharacterDefinition;
+class UMGPawnData;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class UMGPawnExtensionComponent : public UPawnComponent, public IGameFrameworkInitStateInterface
@@ -44,7 +44,7 @@ public:
 	const T* GetPawnData() const { return Cast<T>(PawnData); }
 
 	/** Sets the current pawn data */
-	void SetPawnData(const UMGCharacterDefinition* InPawnData);
+	void SetPawnData(const UMGPawnData* InPawnData);
 	
 	UFUNCTION(BlueprintPure, Category = "Lyra|Pawn")
 	UMGAbilitySystemComponent* GetMGAbilitySystemComponent() const { return AbilitySystemComponent; }
@@ -78,7 +78,7 @@ protected:
 	
 	//临时将EditInstanceOnly改为EditAnywhere,NPC暂时无法由数据驱动生成到世界中
 	UPROPERTY(EditAnywhere, ReplicatedUsing = OnRep_PawnData, Category = "MundusGranum|Pawn")
-	TObjectPtr<const UMGCharacterDefinition> PawnData;
+	TObjectPtr<const UMGPawnData> PawnData;
 	
 	UPROPERTY(Transient)
 	TObjectPtr<UMGAbilitySystemComponent> AbilitySystemComponent;

@@ -10,7 +10,7 @@
 #include "AbilitySystem/Attributes/MGCombatSet.h"
 #include "AbilitySystem/Attributes/MGHealthSet.h"
 #include "AbilitySystem/Attributes/MGPrimarySet.h"
-#include "Character/MGCharacterDefinition.h"
+#include "Character/MGPawnData.h"
 #include "Character/MGPawnExtensionComponent.h"
 #include "Components/GameFrameworkComponentManager.h"
 #include "GameModes/MGExperienceManagerComponent.h"
@@ -66,7 +66,7 @@ void AMGPlayerState::ClientInitialize(AController* C)
 }
 
 
-void AMGPlayerState::SetPawnData(const UMGCharacterDefinition* InCharacterDefinition)
+void AMGPlayerState::SetPawnData(const UMGPawnData* InCharacterDefinition)
 {
      check(InCharacterDefinition);
 
@@ -137,7 +137,7 @@ void AMGPlayerState::OnExperienceLoaded(const UMGExperienceDefinition* CurrentEx
 {
      if (AMGGameModeBase* MGGameMode = GetWorld()->GetAuthGameMode<AMGGameModeBase>())
      {
-          if (const UMGCharacterDefinition* NewPawnData = MGGameMode->GetPawnDataForController(GetOwningController()))
+          if (const UMGPawnData* NewPawnData = MGGameMode->GetPawnDataForController(GetOwningController()))
           {
                SetPawnData(NewPawnData);
           }

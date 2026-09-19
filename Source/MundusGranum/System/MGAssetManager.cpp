@@ -33,7 +33,7 @@ void UMGAssetManager::StartInitialLoading()
 	UAbilitySystemGlobals::Get().InitGlobalData();
 }
 
-const UMGCharacterDefinition* UMGAssetManager::GetDefaultPawnData() const
+const UMGPawnData* UMGAssetManager::GetDefaultPawnData() const
 {
 	return GetAsset(DefaultPawnData);
 }

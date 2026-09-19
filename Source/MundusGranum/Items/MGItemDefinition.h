@@ -24,21 +24,17 @@ struct FItemBaseData
 	TSoftObjectPtr<UTexture2D> InventoryIcon;
 };
 
-// 手持时的装备显示数据：静态网格（工具/方块/消耗品）或骨骼网格（武器），按需二选一填写
 USTRUCT(BlueprintType)
 struct FEquipDisplayData
 {
 	GENERATED_BODY()
-
-	// 手持时的静态网格
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<UStaticMesh> StaticMesh;
-
-	// 手持时的骨骼网格
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<USkeletalMesh> SkeletalMesh;
-
-	// 手持偏移
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FTransform EquippedTransform = FTransform::Identity;
 

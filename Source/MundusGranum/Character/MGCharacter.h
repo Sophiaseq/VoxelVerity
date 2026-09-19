@@ -34,7 +34,16 @@ public:
 	virtual float GetCharacterLevel() override;
 	virtual UMGWeaponItemDefinition* GetCurrentWeapon() const override;//TODO 或许可以改成通过GameplayTag
 	virtual FVector GetSocketLocation(FName TagName, FName SocketName) const override;
+	virtual UAnimMontage* GetHitReactMontage() const override;
 	//~End ICombatInterface
+	
+	// Begins the death sequence for the character (disables collision, disables movement, etc...)
+	UFUNCTION()
+	virtual void OnDeathStarted(AActor* OwningActor);
+
+	// Ends the death sequence for the character (detaches controller, destroys pawn, etc...)
+	UFUNCTION()
+	virtual void OnDeathFinished(AActor* OwningActor);
 	
 protected:
 	void InitializeGameplayTags();
@@ -49,6 +58,14 @@ protected:
 	virtual void OnRep_Controller() override;
 ;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+	
+	void DisableMovementAndCollision();
+	void DestroyDueToDeath();
+	void UninitAndDestroy();
+	
+	// Called when the death sequence for the character has completed
+	UFUNCTION(BlueprintImplementableEvent, meta=(DisplayName="OnDeathFinished"))
+	void K2_OnDeathFinished();
 
 	//暂时没用
 	void SetupAttributeByLevel(TSubclassOf<UGameplayEffect> AttributeEffect, float Level) const;

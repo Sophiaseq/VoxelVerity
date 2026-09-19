@@ -38,7 +38,7 @@ void UMGGameplayAbility_ProjectileSpell::SpawnProjectile(const FVector& Projecti
 
 		const UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
 		const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), SourceASC->MakeEffectContext());
-		UAbilitySystemBlueprintLibrary::AssignSetByCallerMagnitude(SpecHandle, MundusGranumGameplayTags::Damage.GetModuleName(), 20);
+		UAbilitySystemBlueprintLibrary::AssignSetByCallerMagnitude(SpecHandle, "Damage", 20);
 		Projectile->DamageEffectSpecHandle = SpecHandle;
 		
 		Projectile->FinishSpawning(SpawnTransform);

@@ -9,7 +9,7 @@
 #include "Components/GameFrameworkComponentDelegates.h"
 #include "Components/GameFrameworkComponentManager.h"
 #include "GameFramework/Pawn.h"
-#include "Character/MGCharacterDefinition.h"
+#include "Character/MGPawnData.h"
 #include "Net/UnrealNetwork.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(MGPawnExtensionComponent)
@@ -32,7 +32,7 @@ void UMGPawnExtensionComponent::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 	DOREPLIFETIME(UMGPawnExtensionComponent, PawnData);
 }
 
-void UMGPawnExtensionComponent::SetPawnData(const UMGCharacterDefinition* InPawnData)
+void UMGPawnExtensionComponent::SetPawnData(const UMGPawnData* InPawnData)
 {
 	check(InPawnData);
 

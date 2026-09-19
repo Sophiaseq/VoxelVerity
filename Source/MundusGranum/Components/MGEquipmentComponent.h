@@ -65,6 +65,9 @@ protected:
 	void ClearEquippedDisplay();
 	void ShowSkeletalMesh(USkeletalMesh* Mesh, const FTransform& Transform);
 	void ShowStaticMesh(UStaticMesh* Mesh, const FTransform& Transform);
+	
+	UFUNCTION()
+	void HandleCharacterDeath(AActor* OwningActor);
 
 private:
 	// ========== 显示组件（懒创建，复用）==========
@@ -108,3 +111,5 @@ private:
 	void UpdatePreviewFromDataAsset();
 #endif
 };
+
+

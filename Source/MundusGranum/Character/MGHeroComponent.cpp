@@ -1,7 +1,7 @@
 ﻿#include "MGHeroComponent.h"
 #include "MGLogChannels.h"
 #include "EnhancedInputSubsystems.h"
-#include "MGCharacterDefinition.h"
+#include "MGPawnData.h"
 #include "MGPawnExtensionComponent.h"
 #include "MundusGranumGameplayTags.h"
 #include "Components/GameFrameworkComponentDelegates.h"
@@ -130,11 +130,11 @@ void UMGHeroComponent::HandleChangeInitState(UGameFrameworkComponentManager* Man
 			return;
 		}
 
-		const UMGCharacterDefinition* PawnData = nullptr;
+		const UMGPawnData* PawnData = nullptr;
 
 		if (UMGPawnExtensionComponent* PawnExtComp = UMGPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
 		{
-			PawnData = PawnExtComp->GetPawnData<UMGCharacterDefinition>();
+			PawnData = PawnExtComp->GetPawnData<UMGPawnData>();
 
 			// The player state holds the persistent data for this player (state that persists across deaths and multiple pawns).
 			// The ability system component and attribute sets live on the player state.
@@ -273,7 +273,7 @@ void UMGHeroComponent::InitializePlayerInput(UInputComponent* PlayerInputCompone
 
 	if (const UMGPawnExtensionComponent* PawnExtComp = UMGPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
 	{
-		if (const UMGCharacterDefinition* PawnData = PawnExtComp->GetPawnData<UMGCharacterDefinition>())
+		if (const UMGPawnData* PawnData = PawnExtComp->GetPawnData<UMGPawnData>())
 		{
 			if (const UMGInputConfig* InputConfig = PawnData->InputConfig)
 			{

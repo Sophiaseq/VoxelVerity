@@ -4,6 +4,8 @@
 
 namespace MundusGranumGameplayTags
 {
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Behavior_SurvivesDeath, "Ability.Behavior.SurvivesDeath", "An ability with this type tag should not be canceled due to death.");
+	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InputTag_Move, "InputTag.Move", "角色移动轴输入");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InputTag_Look_Mouse, "InputTag.Look.Mouse", "鼠标视角转动");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InputTag_Jump, "InputTag.Jump", "角色跳跃");
@@ -18,19 +20,25 @@ namespace MundusGranumGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Movement_Mode_Falling, "Movement.Mode.Falling", "下落状态");
 	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_Unequipped, "CharacterState.Unequipped", "未手持物品");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_OneHandedEquipped, "CharacterState.OneHandedEquipped", "单手持武器");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_TwoHandedEquipped, "CharacterState.TwoHandedEquipped", "双手持武器");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_Equipped_LeftHand, "CharacterState.Equipped.LeftHand", "左手持");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_Equipped_RightHand_Sword, "CharacterState.Equipped.RightHand.Sword", "右手持剑");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_Rigidity_SelfAction, "CharacterState.Rigidity.SelfAction", "僵直状态，动作时附加，只能被受击动作打断");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_Rigidity_Hit, "ActionState.Rigidity.Hit", "被攻击时施加的状态");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_Death, "Status.Death", "Target has the death status.");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_Death_Dying, "Status.Death.Dying", "Target has begun the death process.");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_Death_Dead, "Status.Death.Dead", "Target has finished the death process.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_Rigidity_Hit, "CharacterState.Rigidity.Hit", "被攻击时施加的状态");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_Death, "Status.Death", "Target has the death status.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_Death_Dying, "Status.Death.Dying", "Target has begun the death process.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_Death_Dead, "Status.Death.Dead", "Target has finished the death process.");
 	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayEvent_Death, "GameplayEvent.Death", "Event that fires on death. This event only fires on the server.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayEvent_Reset, "GameplayEvent.Reset", "Event that fires once a player reset is executed.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayEvent_RequestReset, "GameplayEvent.RequestReset", "Event to request a player's pawn to be instantly replaced with a new one at a valid spawn location.");
-	
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Damage, "Damage", "伤害");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayEvent_HitReact, "GameplayEvent.HitReact", "角色的AbilitySystemComponent被添加CharacterState.Rigidity.Hit时触发的事件")
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(HitReact_Direction_Front, "HitReact.Direction.Front", "受击方向：正面");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(HitReact_Direction_Back, "HitReact.Direction.Back", "受击方向：背面");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(HitReact_Direction_Left, "HitReact.Direction.Left", "受击方向：左侧");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(HitReact_Direction_Right, "HitReact.Direction.Right", "受击方向：右侧");
+
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Damage_Melee_Sharpness, "Damage.Melee.Sharpness", "近战武器的锋利度属性");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Damage_Melee_Quality, "Damage.Melee.Quality", "近战武器的质量属性")
 	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(ItemCategory_Block, "ItemCategory.Block", "方块物品");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(ItemCategory_Tool, "ItemCategory.Tool", "工具物品");

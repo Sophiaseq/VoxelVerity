@@ -18,7 +18,7 @@ template<typename T>
 using TAttributeFuncPtr = TBaseStaticDelegateInstance<T, FDefaultDelegateUserPolicy>::FFuncPtr;
 
 class UMGExperienceDefinition;
-class UMGCharacterDefinition;
+class UMGPawnData;
 class UMGAbilitySystemComponent;
 class AMGPlayerController;
 
@@ -54,7 +54,7 @@ public:
 	template <class T>
 	const T* GetPawnData() const { return Cast<T>(PawnData); }
 	
-	void SetPawnData(const UMGCharacterDefinition* InCharacterDefinition);
+	void SetPawnData(const UMGPawnData* InCharacterDefinition);
 	
 	FORCEINLINE [[nodiscard]] float GetPlayerLevel() const { return PlayerLevel; }
 	
@@ -83,7 +83,7 @@ protected:
 	void OnRep_PawnData();
 	
 	UPROPERTY(ReplicatedUsing = OnRep_PawnData)
-	TObjectPtr<const UMGCharacterDefinition> PawnData;
+	TObjectPtr<const UMGPawnData> PawnData;
 	
 private:
 	void OnExperienceLoaded(const UMGExperienceDefinition* CurrentExperience);

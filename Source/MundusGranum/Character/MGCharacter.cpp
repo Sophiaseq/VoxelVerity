@@ -53,6 +53,8 @@ AMGCharacter::AMGCharacter()
 	PawnExtComponent->OnAbilitySystemUninitialized_Register(FSimpleMulticastDelegate::FDelegate::CreateUObject(this, &ThisClass::OnAbilitySystemUninitialized));
 
 	HealthComponent = CreateDefaultSubobject<UMGHealthComponent>(TEXT("HealthComponent"));
+	HealthComponent->OnDeathStarted.AddDynamic(this, &ThisClass::OnDeathStarted);
+	HealthComponent->OnDeathFinished.AddDynamic(this, &ThisClass::OnDeathFinished);
 }
 
 void AMGCharacter::BeginPlay()
@@ -146,6 +148,70 @@ FVector AMGCharacter::GetSocketLocation(FName TagName, FName SocketName) const
  		if (const USceneComponent* SceneComp = Cast<USceneComponent>(Comp))
  			return SceneComp->GetSocketLocation(SocketName);
  	return FVector::ZeroVector;
+}
+
+UAnimMontage* AMGCharacter::GetHitReactMontage() const
+{
+	return PawnExtComponent->GetPawnData<UMGPawnData>()->HitReactMontage;
+}
+
+void AMGCharacter::OnDeathStarted(AActor* OwningActor)
+{
+	DisableMovementAndCollision();
+	
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetEnableGravity(true);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+}
+
+void AMGCharacter::OnDeathFinished(AActor* OwningActor)
+{
+	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ThisClass::DestroyDueToDeath);
+}
+
+void AMGCharacter::DisableMovementAndCollision()
+{
+	if (GetController())
+	{
+		GetController()->SetIgnoreMoveInput(true);
+	}
+
+	UCapsuleComponent* CapsuleComp = GetCapsuleComponent();
+	check(CapsuleComp);
+	CapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	CapsuleComp->SetCollisionResponseToAllChannels(ECR_Ignore);
+
+	UCharacterMovementComponent* MoveComp = GetCharacterMovement();
+	MoveComp->StopMovementImmediately();
+	MoveComp->DisableMovement();
+}
+
+void AMGCharacter::DestroyDueToDeath()
+{
+	K2_OnDeathFinished();
+
+	UninitAndDestroy();
+}
+
+void AMGCharacter::UninitAndDestroy()
+{
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		DetachFromControllerPendingDestroy();
+		SetLifeSpan(1.0f);
+	}
+
+	// Uninitialize the ASC if we're still the avatar actor (otherwise another pawn already did it when they became the avatar actor)
+	if (UMGAbilitySystemComponent* MGASC = GetMGAbilitySystemComponent())
+	{
+		if (MGASC->GetAvatarActor() == this)
+		{
+			PawnExtComponent->UninitializeAbilitySystem();
+		}
+	}
+
+	SetActorHiddenInGame(true);
 }
 
 void AMGCharacter::InitializeGameplayTags()

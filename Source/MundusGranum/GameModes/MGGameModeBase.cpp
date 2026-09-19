@@ -25,14 +25,14 @@ AMGGameModeBase::AMGGameModeBase()
 	HUDClass = AMGHUD::StaticClass();
 }
 
-const UMGCharacterDefinition* AMGGameModeBase::GetPawnDataForController(const AController* InController) const
+const UMGPawnData* AMGGameModeBase::GetPawnDataForController(const AController* InController) const
 {
 	// See if pawn data is already set on the player state
 	if (InController != nullptr)
 	{
 		if (const AMGPlayerState* MGPS = InController->GetPlayerState<AMGPlayerState>())
 		{
-			if (const UMGCharacterDefinition* PawnData = MGPS->GetPawnData<UMGCharacterDefinition>())
+			if (const UMGPawnData* PawnData = MGPS->GetPawnData<UMGPawnData>())
 			{
 				return PawnData;
 			}
@@ -72,7 +72,7 @@ void AMGGameModeBase::InitGame(const FString& MapName, const FString& Options, F
 
 UClass* AMGGameModeBase::GetDefaultPawnClassForController_Implementation(AController* InController)
 {
-	if (const UMGCharacterDefinition* PawnData = GetPawnDataForController(InController))
+	if (const UMGPawnData* PawnData = GetPawnDataForController(InController))
 	{
 		if (PawnData->PawnClass)
 		{
@@ -99,7 +99,7 @@ APawn* AMGGameModeBase::SpawnDefaultPawnAtTransform_Implementation(AController* 
 		{
 			if (UMGPawnExtensionComponent* PawnExtComp = UMGPawnExtensionComponent::FindPawnExtensionComponent(SpawnedPawn))
 			{
-				if (const UMGCharacterDefinition* PawnData = GetPawnDataForController(NewPlayer))
+				if (const UMGPawnData* PawnData = GetPawnDataForController(NewPlayer))
 				{
 					PawnExtComp->SetPawnData(PawnData);
 				}

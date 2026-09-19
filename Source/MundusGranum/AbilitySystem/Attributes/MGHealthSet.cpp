@@ -43,9 +43,6 @@ void UMGHealthSet::PreAttributeChange(const FGameplayAttribute& Attribute, float
     {
         ClampVitalAttribute(Attribute, NewValue, MaxStamina);
     }
-    // 注意：这里只做钳制，不做业务逻辑
-    // ❌ 错误：在这里处理死亡逻辑
-    // ✅ 正确：在PostGameplayEffectExecute中处理死亡逻辑
 }
 
 bool UMGHealthSet::PreGameplayEffectExecute(struct FGameplayEffectModCallbackData& Data)
@@ -105,7 +102,7 @@ void UMGHealthSet::PostAttributeChange(const FGameplayAttribute& Attribute, floa
         }
     }
 
-    if (bOutOfHealth && (GetHealth() > 0.0f))
+    if (bOutOfHealth && GetHealth() > 0.0f)
     {
         bOutOfHealth = false;
     }
@@ -134,15 +131,11 @@ void UMGHealthSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackDat
         // 读取GE计算后写入到IncomingDamage的值
         const float LocalIncomingDamage = GetIncomingDamage();
 
-        // 防御检查：伤害必须大于0才有意义
+        // Damage数值不用设置为负数
         if (LocalIncomingDamage > 0.0f)
         {
-            // 计算实际生命值减少
-            // 注意：IncomingDamage已经在MMC中完成了防御力减免等计算
-            // 这里直接应用即可
             const float NewHealth = GetHealth() - LocalIncomingDamage;
-
-            // 设置新生命值（PreAttributeChange会自动钳制到0~MaxHealth范围）
+            
             SetHealth(FMath::Clamp(NewHealth, 0.0f, GetMaxHealth()));
             SetIncomingDamage(0.0f);
             UE_LOG(LogMGAbilitySystem, Warning, TEXT("Changed Health on %s, Health: %f"), *Data.Target.GetAvatarActor()->GetName(), GetHealth())
@@ -150,7 +143,7 @@ void UMGHealthSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackDat
     }
     else if (Data.EvaluatedData.Attribute == GetIncomingHealingAttribute())
     {
-        // Convert into +Health and then clamo
+        // Convert into +Health and then clamp
         SetHealth(FMath::Clamp(GetHealth() + GetIncomingHealing(), 0.0f, GetMaxHealth()));
         SetIncomingHealing(0.0f);
     }

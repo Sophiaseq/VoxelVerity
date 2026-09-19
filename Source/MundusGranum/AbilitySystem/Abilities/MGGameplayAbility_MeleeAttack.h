@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "MGGameplayAbility.h"
 #include "Items/Weapons/MeleeCombos.h"
+#include "Items/Weapons/MGWeaponItemDefinition.h"
 #include "MGGameplayAbility_MeleeAttack.generated.h"
 
 class UAbilityTask_PlayMontageAndWait;
@@ -32,6 +33,7 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	bool TryAdvanceCombo();
 	
+	UPROPERTY(BlueprintReadOnly)
 	TArray<FGameplayTag> MeleeInputTags;
 	
 	UPROPERTY(Transient);
@@ -45,6 +47,9 @@ protected:
 	
 	FMeleeComboSection CurrentSection;
 
+	UFUNCTION(BlueprintCallable)
+	void SetSetByCallerMagnitudes(FGameplayEffectSpecHandle InSpecHandle, const FWeaponAttributes& WeaponAttributes, UAbilitySystemComponent* TargetASC);
+	
 	UFUNCTION()
 	void HandleMontageBlendOut();
 

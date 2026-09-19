@@ -4,6 +4,8 @@
 #include "AbilityTask_MeleeTrace.h"
 
 #include "AbilitySystemComponent.h"
+#include "AbilitySystemGlobals.h"
+#include "MundusGranumGameplayTags.h"
 #include "Interaction/CombatInterface.h"
 
 UAbilityTask_MeleeTrace* UAbilityTask_MeleeTrace::MeleeTrace(UGameplayAbility* OwningAbility, FGameplayTag ActivationTag, FVector InBoxHalfExtent)
@@ -121,6 +123,8 @@ void UAbilityTask_MeleeTrace::PerformTrace()
 		TWeakObjectPtr<AActor> Key(HitActor);
 		if (HitActors.Contains(Key)) continue;
 
+		SendHitSection(Hit);
+		
 		HitActors.Add(Key);
 		NewHits.Add(Hit);
 	}
@@ -132,4 +136,55 @@ void UAbilityTask_MeleeTrace::PerformTrace()
 
 	LastStart = CurrentStart;
 	LastEnd = CurrentEnd;
+}
+
+
+void UAbilityTask_MeleeTrace::SendHitSection(const FHitResult& Hit)
+{
+	AActor* Avatar = GetAvatarActor();
+	if (!Avatar)
+	{
+		return;
+	}
+
+	AActor* HitActor = Hit.GetActor();
+	if (!HitActor || HitActor == Avatar)
+	{
+		return;
+	}
+
+	UAbilitySystemComponent* VictimASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(HitActor);
+	if (!VictimASC)
+	{
+		return;
+	}
+
+	// 计算受击方向：攻击者相对受击者的水平方位，映射为前/后/左/右
+	const FVector ToAttacker = (Avatar->GetActorLocation() - HitActor->GetActorLocation()).GetSafeNormal2D();
+	const float ForwardDot = FVector::DotProduct(HitActor->GetActorForwardVector().GetSafeNormal2D(), ToAttacker);
+	const float RightDot = FVector::DotProduct(HitActor->GetActorRightVector().GetSafeNormal2D(), ToAttacker);
+
+	FGameplayTag DirectionTag;
+	if (FMath::Abs(ForwardDot) >= FMath::Abs(RightDot))
+	{
+		DirectionTag = ForwardDot >= 0.f
+			? MundusGranumGameplayTags::HitReact_Direction_Front
+			: MundusGranumGameplayTags::HitReact_Direction_Back;
+	}
+	else
+	{
+		DirectionTag = RightDot >= 0.f
+			? MundusGranumGameplayTags::HitReact_Direction_Right
+			: MundusGranumGameplayTags::HitReact_Direction_Left;
+	}
+
+	// 构造事件，把受击方向作为目标标签随 Payload 一起发给受击者 ASC
+	FGameplayEventData Payload;
+	Payload.EventTag = MundusGranumGameplayTags::GameplayEvent_HitReact;
+	Payload.Instigator = Avatar;
+	Payload.Target = HitActor;
+	Payload.TargetTags.AddTag(DirectionTag);
+
+	FScopedPredictionWindow NewScopedWindow(VictimASC, true);
+	VictimASC->HandleGameplayEvent(Payload.EventTag, &Payload);
 }

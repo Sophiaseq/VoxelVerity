@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayEffectTypes.h"
 #include "GameplayTagContainer.h"
 #include "Animation/AnimInstance.h"
 #include "MGAnimInstance.generated.h"
@@ -17,27 +18,14 @@ class MUNDUSGRANUM_API UMGAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
 public:
+	virtual void InitializeWithAbilitySystem(UAbilitySystemComponent* ASC);
+	
+protected:
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaTime) override;
 	
-	UPROPERTY(BlueprintReadOnly)
-	AMGCharacter* MGCharacter;
-	
-	UPROPERTY(BlueprintReadOnly, Category="Movement")
-	UCharacterMovementComponent* MGCharacterMovement;
-	
-	UPROPERTY(BlueprintReadOnly, Category="Movement")
-	float CharacterDirection;
-	
-	UPROPERTY(BlueprintReadOnly, Category="Movement")
-	float GroudSpeed;
-	
-	UPROPERTY(BlueprintReadOnly, Category="Movement")
-	bool IsFalling;
-	
-	UPROPERTY(BlueprintReadOnly, Category="Movement | CharacterState")
-	FGameplayTag CharacterState;
-	
-	UPROPERTY(BlueprintReadOnly, Category="Movement |ActionState")
-	FGameplayTag ActionState;
+	// Gameplay tags that can be mapped to blueprint variables. The variables will automatically update as the tags are added or removed.
+	// These should be used instead of manually querying for the gameplay tags.
+	UPROPERTY(EditDefaultsOnly, Category = "GameplayTags")
+	FGameplayTagBlueprintPropertyMap GameplayTagPropertyMap;
 };

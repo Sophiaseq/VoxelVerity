@@ -32,6 +32,7 @@ public:
 protected:
 	virtual void Activate() override;
 	
+	void SendHitSection(const FHitResult& Hit);
 	void OnTagChanged(FGameplayTag tag, int32 Count);
 	void PerformTrace();
 	
