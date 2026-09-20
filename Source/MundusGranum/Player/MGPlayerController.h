@@ -4,6 +4,7 @@
 
 #include "ModularPlayerController.h"
 #include "GameFramework/PlayerController.h"
+#include "UI/Widget/DamageTextComponent.h"
 #include "MGPlayerController.generated.h"
 
 class UMGAbilitySystemComponent;
@@ -28,6 +29,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "MundusGranum|PlayerController")
 	UMGAbilitySystemComponent* GetMGAbilitySystemComponent() const;
 	
+	//~AActor interface
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	//~End of AActor interface
+	
 	//~AController interface
 	virtual void InitPlayerState() override;
 	virtual void CleanupPlayerState() override;
@@ -35,19 +40,29 @@ public:
 	//~End of AController interface
 
 	//~APlayerController interface
+	virtual void SetPlayer(UPlayer* InPlayer) override;
+	virtual void PreProcessInput(const float DeltaTime, const bool bGamePaused) override;
 	virtual void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
 	//~End of APlayerController interface
+
+	UFUNCTION(Client, Unreliable, BlueprintCallable)
+	void ShowDamageNumber(float DamageAmount, const FVector& WidgetSpawnLocation);
 	
 protected:
 	virtual void BeginPlay() override;
 	
 	// Called when the player state is set or cleared
 	virtual void OnPlayerStateChanged();
+	
+	void InitHUD();
 
 private:
 	void BroadcastOnPlayerStateChanged();
 	
 	UPROPERTY()
 	TObjectPtr<APlayerState> LastSeenPlayerState;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "MundusGranum|PlayerController")
+	TSubclassOf<UDamageTextComponent> DamageTextComponentClass;
 
 };

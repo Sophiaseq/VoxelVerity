@@ -3,10 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Player/MGPlayerAttributeSet.h"
 #include "UObject/Object.h"
 #include "MGWidgetController.generated.h"
 
+class UAttributeSet;
 class UAbilitySystemComponent;
 class AMGPlayerController;
 /**
@@ -18,7 +18,7 @@ struct FWidgetControllerParams
 	GENERATED_BODY()
 	
 	FWidgetControllerParams(){}
-	FWidgetControllerParams(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC,const FMGPlayerAttributeSet& Attributes)
+	FWidgetControllerParams(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC,const TArray<UAttributeSet*>& Attributes)
 	: PlayerController(PC), PlayerState(PS), AbilitySystemComponent(ASC), PlayerAttributes(Attributes) {}
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -31,7 +31,7 @@ struct FWidgetControllerParams
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FMGPlayerAttributeSet PlayerAttributes;
+	TArray<UAttributeSet*> PlayerAttributes;
 };
 
 UCLASS()
@@ -56,6 +56,6 @@ protected:
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 	
 	UPROPERTY(BlueprintReadOnly, Category=WidgetController)
-	FMGPlayerAttributeSet Attributes;
+	TArray<UAttributeSet*> Attributes;
 	
 };

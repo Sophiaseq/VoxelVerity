@@ -51,6 +51,8 @@ public:
 	
 	EMGAbilityActivationPolicy GetActivationPolicy() const { return ActivationPolicy; }
 	
+	void TryActivateAbilityOnSpawn(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) const;
+	
 protected:
 	// Defines how this ability is meant to activate.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "MG|Ability Activation")

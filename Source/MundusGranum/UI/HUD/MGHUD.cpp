@@ -33,7 +33,7 @@ UAttributeMenuWidgetController* AMGHUD::GetAttributeMenuWidgetController(const F
 	return AttributeMenuWidgetController;
 }
 
-void AMGHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, FMGPlayerAttributeSet Attributes)
+void AMGHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, const TArray<UAttributeSet*>& Attributes)
 {
 	if (OverlayWidget) return;
 	checkf(OverlayWidgetClass, TEXT("Overlay Widget Class uninitialized"))

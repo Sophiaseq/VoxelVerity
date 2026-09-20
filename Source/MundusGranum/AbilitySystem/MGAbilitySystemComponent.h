@@ -32,6 +32,8 @@ public:
 	void AbilityInputTagReleased(const FGameplayTag& InputTag);
 
 	void RemoveTagFromCachedInputTag(const FGameplayTag& InputTag);
+	
+	void TryActivateAbilitiesOnSpawn();
 
 protected:
 	void EffectApplied(UAbilitySystemComponent* AbilitySystemComponent, const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle ActiveEffectHandle);

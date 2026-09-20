@@ -7,8 +7,9 @@
 #include "MundusGranumGameplayTags.h"
 #include "AbilitySystem/MGAbilitySystemComponent.h"
 #include "AbilitySystem/Attributes/MGHealthSet.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
-#include "UI/UI_MVVM/HealthBarComponent.h"
+#include "Player/MGPlayerController.h"
 
 
 UMGHealthComponent::UMGHealthComponent(const FObjectInitializer& ObjectInitializer)

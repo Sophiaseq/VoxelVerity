@@ -5,19 +5,19 @@
 #include "CoreMinimal.h"
 #include "ModularGameMode.h"
 #include "Character/MGPawnData.h"
-#include "MGGameModeBase.generated.h"
+#include "MGGameMode.generated.h"
 
 class UMGExperienceDefinition;
 /**
  * 
  */
 UCLASS(Config=Game)
-class MUNDUSGRANUM_API AMGGameModeBase : public AModularGameModeBase
+class MUNDUSGRANUM_API AMGGameMode : public AModularGameModeBase
 {
 	GENERATED_BODY()
 	
 public:
-	AMGGameModeBase();
+	AMGGameMode();
 	
 	UFUNCTION(BlueprintCallable, Category = "MundusGranum|Pawn")
 	const UMGPawnData* GetPawnDataForController(const AController* InController) const;

@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "MGGameModeBase.h"
+#include "MGGameMode.h"
 
 #include "GameMapsSettings.h"
 #include "MGExperienceManagerComponent.h"
@@ -16,7 +16,7 @@
 #include "System/MGAssetManager.h"
 #include "UI/HUD/MGHUD.h"
 
-AMGGameModeBase::AMGGameModeBase()
+AMGGameMode::AMGGameMode()
 {
 	GameStateClass = AMGGameState::StaticClass();
 	PlayerControllerClass = AMGPlayerController::StaticClass();
@@ -25,7 +25,7 @@ AMGGameModeBase::AMGGameModeBase()
 	HUDClass = AMGHUD::StaticClass();
 }
 
-const UMGPawnData* AMGGameModeBase::GetPawnDataForController(const AController* InController) const
+const UMGPawnData* AMGGameMode::GetPawnDataForController(const AController* InController) const
 {
 	// See if pawn data is already set on the player state
 	if (InController != nullptr)
@@ -60,7 +60,7 @@ const UMGPawnData* AMGGameModeBase::GetPawnDataForController(const AController* 
 	return nullptr;
 }
 
-void AMGGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
+void AMGGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
 
@@ -70,7 +70,7 @@ void AMGGameModeBase::InitGame(const FString& MapName, const FString& Options, F
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ThisClass::HandleMatchAssignmentIfNotExpectingOne);
 }
 
-UClass* AMGGameModeBase::GetDefaultPawnClassForController_Implementation(AController* InController)
+UClass* AMGGameMode::GetDefaultPawnClassForController_Implementation(AController* InController)
 {
 	if (const UMGPawnData* PawnData = GetPawnDataForController(InController))
 	{
@@ -83,7 +83,7 @@ UClass* AMGGameModeBase::GetDefaultPawnClassForController_Implementation(AContro
 	return Super::GetDefaultPawnClassForController_Implementation(InController);
 }
 
-APawn* AMGGameModeBase::SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer,
+APawn* AMGGameMode::SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer,
                                                                    const FTransform& SpawnTransform)
 {
 	FActorSpawnParameters SpawnInfo;
@@ -126,7 +126,7 @@ APawn* AMGGameModeBase::SpawnDefaultPawnAtTransform_Implementation(AController* 
 	return nullptr;
 }
 
-void AMGGameModeBase::InitGameState()
+void AMGGameMode::InitGameState()
 {
 	Super::InitGameState();
 	
@@ -137,7 +137,7 @@ void AMGGameModeBase::InitGameState()
 	ExperienceComponent->CallOrRegister_OnExperienceLoaded(FOnMGExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::OnExperienceLoaded));
 }
 
-void AMGGameModeBase::OnExperienceLoaded(const UMGExperienceDefinition* CurrentExperience)
+void AMGGameMode::OnExperienceLoaded(const UMGExperienceDefinition* CurrentExperience)
 {
 	UE_LOG(LogMGExperience, Warning, TEXT("[Init] GameMode::OnExperienceLoaded → 遍历无 Pawn 的 PC RestartPlayer"));
 
@@ -157,7 +157,7 @@ void AMGGameModeBase::OnExperienceLoaded(const UMGExperienceDefinition* CurrentE
 	}
 }
 
-bool AMGGameModeBase::IsExperienceLoaded() const
+bool AMGGameMode::IsExperienceLoaded() const
 {
 	check(GameState);
 	UMGExperienceManagerComponent* ExperienceComponent = GameState->FindComponentByClass<UMGExperienceManagerComponent>();
@@ -166,7 +166,7 @@ bool AMGGameModeBase::IsExperienceLoaded() const
 }
 
 
-void AMGGameModeBase::OnMatchAssignmentGiven(FPrimaryAssetId ExperienceId, const FString& ExperienceIdSource)
+void AMGGameMode::OnMatchAssignmentGiven(FPrimaryAssetId ExperienceId, const FString& ExperienceIdSource)
 {
 	if (ExperienceId.IsValid())
 	{
@@ -182,7 +182,7 @@ void AMGGameModeBase::OnMatchAssignmentGiven(FPrimaryAssetId ExperienceId, const
 	}
 }
 
-void AMGGameModeBase::HandleMatchAssignmentIfNotExpectingOne()
+void AMGGameMode::HandleMatchAssignmentIfNotExpectingOne()
 {
 	FPrimaryAssetId ExperienceId;
 	FString ExperienceIdSource;
@@ -236,9 +236,9 @@ void AMGGameModeBase::HandleMatchAssignmentIfNotExpectingOne()
 		}
 	}*/
 
-	UAssetManager& AssetManager = UAssetManager::Get();
+	UMGAssetManager& MGAssetManager = UMGAssetManager::Get();
 	FAssetData Dummy;
-	if (ExperienceId.IsValid() && !AssetManager.GetPrimaryAssetData(ExperienceId, /*out*/ Dummy))
+	if (ExperienceId.IsValid() && !MGAssetManager.GetPrimaryAssetData(ExperienceId, /*out*/ Dummy))
 	{
 		UE_LOG(LogTemp, Error, TEXT("EXPERIENCE: Wanted to use %s but couldn't find it, falling back to the default)"), *ExperienceId.ToString());
 		ExperienceId = FPrimaryAssetId();
@@ -261,7 +261,7 @@ void AMGGameModeBase::HandleMatchAssignmentIfNotExpectingOne()
 	OnMatchAssignmentGiven(ExperienceId, ExperienceIdSource);
 }
 
-void AMGGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
+void AMGGameMode::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
 {
 	// 延迟生成玩家，直到 Experience 加载完成（加载完后 OnExperienceLoaded 会 RestartPlayer）
 	if (IsExperienceLoaded())

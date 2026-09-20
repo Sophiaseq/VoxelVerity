@@ -24,6 +24,8 @@ namespace MundusGranumGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_Equipped_RightHand_Sword, "CharacterState.Equipped.RightHand.Sword", "右手持剑");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_Rigidity_SelfAction, "CharacterState.Rigidity.SelfAction", "僵直状态，动作时附加，只能被受击动作打断");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_Rigidity_Hit, "CharacterState.Rigidity.Hit", "被攻击时施加的状态");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_Block, "CharacterState.Block", "普通格挡");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_Block_Parry, "CharacterState.Block.Parry", "弹刀");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_Death, "Status.Death", "Target has the death status.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_Death_Dying, "Status.Death.Dying", "Target has begun the death process.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_Death_Dead, "Status.Death.Dead", "Target has finished the death process.");

@@ -28,8 +28,11 @@ public:
 	TObjectPtr<UMGAbilityTagRelationshipMapping> TagRelationshipMapping;
 	
 	//很可能需要换个位置
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "MundusGranum|Anim")
 	TObjectPtr<UAnimMontage> HitReactMontage;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "MundusGranum|Damage")
+	TObjectPtr<UCurveTable> DamageCalculationCoefficients;
 	
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override
 	{

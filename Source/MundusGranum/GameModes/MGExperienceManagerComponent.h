@@ -48,6 +48,10 @@ public:
 	// 获取当前体验（仅在加载完成后有效）
 	const UMGExperienceDefinition* GetCurrentExperienceChecked() const;
 
+	//~ Begin UActorComponent interface
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	//~ End UActorComponent interface
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
@@ -58,10 +62,14 @@ private:
 	void OnGameFeaturePluginLoadComplete(const UE::GameFeatures::FResult& Result);
 	void OnExperienceFullLoadCompleted();
 
+	// 体验复制到客户端后，客户端从这里开始加载体验（激活 AddInputContextMapping 等 GameFeatureAction）
+	UFUNCTION()
+	void OnRep_CurrentExperience();
+
 	EMGExperienceLoadState LoadState = EMGExperienceLoadState::Unloaded;
-	
-	// 当前体验资产（非复制，仅本地使用，若需网络可加 Replicated）
-	UPROPERTY()
+
+	// 当前体验资产（复制给客户端，客户端在 OnRep 后开始加载）
+	UPROPERTY(ReplicatedUsing = OnRep_CurrentExperience)
 	TObjectPtr<const UMGExperienceDefinition> CurrentExperience;
 
 	// 正在加载的插件计数

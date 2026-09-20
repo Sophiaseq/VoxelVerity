@@ -4,6 +4,7 @@
 #include "MGInventoryComponent.h"
 #include "MGInventorySlot.h"
 #include "Items/MGItemDefinition.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
 UMGInventoryComponent::UMGInventoryComponent(const FObjectInitializer& ObjectInitializer)
@@ -18,6 +19,28 @@ void UMGInventoryComponent::BeginPlay()
 	Super::BeginPlay();
 	InitializeSlots();
 
+}
+
+void UMGInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UMGInventoryComponent, Slots);
+	DOREPLIFETIME(UMGInventoryComponent, SelectedSlotIndex);
+}
+
+void UMGInventoryComponent::OnRep_Slots()
+{
+	// 客户端收到背包复制，广播所有槽位刷新 UI / 手持
+	for (int32 i = 0; i < Slots.Num(); ++i)
+	{
+		OnInventoryChanged.Broadcast(i);
+	}
+}
+
+void UMGInventoryComponent::OnRep_SelectedSlot()
+{
+	OnSelectedSlotChanged.Broadcast(GetSelectedItem());
 }
 
 void UMGInventoryComponent::InitializeSlots()
@@ -214,6 +237,11 @@ void UMGInventoryComponent::SelectSlot(int32 NewIndex)
 	if (NewSelected == SelectedSlotIndex) return;
 	SelectedSlotIndex = NewSelected;
 	OnSelectedSlotChanged.Broadcast(GetSelectedItem());
+}
+
+void UMGInventoryComponent::ServerSelectSlot_Implementation(int32 NewIndex)
+{
+	SelectSlot(NewIndex);
 }
 
 int32 UMGInventoryComponent::GetSelectedSlotIndex() const

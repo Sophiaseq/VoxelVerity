@@ -14,7 +14,7 @@
 #include "Character/MGPawnExtensionComponent.h"
 #include "Components/GameFrameworkComponentManager.h"
 #include "GameModes/MGExperienceManagerComponent.h"
-#include "GameModes/MGGameModeBase.h"
+#include "GameModes/MGGameMode.h"
 #include "Net/UnrealNetwork.h"
 
 
@@ -28,9 +28,9 @@ AMGPlayerState::AMGPlayerState(const FObjectInitializer& ObjectInitializer)
      AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 
      // These attribute sets will be detected by AbilitySystemComponent::InitializeComponent. Keeping a reference so that the sets don't get garbage collected before that.
-     PlayerAttributes.PrimarySet = CreateDefaultSubobject<UMGPrimarySet>(TEXT("PrimarySet"));
-     PlayerAttributes.HealthSet = CreateDefaultSubobject<UMGHealthSet>(TEXT("HealthSet"));
-     PlayerAttributes.CombatSet = CreateDefaultSubobject<UMGCombatSet>(TEXT("CombatSet"));
+     PrimarySet = CreateDefaultSubobject<UMGPrimarySet>(TEXT("PrimarySet"));
+     HealthSet = CreateDefaultSubobject<UMGHealthSet>(TEXT("HealthSet"));
+     CombatSet = CreateDefaultSubobject<UMGCombatSet>(TEXT("CombatSet"));
 
      TagsToAttributes.Add(MundusGranumGameplayTags::Attribute_Primary_Strength, UMGPrimarySet::GetStrengthAttribute);
      TagsToAttributes.Add(MundusGranumGameplayTags::Attribute_Primary_Dexterity, UMGPrimarySet::GetDexterityAttribute);
@@ -55,6 +55,22 @@ AMGPlayerState::AMGPlayerState(const FObjectInitializer& ObjectInitializer)
      SetNetUpdateFrequency(100.0f);
 }
 
+void AMGPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+     FDoRepLifetimeParams SharedParams;
+     SharedParams.bIsPushBased = true;
+
+     DOREPLIFETIME_WITH_PARAMS_FAST(ThisClass, PawnData, SharedParams);
+     DOREPLIFETIME_WITH_PARAMS_FAST(ThisClass, MyPlayerConnectionType, SharedParams)
+
+     /*SharedParams.Condition = ELifetimeCondition::COND_SkipOwner;
+     DOREPLIFETIME_WITH_PARAMS_FAST(ThisClass, ReplicatedViewRotation, SharedParams);*/
+
+     DOREPLIFETIME(ThisClass, StatTags);	
+}
+
 void AMGPlayerState::ClientInitialize(AController* C)
 {
      Super::ClientInitialize(C);
@@ -62,6 +78,39 @@ void AMGPlayerState::ClientInitialize(AController* C)
      if (UMGPawnExtensionComponent* PawnExtComp = UMGPawnExtensionComponent::FindPawnExtensionComponent(GetPawn()))
      {
           PawnExtComp->CheckDefaultInitialization();
+     }
+}
+
+void AMGPlayerState::OnDeactivated()
+{
+     bool bDestroyDeactivatedPlayerState = false;
+
+     switch (GetPlayerConnectionType())
+     {
+     case EMGPlayerConnectionType::Player:
+     case EMGPlayerConnectionType::InactivePlayer:
+          //@TODO: Ask the experience if we should destroy disconnecting players immediately or leave them around
+          // (e.g., for long running servers where they might build up if lots of players cycle through)
+          bDestroyDeactivatedPlayerState = true;
+          break;
+     default:
+          bDestroyDeactivatedPlayerState = true;
+          break;
+     }
+	
+     SetPlayerConnectionType(EMGPlayerConnectionType::InactivePlayer);
+
+     if (bDestroyDeactivatedPlayerState)
+     {
+          Destroy();
+     }
+}
+
+void AMGPlayerState::OnReactivated()
+{
+     if (GetPlayerConnectionType() == EMGPlayerConnectionType::InactivePlayer)
+     {
+          SetPlayerConnectionType(EMGPlayerConnectionType::Player);
      }
 }
 
@@ -99,6 +148,12 @@ void AMGPlayerState::SetPawnData(const UMGPawnData* InCharacterDefinition)
      ForceNetUpdate();
 }
 
+void AMGPlayerState::SetPlayerConnectionType(EMGPlayerConnectionType NewType)
+{
+     MARK_PROPERTY_DIRTY_FROM_NAME(ThisClass, MyPlayerConnectionType, this);
+     MyPlayerConnectionType = NewType;
+}
+
 void AMGPlayerState::AddStatTagStack(FGameplayTag Tag, int32 StackCount)
 {
      StatTags.AddStack(Tag, StackCount);
@@ -123,19 +178,9 @@ void AMGPlayerState::OnRep_PawnData()
 {
 }
 
-void AMGPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-     FDoRepLifetimeParams SharedParams;
-     SharedParams.bIsPushBased = true;
-
-     DOREPLIFETIME_WITH_PARAMS_FAST(ThisClass, PawnData, SharedParams);
-}
-
 void AMGPlayerState::OnExperienceLoaded(const UMGExperienceDefinition* CurrentExperience)
 {
-     if (AMGGameModeBase* MGGameMode = GetWorld()->GetAuthGameMode<AMGGameModeBase>())
+     if (AMGGameMode* MGGameMode = GetWorld()->GetAuthGameMode<AMGGameMode>())
      {
           if (const UMGPawnData* NewPawnData = MGGameMode->GetPawnDataForController(GetOwningController()))
           {

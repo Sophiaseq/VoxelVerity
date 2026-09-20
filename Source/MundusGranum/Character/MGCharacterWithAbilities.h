@@ -3,7 +3,7 @@
 #pragma once
 
 #include "MGCharacter.h"
-#include "UI/UI_MVVM/HealthBarComponent.h"
+#include "UI/Widget/HealthBarComponent.h"
 #include "MGCharacterWithAbilities.generated.h"
 
 class UMGHealthSet;

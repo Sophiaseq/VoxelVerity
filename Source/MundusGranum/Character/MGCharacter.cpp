@@ -17,7 +17,11 @@
 // Sets default values
 AMGCharacter::AMGCharacter()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bStartWithTickEnabled = false;
+	
+	bReplicates = true;
+	GetCharacterMovement()->SetIsReplicated(true);
 	
 	UCapsuleComponent* CapsuleComp = GetCapsuleComponent();
 	check(CapsuleComp);
@@ -33,7 +37,7 @@ AMGCharacter::AMGCharacter()
 	MeshComp->SetGenerateOverlapEvents(true);
 
 	UCharacterMovementComponent* MoveComp = GetCharacterMovement();
-	MoveComp->MaxWalkSpeed = 230.0f;
+	MoveComp->MaxWalkSpeed = WalkSpeed;
 	MoveComp->GravityScale = 1.0f;
 	MoveComp->MaxAcceleration = 2400.0f;
 	MoveComp->BrakingFrictionFactor = 1.0f;
@@ -60,6 +64,30 @@ AMGCharacter::AMGCharacter()
 void AMGCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	UE_LOG(LogMG, Warning, TEXT("HasAuthority=%d LocalRole=%d RemoteRole=%d Controller=%s IsLocallyControlled=%d"),
+	HasAuthority(),
+	(int)GetLocalRole(),
+	(int)GetRemoteRole(),
+	*GetNameSafe(GetController()),
+	IsLocallyControlled());
+}
+
+void AMGCharacter::SetSprinting(bool bSprinting)
+{
+	// 本地立即生效（客户端用于预测，服务器用于权威）
+	GetCharacterMovement()->MaxWalkSpeed = bSprinting ? SprintSpeed : WalkSpeed;
+
+	// 客户端把冲刺状态发给服务器
+	if (!HasAuthority())
+	{
+		ServerSetSprinting(bSprinting);
+	}
+}
+
+void AMGCharacter::ServerSetSprinting_Implementation(bool bSprinting)
+{
+	GetCharacterMovement()->MaxWalkSpeed = bSprinting ? SprintSpeed : WalkSpeed;
 }
 
 void AMGCharacter::PossessedBy(AController* NewController)

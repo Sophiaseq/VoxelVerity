@@ -22,7 +22,13 @@ public:
 	
 	AMGCharacter();
 	virtual void Tick(float DeltaTime) override;
-	
+
+	/** 切换冲刺状态：本地立即生效，客户端会发 RPC 给服务器做权威修改 */
+	void SetSprinting(bool bSprinting);
+
+	UFUNCTION(Server, Reliable)
+	void ServerSetSprinting(bool bSprinting);
+
 	UFUNCTION(BlueprintCallable, Category = "MundusGranum|PlayerState")
 	UMGAbilitySystemComponent* GetMGAbilitySystemComponent() const;
 	
@@ -69,7 +75,13 @@ protected:
 
 	//暂时没用
 	void SetupAttributeByLevel(TSubclassOf<UGameplayEffect> AttributeEffect, float Level) const;
-	
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MundusGranum|Movement")
+	float SprintSpeed = 600.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MundusGranum|Movement")
+	float WalkSpeed = 230.0f;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MundusGranum|Character", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UMGHealthComponent> HealthComponent;
 	

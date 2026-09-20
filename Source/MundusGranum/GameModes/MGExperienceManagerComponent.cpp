@@ -5,6 +5,7 @@
 #include "MGExperienceActionSet.h"
 #include "MGExperienceManager.h"
 #include "Engine/AssetManager.h"
+#include "Net/UnrealNetwork.h"
 
 namespace MGConsoleVariables
 {
@@ -38,6 +39,19 @@ void UMGExperienceManagerComponent::BeginPlay()
 {
     Super::BeginPlay();
     // 如果已设置 CurrentExperience 则开始加载（网络客户端会在复制后触发）
+}
+
+void UMGExperienceManagerComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME(UMGExperienceManagerComponent, CurrentExperience);
+}
+
+void UMGExperienceManagerComponent::OnRep_CurrentExperience()
+{
+    // 客户端收到体验后开始加载，激活 AddInputContextMapping 等 GameFeatureAction
+    StartExperienceLoad();
 }
 
 void UMGExperienceManagerComponent::SetCurrentExperience(FPrimaryAssetId ExperienceId)

@@ -6,7 +6,7 @@
 #include "GameFramework/HUD.h"
 #include "MGHUD.generated.h"
 
-struct FMGPlayerAttributeSet;
+struct FGameplayAttribute;
 class UAttributeMenuWidgetController;
 class UAttributeSet;
 class UAbilitySystemComponent;
@@ -25,7 +25,7 @@ public:
 	UOverlayWidgetController* GetOverlayWidgetController(const FWidgetControllerParams& WCParams);
 	UAttributeMenuWidgetController* GetAttributeMenuWidgetController(const FWidgetControllerParams& WCParams);
 	
-	void InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, FMGPlayerAttributeSet Attributes);
+	void InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, const TArray<UAttributeSet*>&);
 	
 protected:
 	virtual void BeginPlay() override;

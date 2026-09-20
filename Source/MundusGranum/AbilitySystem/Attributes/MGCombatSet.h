@@ -7,6 +7,7 @@
 #include "MGAttributeSet.h"
 #include "MGCombatSet.generated.h"
 
+struct MGDamageStatics;
 /**
  * 
  */
@@ -51,4 +52,6 @@ private:
 	/** 暴击伤害倍率 — 1.5=暴击时造成150%伤害 */
 	UPROPERTY(VisibleAnywhere, Category = "Combat", ReplicatedUsing = OnRep_CriticalDamage)
 	FGameplayAttributeData CriticalDamage;
+	
+	friend MGDamageStatics;
 };

@@ -2,23 +2,31 @@
 
 
 #include "MGPlayerController.h"
-#include "MGLogChannels.h"
 
-#include "EnhancedInputComponent.h"
-#include "EnhancedInputSubsystems.h"
+#include <ThirdParty/ShaderConductor/ShaderConductor/External/DirectXShaderCompiler/include/dxc/DXIL/DxilConstants.h>
+
+#include "MGLogChannels.h"
 #include "MGPlayerState.h"
-#include "MundusGranumGameplayTags.h"
 #include "AbilitySystem/MGAbilitySystemComponent.h"
 #include "AbilitySystem/Attributes/MGHealthSet.h"
-#include "Character/MGCharacter.h"
-#include "GameFramework/Character.h"
-#include "GameFramework/CharacterMovementComponent.h"
-#include "Input/MGInputComponent.h"
+#include "Net/UnrealNetwork.h"
 #include "UI/HUD/MGHUD.h"
 
 AMGPlayerController::AMGPlayerController()
 {
 	bReplicates = true;
+}
+
+void AMGPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	// Disable replicating the PC target view as it doesn't work well for replays or client-side spectating.
+	// The engine TargetViewRotation is only set in APlayerController::TickActor if the server knows ahead of time that 
+	// a specific pawn is being spectated and it only replicates down for COND_OwnerOnly.
+	// In client-saved replays, COND_OwnerOnly is never true and the target pawn is not always known at the time of recording.
+	// To support client-saved replays, the replication of this was moved to ReplicatedViewRotation and updated in PlayerTick.
+	DISABLE_REPLICATED_PROPERTY(APlayerController, TargetViewRotation);
 }
 
 AMGPlayerState* AMGPlayerController::GetMGPlayerState() const
@@ -37,17 +45,25 @@ void AMGPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	AMGPlayerState* PS = GetPlayerState<AMGPlayerState>();
-	AMGHUD* HUD = Cast<AMGHUD>(GetHUD());
-	if (PS && HUD)
-	{
-		HUD->InitOverlay(this, PS, PS->GetMGAbilitySystemComponent(), PS->GetPlayerAttributes());
-	}
+	InitHUD();
 }
 
 void AMGPlayerController::OnPlayerStateChanged()
 {
 	// Empty, place for derived classes to implement without having to hook all the other events
+}
+
+void AMGPlayerController::InitHUD()
+{
+	AMGPlayerState* PS = GetPlayerState<AMGPlayerState>();
+	AMGHUD* HUD = Cast<AMGHUD>(GetHUD());
+	UMGAbilitySystemComponent* MGASC = GetMGAbilitySystemComponent();
+	if (MGASC == nullptr) return;
+	const TArray<UAttributeSet*> Attributes = MGASC->GetSpawnedAttributes();
+	if (PS && HUD)
+	{
+		HUD->InitOverlay(this, PS, MGASC, Attributes);
+	}
 }
 
 void AMGPlayerController::BroadcastOnPlayerStateChanged()
@@ -82,15 +98,24 @@ void AMGPlayerController::OnRep_PlayerState()
 	// here is only for when the PlayerState and ASC replicated before the PC and incorrectly thought the abilities were not for the local player.
 	if (GetWorld()->IsNetMode(NM_Client))
 	{
-		if (AMGPlayerState* MGPS = GetPlayerState<AMGPlayerState>())
+		if (UMGAbilitySystemComponent* MGASC = GetMGAbilitySystemComponent())
 		{
-			if (UMGAbilitySystemComponent* MGASC = MGPS->GetMGAbilitySystemComponent())
-			{
-				MGASC->RefreshAbilityActorInfo();
-				//TODO MGASC->TryActivateAbilitiesOnSpawn();
-			}
+			MGASC->RefreshAbilityActorInfo();
+			MGASC->TryActivateAbilitiesOnSpawn();
 		}
 	}
+	
+	InitHUD();
+}
+
+void AMGPlayerController::SetPlayer(UPlayer* InPlayer)
+{
+	Super::SetPlayer(InPlayer);
+}
+
+void AMGPlayerController::PreProcessInput(const float DeltaTime, const bool bGamePaused)
+{
+	Super::PreProcessInput(DeltaTime, bGamePaused);
 }
 
 void AMGPlayerController::PostProcessInput(const float DeltaTime, const bool bGamePaused)
@@ -101,5 +126,16 @@ void AMGPlayerController::PostProcessInput(const float DeltaTime, const bool bGa
 	}
 	
 	Super::PostProcessInput(DeltaTime, bGamePaused);
+}
+
+void AMGPlayerController::ShowDamageNumber_Implementation(float DamageAmount, const FVector& WidgetSpawnLocation)
+{
+	if (DamageTextComponentClass)
+	{
+		UDamageTextComponent* TextComponent = NewObject<UDamageTextComponent>(this, DamageTextComponentClass);
+		TextComponent->RegisterComponent();
+		TextComponent->SetWorldLocation(WidgetSpawnLocation);
+		TextComponent->SetDamageText(DamageAmount);
+	}
 }
 

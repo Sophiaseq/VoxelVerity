@@ -1,5 +1,6 @@
 ﻿#include "MGHeroComponent.h"
 #include "MGLogChannels.h"
+#include "MGCharacter.h"
 #include "EnhancedInputSubsystems.h"
 #include "MGPawnData.h"
 #include "MGPawnExtensionComponent.h"
@@ -13,7 +14,6 @@
 #include "UserSettings/EnhancedInputUserSettings.h"
 #include "InputMappingContext.h"
 #include "AbilitySystem/MGAbilitySystemComponent.h"
-#include "Components/MGEquipmentComponent.h"
 #include "Components/MGInventoryComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -413,16 +413,18 @@ void UMGHeroComponent::Input_LookMouse(const FInputActionValue& InputActionValue
 
 void UMGHeroComponent::Input_SprintPressed()
 {
-	ACharacter* Character = Cast<ACharacter>(GetPawn<APawn>());
-	if (!Character) return;
-	Character->GetCharacterMovement()->MaxWalkSpeed = 600;
+	if (AMGCharacter* Character = Cast<AMGCharacter>(GetPawn<APawn>()))
+	{
+		Character->SetSprinting(true);
+	}
 }
 
 void UMGHeroComponent::Input_SprintReleased()
 {
-	ACharacter* Character = Cast<ACharacter>(GetPawn<APawn>());
-	if (!Character) return;
-	Character->GetCharacterMovement()->MaxWalkSpeed = 230;
+	if (AMGCharacter* Character = Cast<AMGCharacter>(GetPawn<APawn>()))
+	{
+		Character->SetSprinting(false);
+	}
 }
 
 void UMGHeroComponent::Input_SlowWalk()
@@ -436,7 +438,7 @@ void UMGHeroComponent::InputTag_SelectItem(const FInputActionValue& Value)
 	const float Axis = Value.Get<float>();
 	if (FMath::IsNearlyZero(Axis)) return;
 	const int32 Delta = Axis > 0.f ? 1 : -1;
-	InventoryComponent->SelectSlot(InventoryComponent->GetSelectedSlotIndex() + Delta);
+	InventoryComponent->ServerSelectSlot(InventoryComponent->GetSelectedSlotIndex() + Delta);
 }
 
 

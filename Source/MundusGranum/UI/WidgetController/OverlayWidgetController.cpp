@@ -8,7 +8,12 @@
 
 void UOverlayWidgetController::BroadcastInitialValues()
 {
-	const UMGHealthSet* HealthSet = Cast<UMGHealthSet>(Attributes.HealthSet);
+	//这里直接从ASC拿到AttributeSet，当前类的父类似乎不需要再存Attribute成员变量
+	if (!AbilitySystemComponent->GetAttributeSet(UMGHealthSet::StaticClass()))
+	{
+		return;
+	}
+	const UMGHealthSet* HealthSet = Cast<UMGHealthSet>(AbilitySystemComponent->GetAttributeSet(UMGHealthSet::StaticClass()));
 	
 	OnHealthChanged.Broadcast(HealthSet->GetHealth());
 	OnMaxHealthChanged.Broadcast(HealthSet->GetMaxHealth());
@@ -18,7 +23,11 @@ void UOverlayWidgetController::BroadcastInitialValues()
 
 void UOverlayWidgetController::BindCallbackToDependencies()
 {
-	const UMGHealthSet* HealthSet = Cast<UMGHealthSet>(Attributes.HealthSet);
+	if (!AbilitySystemComponent->GetAttributeSet(UMGHealthSet::StaticClass()))
+	{
+		return;
+	}
+	const UMGHealthSet* HealthSet = Cast<UMGHealthSet>(AbilitySystemComponent->GetAttributeSet(UMGHealthSet::StaticClass()));
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
 		HealthSet->GetHealthAttribute()).AddLambda(
 			[this](const FOnAttributeChangeData& Data)

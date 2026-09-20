@@ -162,6 +162,18 @@ void UMGAbilitySystemComponent::RemoveTagFromCachedInputTag(const FGameplayTag& 
 	CachedInputTag.RemoveTag(InputTag);
 }
 
+void UMGAbilitySystemComponent::TryActivateAbilitiesOnSpawn()
+{
+	ABILITYLIST_SCOPE_LOCK();
+	for (const FGameplayAbilitySpec& AbilitySpec : ActivatableAbilities.Items)
+	{
+		if (const UMGGameplayAbility* MGAbilityCDO = Cast<UMGGameplayAbility>(AbilitySpec.Ability))
+		{
+			MGAbilityCDO->TryActivateAbilityOnSpawn(AbilityActorInfo.Get(), AbilitySpec);
+		}
+	}
+}
+
 void UMGAbilitySystemComponent::EffectApplied(UAbilitySystemComponent* AbilitySystemComponent,
                                               const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle ActiveEffectHandle)
 {
