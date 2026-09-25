@@ -19,9 +19,11 @@ namespace MundusGranumGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Movement_Mode_Walking, "Movement.Mode.Walking", "行走状态");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Movement_Mode_Falling, "Movement.Mode.Falling", "下落状态");
 	
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Attack_Melee, "Ability.Attack.Melee", "近战攻击能力");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Attack_Ranged, "Ability.Attack.Ranged", "远程攻击能力");	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_Unequipped, "CharacterState.Unequipped", "未手持物品");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_Equipped_LeftHand, "CharacterState.Equipped.LeftHand", "左手持");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_Equipped_RightHand_Sword, "CharacterState.Equipped.RightHand.Sword", "右手持剑");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_Equipped_RightHand, "CharacterState.Equipped.RightHand", "右手持");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_Rigidity_SelfAction, "CharacterState.Rigidity.SelfAction", "僵直状态，动作时附加，只能被受击动作打断");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_Rigidity_Hit, "CharacterState.Rigidity.Hit", "被攻击时施加的状态");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(CharacterState_Block, "CharacterState.Block", "普通格挡");
@@ -54,6 +56,27 @@ namespace MundusGranumGameplayTags
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Component_Mesh_Weapon, "Component.Mesh.Weapon", "武器网格的组件标签")
 	
+	const TMap<FGameplayTag, FGameplayTag>& DamageTypesToResistances()
+	{
+		// 第一次调用时才构造，此时 GameplayTags 注册表已就绪
+		static const TMap<FGameplayTag, FGameplayTag> Map =
+		{
+			{Damage_Element,           Attribute_Resistance_Element},
+			{Damage_Element_Fire,      Attribute_Resistance_Element_Fire},
+			{Damage_Element_Lightning, Attribute_Resistance_Element_Lightning},
+			{Damage_Physical,          Attribute_Resistance_Physical}
+		};
+		return Map;
+	}
+	
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Damage_Element, "Damage.Element", "元素伤害")
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Damage_Element_Fire, "Damage.Fire", "火焰伤害")
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Damage_Element_Lightning, "Damage.Element.Lightning", "雷电伤害")
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Damage_Physical, "Damage.Physical","物理伤害")
+	
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Attribute_Weapon_Melee_Sharpness, "Attribute.Weapon.Melee.Sharpness", "近战武器的锋利度属性")
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Attribute_Weapon_Melee_Quality, "Attribute.Weapon.Melee.Quality", "近战武器的质量属性")
+	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Attribute_Primary_Strength, "Attributes.Primary.Strength", "力量");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Attribute_Primary_Dexterity, "Attributes.Primary.Dexterity", "敏捷");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Attribute_Primary_Constitution, "Attributes.Primary.Constitution", "体质");
@@ -72,6 +95,10 @@ namespace MundusGranumGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Attribute_Combat_CriticalDamage, "Attributes.Combat.CriticalDamage", "暴击伤害倍率");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Attribute_Combat_IncomingDamage, "Attributes.Meta.IncomingDamage", "本次受到的伤害（meta 缓冲）");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Attribute_Combat_IncomingHealing, "Attributes.Meta.IncomingHealing", "本次受到的治疗（meta 缓冲）");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Attribute_Resistance_Element, "Attribute.Resistance.Element", "元素抗性");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Attribute_Resistance_Element_Fire, "Attribute.Resistance.Element.Fire", "火元素抗性");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Attribute_Resistance_Element_Lightning, "Attribute.Resistance.Element.Lightning", "雷元素抗性");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Attribute_Resistance_Physical, "Attribute.Resistance.Physical", "物理抗性");
 	
 	const TMap<uint8, FGameplayTag> MovementModeTagMap =
 	{

@@ -35,4 +35,13 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category="MGAbilitySystemLibrary|GameplayEffect")
 	static void SetIsCriticalHit(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, bool bInIsCriticalHit);
+	
+	UFUNCTION(BlueprintCallable, Category="MGAbilitySystemLibrary|GameplayMechanics")
+	static void GetLivePlayersWithinRadius(const UObject* WorldContextObject, TArray<AActor*>& OutOverlappingActors, const TArray<AActor*>& ActorsToIgnore, float Radius, const FVector& SphereLocation);
+	
+	UFUNCTION(BlueprintPure, Category="MGAbilitySystemLibrary|GameplayMechanics")
+	static AActor* FindTargetByCameraTrace(const UObject* WorldContextObject, float MaxDistance);
+	
+	UFUNCTION(BlueprintPure, Category="MGAbilitySystemLibrary|GameplayMechanics")
+	static AActor* GetClosestActor(AActor* Observer, const TArray<AActor*>& Actors);
 };

@@ -9,7 +9,7 @@
 
 class UMGWeaponItemDefinition;
 // This class does not need to be modified.
-UINTERFACE()
+UINTERFACE(BlueprintType)
 class UCombatInterface : public UInterface
 {
 	GENERATED_BODY()
@@ -25,10 +25,25 @@ class MUNDUSGRANUM_API ICombatInterface
 public:
 	virtual float GetCharacterLevel() = 0;
 	
-	virtual UMGWeaponItemDefinition* GetCurrentWeapon() const {return nullptr;}
+	virtual const UMGWeaponItemDefinition* GetCurrentWeapon() const {return nullptr;}
 	
 	virtual FVector GetSocketLocation(FName TagName, FName SocketName) const {return FVector();}
 	
 	virtual UAnimMontage* GetHitReactMontage() const {return nullptr;}
+	
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	bool IsDead() const;
+	
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	AActor* GetAvatar();
+	
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void UpdateFacingTarget(const FVector& FacingTarget);
+	
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void SetCombatTarget(const AActor* Target);
+	
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	const AActor* GetCombatTarget();
 
 };

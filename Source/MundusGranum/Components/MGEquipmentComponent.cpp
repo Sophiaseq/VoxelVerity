@@ -3,6 +3,8 @@
 
 #include "MGEquipmentComponent.h"
 
+#include "AbilitySystemComponent.h"
+#include "AbilitySystemInterface.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/Actor.h"
@@ -163,6 +165,14 @@ void UMGEquipmentComponent::UpdateEquippedItem(UMGItemDefinition* NewItem)
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("[Equipment] Item '%s' has no display mesh."), *CurrentItem->GetName());
+	}
+	
+	// 需要优化
+	if (IAbilitySystemInterface* ASI = Cast<IAbilitySystemInterface>(GetOwner()))
+	{
+		ASI->GetAbilitySystemComponent()->RemoveLooseGameplayTags(EquippedTags, 1, EGameplayTagReplicationState::TagOnly);
+		ASI->GetAbilitySystemComponent()->AddLooseGameplayTags(CurrentItem->ItemTags, 1, EGameplayTagReplicationState::TagOnly);
+		EquippedTags = CurrentItem->ItemTags;
 	}
 }
 

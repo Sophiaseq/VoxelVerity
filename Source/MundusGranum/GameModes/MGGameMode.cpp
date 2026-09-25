@@ -3,18 +3,21 @@
 
 #include "MGGameMode.h"
 
-#include "GameMapsSettings.h"
+#include "EngineUtils.h"
 #include "MGExperienceManagerComponent.h"
 #include "MGLogChannels.h"
 #include "MGGameState.h"
 #include "Character/MGCharacter.h"
 #include "Character/MGPawnExtensionComponent.h"
+#include "Character/MGSpawnPoint.h"
 #include "Engine/AssetManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/MGPlayerController.h"
 #include "Player/MGPlayerState.h"
 #include "System/MGAssetManager.h"
 #include "UI/HUD/MGHUD.h"
+
+class AMGSpawnPoint;
 
 AMGGameMode::AMGGameMode()
 {
@@ -137,6 +140,22 @@ void AMGGameMode::InitGameState()
 	ExperienceComponent->CallOrRegister_OnExperienceLoaded(FOnMGExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::OnExperienceLoaded));
 }
 
+void AMGGameMode::SpawnAllCharactersFromSpawnPoints()
+{
+	if (!HasAuthority()) return;
+
+	const UWorld* World = GetWorld();
+	if (!World) return;
+
+	for (TActorIterator<AMGSpawnPoint> It(World); It; ++It)
+	{
+		AMGSpawnPoint* SpawnPoint = *It;
+		if (!SpawnPoint) continue;
+		
+		SpawnPoint->SpawnCharacter();
+	}
+}
+
 void AMGGameMode::OnExperienceLoaded(const UMGExperienceDefinition* CurrentExperience)
 {
 	UE_LOG(LogMGExperience, Warning, TEXT("[Init] GameMode::OnExperienceLoaded → 遍历无 Pawn 的 PC RestartPlayer"));
@@ -155,6 +174,8 @@ void AMGGameMode::OnExperienceLoaded(const UMGExperienceDefinition* CurrentExper
 			}
 		}
 	}
+	
+	SpawnAllCharactersFromSpawnPoints();
 }
 
 bool AMGGameMode::IsExperienceLoaded() const

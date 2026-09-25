@@ -16,13 +16,13 @@ class MUNDUSGRANUM_API UMGCharacterData : public UMGPawnData
 	
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FText CharacterName;
+	FName CharacterName;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<USkeletalMesh> CharacterMesh;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TObjectPtr<UAnimInstance> Anim;
+	TSubclassOf<UAnimInstance> Anim;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TArray<TSoftObjectPtr<UMGItemDefinition>> DropsAfterDeath;

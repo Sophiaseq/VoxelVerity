@@ -25,7 +25,7 @@ public class MundusGranum : ModuleRules
 			"GameFeatures"
 		});
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "GameplayTags", "GameplayTasks", "NavigationSystem", "Niagara", "ModelViewViewModel" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "GameplayTags", "GameplayTasks", "NavigationSystem", "Niagara", "ModelViewViewModel", "AIModule" });
 
 		PrivateIncludePaths.AddRange(new string[] { "MundusGranum" });
 

@@ -131,6 +131,14 @@ void AMGCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PawnExtComponent->SetupPlayerInputComponent();
 }
 
+void AMGCharacter::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+	// 需不需要将它变为成员变量
+	bool bHitReacting = NewCount > 0;
+	// TODO 派生自己的MovementComponent
+	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : WalkSpeed;
+}
+
 void AMGCharacter::SetupAttributeByLevel(TSubclassOf<UGameplayEffect> AttributeEffect, float Level) const
 {
 	check(IsValid(GetAbilitySystemComponent()));
@@ -158,6 +166,8 @@ UAbilitySystemComponent* AMGCharacter::GetAbilitySystemComponent() const
 	return PawnExtComponent->GetMGAbilitySystemComponent();
 }
 
+//~Begin CombatInterface
+
 float AMGCharacter::GetCharacterLevel()
 {
 	if (const AMGPlayerState* MGPlayerState = Cast<AMGPlayerState>(GetPlayerState()))
@@ -165,7 +175,7 @@ float AMGCharacter::GetCharacterLevel()
 	return 0.0f;
 }
 
-UMGWeaponItemDefinition* AMGCharacter::GetCurrentWeapon() const
+const UMGWeaponItemDefinition* AMGCharacter::GetCurrentWeapon() const
 {
 	return FindComponentByClass<UMGEquipmentComponent>() ? FindComponentByClass<UMGEquipmentComponent>()->GetCurrentWeapon() : nullptr;
 }
@@ -182,6 +192,32 @@ UAnimMontage* AMGCharacter::GetHitReactMontage() const
 {
 	return PawnExtComponent->GetPawnData<UMGPawnData>()->HitReactMontage;
 }
+
+bool AMGCharacter::IsDead_Implementation() const
+{
+	if (HealthComponent->GetDeathState()!= EMGDeathState::NotDead)
+	{
+		return true;
+	}
+	return false;
+}
+
+AActor* AMGCharacter::GetAvatar_Implementation()
+{
+	return this;
+}
+
+const AActor* AMGCharacter::GetCombatTarget_Implementation()
+{
+	return CombatTarget;
+}
+
+void AMGCharacter::SetCombatTarget_Implementation(const AActor* Target)
+{
+	CombatTarget = Target;
+}
+
+//~End CombatInterface
 
 void AMGCharacter::OnDeathStarted(AActor* OwningActor)
 {

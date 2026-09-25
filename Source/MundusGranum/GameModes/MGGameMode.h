@@ -30,6 +30,9 @@ public:
 	virtual void InitGameState() override;
 	//~End of AGameModeBase interface
 	
+	// 让所有的TargetPoint根据它们携带的PawnData生成pawn
+	UFUNCTION(BlueprintCallable, Category = "MundusGranum|Pawn")
+	void SpawnAllCharactersFromSpawnPoints();
 protected:
 	void OnExperienceLoaded(const UMGExperienceDefinition* CurrentExperience);
 	bool IsExperienceLoaded() const;

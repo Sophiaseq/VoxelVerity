@@ -22,6 +22,10 @@ public:
 	ATTRIBUTE_ACCESSORS_BASIC(UMGCombatSet, DefensePower)
 	ATTRIBUTE_ACCESSORS_BASIC(UMGCombatSet, CriticalRate)
 	ATTRIBUTE_ACCESSORS_BASIC(UMGCombatSet, CriticalDamage)
+	ATTRIBUTE_ACCESSORS_BASIC(UMGCombatSet, ElementResistance)
+	ATTRIBUTE_ACCESSORS_BASIC(UMGCombatSet, FireElementResistance)
+	ATTRIBUTE_ACCESSORS_BASIC(UMGCombatSet, LightningElementResistance)
+	ATTRIBUTE_ACCESSORS_BASIC(UMGCombatSet, PhysicalResistance)
 	
 protected:
 	UFUNCTION()
@@ -36,22 +40,42 @@ protected:
 	UFUNCTION()
 	virtual void OnRep_CriticalDamage(const FGameplayAttributeData& OldValue);
 	
+	UFUNCTION()
+	virtual void OnRep_ElementResistance(const FGameplayAttributeData& OldValue);
+	
+	UFUNCTION()
+	virtual void OnRep_FireElementResistance(const FGameplayAttributeData& OldValue);
+	
+	UFUNCTION()
+	virtual void OnRep_LightningElementResistance(const FGameplayAttributeData& OldValue);
+	
+	UFUNCTION()
+	virtual void OnRep_PhysicalResistance(const FGameplayAttributeData& OldValue);
+	
 private:
-	/** 攻击力 — 影响所有伤害类技能的最终伤害值 */
 	UPROPERTY(VisibleAnywhere, Category = "Combat", ReplicatedUsing = OnRep_AttackPower)
 	FGameplayAttributeData AttackPower;
 	
-	/** 防御力 — 减少受到的物理伤害 */
 	UPROPERTY(VisibleAnywhere, Category = "Combat", ReplicatedUsing = OnRep_DefensePower)
 	FGameplayAttributeData DefensePower;
-
-	/** 暴击率 — 0.0~1.0，0.05=5%暴击率 */
+	
 	UPROPERTY(VisibleAnywhere, Category = "Combat", ReplicatedUsing = OnRep_CriticalRate)
 	FGameplayAttributeData CriticalRate;
-
-	/** 暴击伤害倍率 — 1.5=暴击时造成150%伤害 */
+	
 	UPROPERTY(VisibleAnywhere, Category = "Combat", ReplicatedUsing = OnRep_CriticalDamage)
 	FGameplayAttributeData CriticalDamage;
+	
+	UPROPERTY(VisibleAnywhere, Category = "Combat", ReplicatedUsing = OnRep_ElementResistance)
+	FGameplayAttributeData ElementResistance;
+	
+	UPROPERTY(VisibleAnywhere, Category = "Combat", ReplicatedUsing = OnRep_FireElementResistance)
+	FGameplayAttributeData FireElementResistance;
+	
+	UPROPERTY(VisibleAnywhere, Category = "Combat", ReplicatedUsing = OnRep_LightningElementResistance)
+	FGameplayAttributeData LightningElementResistance;
+	
+	UPROPERTY(VisibleAnywhere, Category = "Combat", ReplicatedUsing = OnRep_PhysicalResistance)
+	FGameplayAttributeData PhysicalResistance;
 	
 	friend MGDamageStatics;
 };

@@ -5,6 +5,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
+#include "KismetTraceUtils.h"
 #include "MundusGranumGameplayTags.h"
 #include "Interaction/CombatInterface.h"
 
@@ -113,7 +114,23 @@ void UAbilityTask_MeleeTrace::PerformTrace()
 		ECC_Pawn,
 		FCollisionShape::MakeBox(BoxHalfExtent),
 		Params);
-
+	
+#if ENABLE_DRAW_DEBUG
+	DrawDebugSweptBox(
+		GetWorld(),
+		LastStart,
+		CurrentStart,
+		Orientation.Rotator(),
+		BoxHalfExtent,
+		Hits.Num() > 0 ? FColor::Green : FColor::Red,
+		false, 1.f, 0);
+	
+	for (const FHitResult& Hit : Hits)
+	{
+		DrawDebugPoint(GetWorld(), Hit.ImpactPoint, 8.f, FColor::Yellow, false, -1.f, 0);
+	}
+#endif
+	
 	TArray<FHitResult> NewHits;
 	for (const FHitResult& Hit : Hits)
 	{

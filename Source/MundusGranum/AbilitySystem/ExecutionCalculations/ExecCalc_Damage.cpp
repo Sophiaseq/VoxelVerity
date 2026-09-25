@@ -4,6 +4,7 @@
 #include "ExecCalc_Damage.h"
 
 #include "MundusGranumGameplayTags.h"
+#include "VectorUtil.h"
 #include "AbilitySystem/MGAbilitySystemComponent.h"
 #include "AbilitySystem/MGAbilitySystemLibrary.h"
 #include "AbilitySystem/Attributes/MGCombatSet.h"
@@ -17,6 +18,10 @@ struct MGDamageStatics
 	DECLARE_ATTRIBUTE_CAPTUREDEF(DefensePower)
 	DECLARE_ATTRIBUTE_CAPTUREDEF(CriticalRate)
 	DECLARE_ATTRIBUTE_CAPTUREDEF(CriticalDamage)
+	DECLARE_ATTRIBUTE_CAPTUREDEF(ElementResistance)
+	DECLARE_ATTRIBUTE_CAPTUREDEF(FireElementResistance)
+	DECLARE_ATTRIBUTE_CAPTUREDEF(LightningElementResistance)
+	DECLARE_ATTRIBUTE_CAPTUREDEF(PhysicalResistance)
 	
 	MGDamageStatics()
 	{
@@ -24,7 +29,18 @@ struct MGDamageStatics
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UMGCombatSet, DefensePower, Target, false);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UMGCombatSet, CriticalRate, Target, true);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UMGCombatSet, CriticalDamage, Target, true);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UMGCombatSet, ElementResistance, Target, true);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UMGCombatSet, FireElementResistance, Target, true);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UMGCombatSet, LightningElementResistance, Target, true);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UMGCombatSet, PhysicalResistance, Target, true);
+		
+		TagsToCaptureDefs.Add(MundusGranumGameplayTags::Attribute_Resistance_Element, ElementResistanceDef);
+		TagsToCaptureDefs.Add(MundusGranumGameplayTags::Attribute_Resistance_Element_Fire, FireElementResistanceDef);
+		TagsToCaptureDefs.Add(MundusGranumGameplayTags::Attribute_Resistance_Element_Lightning, LightningElementResistanceDef);
+		TagsToCaptureDefs.Add(MundusGranumGameplayTags::Attribute_Resistance_Physical, PhysicalResistanceDef);
 	}
+	
+	TMap<FGameplayTag, FGameplayEffectAttributeCaptureDefinition> TagsToCaptureDefs;
 };
 
 static const MGDamageStatics& DamageStatic()
@@ -40,6 +56,10 @@ UExecCalc_Damage::UExecCalc_Damage()
 	RelevantAttributesToCapture.Add(DamageStatic().DefensePowerDef);
 	RelevantAttributesToCapture.Add(DamageStatic().CriticalRateDef);
 	RelevantAttributesToCapture.Add(DamageStatic().CriticalDamageDef);
+	RelevantAttributesToCapture.Add(DamageStatic().ElementResistanceDef);
+	RelevantAttributesToCapture.Add(DamageStatic().FireElementResistanceDef);
+	RelevantAttributesToCapture.Add(DamageStatic().LightningElementResistanceDef);
+	RelevantAttributesToCapture.Add(DamageStatic().PhysicalResistanceDef);
 }
 
 void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
@@ -63,6 +83,24 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	FAggregatorEvaluateParameters EvaluateParameters;
 	EvaluateParameters.SourceTags = SourceTag;
 	EvaluateParameters.TargetTags = TargetTag;
+	
+	float Damage = 0.f;
+	for (const auto& Pair : MundusGranumGameplayTags::DamageTypesToResistances())
+	{
+		const FGameplayTag ResistanceTag = Pair.Value;
+		checkf(MGDamageStatics().TagsToCaptureDefs.Contains(ResistanceTag), TEXT("TagsToCaptureDefs在ExecCalc_Damage中没有标签[%s]"), *ResistanceTag.ToString());
+		const FGameplayEffectAttributeCaptureDefinition CaptureDef = MGDamageStatics().TagsToCaptureDefs[ResistanceTag];
+		
+		float DamageTypeValue = Spec.GetSetByCallerMagnitude(Pair.Key);
+		
+		float Resistance = 0.f;
+		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(CaptureDef, EvaluateParameters, Resistance);
+		Resistance = FMath::Clamp(Resistance, 0.f, 100);
+		
+		DamageTypeValue *= (100 - Resistance) / 100;
+		
+		Damage += DamageTypeValue;
+	}
 	
 	const float Sharpness =  Spec.GetSetByCallerMagnitude("Damage.Melee.Sharpness");
 	const float Quality =  Spec.GetSetByCallerMagnitude("Damage.Melee.Quality");
@@ -104,7 +142,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 
 	float DamageReduction = (100 - EffectiveCoefficient * (DefensePower * (100 - Sharpness*PenetrationCoefficient) / 100.f)) / 100.f;
 	
-	float FinalDamage = AttackPower * Quality * DamageReduction*(1-BlockCoefficient);
+	float FinalDamage = Damage + AttackPower * Quality * DamageReduction*(1-BlockCoefficient);
 	const bool bCriticalHit = FMath::RandRange(0, 100) < CriticalRateDef;
 	FinalDamage = bCriticalHit ? FinalDamage*CriticalDamageDef : FinalDamage;
 	

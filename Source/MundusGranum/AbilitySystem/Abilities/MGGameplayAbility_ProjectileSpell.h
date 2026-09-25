@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "MGGameplayAbility.h"
+#include "MGGameplayAbility_Damage.h"
 #include "MGGameplayAbility_ProjectileSpell.generated.h"
 
 class AMGProjectile;
@@ -11,7 +11,7 @@ class AMGProjectile;
  * 
  */
 UCLASS()
-class MUNDUSGRANUM_API UMGGameplayAbility_ProjectileSpell : public UMGGameplayAbility
+class MUNDUSGRANUM_API UMGGameplayAbility_ProjectileSpell : public UMGGameplayAbility_Damage
 {
 	GENERATED_BODY()
 	
@@ -23,7 +23,4 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSubclassOf<AMGProjectile> ProjectileClass;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSubclassOf<UGameplayEffect> DamageEffectClass;
  };

@@ -233,8 +233,7 @@ void UMGHeroComponent::AddAdditionalInputConfig(const UMGInputConfig* InputConfi
 		UMGInputComponent* MGIC = Pawn->FindComponentByClass<UMGInputComponent>();
 		if (ensureMsgf(MGIC, TEXT("Unexpected Input Component class! The Gameplay Abilities will not be bound to their inputs. Change the input component to UMGInputComponent or a subclass of it.")))
 		{
-			//TODO
-			//MGIC->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, /*out*/ BindHandles);
+			MGIC->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, /*out*/ BindHandles);
 		}
 	}
 }
@@ -364,11 +363,6 @@ void UMGHeroComponent::Input_AbilityInputTagReleased(FGameplayTag InputTag)
 
 void UMGHeroComponent::Input_Move(const FInputActionValue& InputActionValue)
 {
-	UAbilitySystemComponent* ASC = GetPlayerState<AMGPlayerState>()->GetAbilitySystemComponent();
-	if (ASC && ASC->HasMatchingGameplayTag(MundusGranumGameplayTags::CharacterState_Rigidity_SelfAction.GetTag().RequestDirectParent()))
-	{
-		return;
-	}
 	APawn* Pawn = GetPawn<APawn>();
 	AController* Controller = Pawn ? Pawn->GetController() : nullptr;
 	if (Controller != nullptr)

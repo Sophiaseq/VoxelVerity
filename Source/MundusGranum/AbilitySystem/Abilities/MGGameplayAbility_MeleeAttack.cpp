@@ -25,6 +25,13 @@ bool UMGGameplayAbility_MeleeAttack::CanActivateAbility(const FGameplayAbilitySp
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
 	const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
 {
+	ICombatInterface* CombatInterface = Cast<ICombatInterface>(GetAvatarActorFromActorInfo());
+	const UMGWeaponItemDefinition* WeaponDef = CombatInterface ? CombatInterface->GetCurrentWeapon() : nullptr;
+	if (!WeaponDef || !WeaponDef->Montage || !WeaponDef->MeleeCombos)
+	{
+		return false;
+	}
+	
 	if (!Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags))
 	{
 		return false;
@@ -56,17 +63,12 @@ void UMGGameplayAbility_MeleeAttack::ActivateAbility(const FGameplayAbilitySpecH
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
 	ICombatInterface* CombatInterface = Cast<ICombatInterface>(GetAvatarActorFromActorInfo());
-	UMGWeaponItemDefinition* WeaponDef = CombatInterface ? CombatInterface->GetCurrentWeapon() : nullptr;
-	if (!WeaponDef || !WeaponDef->Montage || !WeaponDef->MeleeCombos)
-	{
-		UE_LOG(LogMG, Warning, TEXT("[MeleeAttack] 无武器 / 无蒙太奇 / 无连招数据，无法激活"));
-		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
-		return;
-	}
+	const UMGWeaponItemDefinition* WeaponDef = CombatInterface ? CombatInterface->GetCurrentWeapon() : nullptr;
 	
 	MeleeCombos = WeaponDef->MeleeCombos;
 	AttackMontage = WeaponDef->Montage;
-
+	WeaponAttributes = WeaponDef->WeaponAttributes;
+	
 	/*UAbilityTask_MeleeTrace* MeleeTask = UAbilityTask_MeleeTrace::MeleeTrace(this, MundusGranumGameplayTags::CharacterState_Rigidity_SelfAction, FVector(5,5,0));
 	MeleeTask->ReadyForActivation();
 	
@@ -157,7 +159,7 @@ void UMGGameplayAbility_MeleeAttack::PlaySection(const FMeleeComboSection& Secti
 	MontageTask->ReadyForActivation();
 }
 
-void UMGGameplayAbility_MeleeAttack::SetSetByCallerMagnitudes(FGameplayEffectSpecHandle InSpecHandle, const FWeaponAttributes& WeaponAttributes, UAbilitySystemComponent* TargetASC)
+void UMGGameplayAbility_MeleeAttack::SetSetByCallerMagnitudes(FGameplayEffectSpecHandle InSpecHandle, UAbilitySystemComponent* TargetASC)
 {
 	UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
 	InSpecHandle.Data->SetSetByCallerMagnitude("Damage.Melee.Sharpness", WeaponAttributes.Sharpness);

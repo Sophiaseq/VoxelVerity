@@ -3,7 +3,6 @@
 
 #include "MMC_Damage.h"
 
-#include "VectorUtil.h"
 #include "AbilitySystem/Attributes/MGCombatSet.h"
 
 UMMC_Damage::UMMC_Damage()
@@ -38,6 +37,8 @@ float UMMC_Damage::CalculateBaseMagnitude_Implementation(const FGameplayEffectSp
 	const float Sharpness =  Spec.GetSetByCallerMagnitude("Damage.Melee.Sharpness");
 	const float Quality =  Spec.GetSetByCallerMagnitude("Damage.Melee.Quality");
 
+	// 遍历所有类型的伤害
+	
 	const float X = FMath::Clamp(Defense-Sharpness, 1, Defense-Sharpness);
 	
 	return AttackPower*Quality / X;

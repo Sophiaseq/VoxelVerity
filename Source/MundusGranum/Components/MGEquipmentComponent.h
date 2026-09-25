@@ -86,6 +86,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Equipment")
 	FName HandSocketName = TEXT("HandRightSocket");
+	
+	UPROPERTY(VisibleInstanceOnly)
+	FGameplayTagContainer EquippedTags;
 
 #if WITH_EDITORONLY_DATA
 	// ========== 编辑器预览 ==========

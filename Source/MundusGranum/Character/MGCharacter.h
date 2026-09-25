@@ -38,9 +38,13 @@ public:
 	
 	//~Begin ICombatInterface
 	virtual float GetCharacterLevel() override;
-	virtual UMGWeaponItemDefinition* GetCurrentWeapon() const override;//TODO 或许可以改成通过GameplayTag
+	virtual const UMGWeaponItemDefinition* GetCurrentWeapon() const override;//TODO 或许可以改成通过GameplayTag
 	virtual FVector GetSocketLocation(FName TagName, FName SocketName) const override;
 	virtual UAnimMontage* GetHitReactMontage() const override;
+	virtual bool IsDead_Implementation() const override;
+	virtual AActor* GetAvatar_Implementation() override;
+	virtual const AActor* GetCombatTarget_Implementation() override;
+	virtual void SetCombatTarget_Implementation(const AActor* Target) override;
 	//~End ICombatInterface
 	
 	// Begins the death sequence for the character (disables collision, disables movement, etc...)
@@ -72,19 +76,24 @@ protected:
 	// Called when the death sequence for the character has completed
 	UFUNCTION(BlueprintImplementableEvent, meta=(DisplayName="OnDeathFinished"))
 	void K2_OnDeathFinished();
+	
+	virtual void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
 	//暂时没用
 	void SetupAttributeByLevel(TSubclassOf<UGameplayEffect> AttributeEffect, float Level) const;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MundusGranum|Movement")
-	float SprintSpeed = 600.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MundusGranum|Movement")
-	float WalkSpeed = 230.0f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MundusGranum|Character", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UMGHealthComponent> HealthComponent;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "MundusGranum|Character", Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UMGPawnExtensionComponent> PawnExtComponent;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MundusGranum|Movement")
+	float SprintSpeed = 600.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MundusGranum|Movement")
+	float WalkSpeed = 230.0f;
+	
+	UPROPERTY(BlueprintReadWrite, Category = "MundusGranum|Combat")
+	TObjectPtr<const AActor> CombatTarget;
 };

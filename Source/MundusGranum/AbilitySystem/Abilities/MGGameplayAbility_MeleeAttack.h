@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "MGGameplayAbility.h"
+#include "MGGameplayAbility_Damage.h"
 #include "Items/Weapons/MeleeCombos.h"
 #include "Items/Weapons/MGWeaponItemDefinition.h"
 #include "MGGameplayAbility_MeleeAttack.generated.h"
@@ -15,7 +15,7 @@ class UMGWeaponItemDefinition;
  *
  */
 UCLASS()
-class MUNDUSGRANUM_API UMGGameplayAbility_MeleeAttack : public UMGGameplayAbility
+class MUNDUSGRANUM_API UMGGameplayAbility_MeleeAttack : public UMGGameplayAbility_Damage
 {
 	GENERATED_BODY()
 
@@ -23,11 +23,12 @@ public:
 	UMGGameplayAbility_MeleeAttack();
 
 	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags = nullptr, const FGameplayTagContainer* TargetTags = nullptr, FGameplayTagContainer* OptionalRelevantTags = nullptr) const override;
-	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	virtual void InputPressed(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
-	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
 protected:
+	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
+	
 	void PlaySection(const FMeleeComboSection& Section);
 	
 	UFUNCTION(BlueprintCallable)
@@ -36,11 +37,14 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	TArray<FGameplayTag> MeleeInputTags;
 	
-	UPROPERTY(Transient);
+	UPROPERTY(BlueprintReadOnly);
 	TObjectPtr<UMeleeCombos> MeleeCombos;
 	
-	UPROPERTY(Transient)
+	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UAnimMontage> AttackMontage;
+	
+	UPROPERTY(BlueprintReadOnly)
+	FWeaponAttributes WeaponAttributes;
 	
 	UPROPERTY(Transient)
 	TObjectPtr<UAbilityTask_PlayMontageAndWait> MontageTask;
@@ -48,7 +52,7 @@ protected:
 	FMeleeComboSection CurrentSection;
 
 	UFUNCTION(BlueprintCallable)
-	void SetSetByCallerMagnitudes(FGameplayEffectSpecHandle InSpecHandle, const FWeaponAttributes& WeaponAttributes, UAbilitySystemComponent* TargetASC);
+	void SetSetByCallerMagnitudes(FGameplayEffectSpecHandle InSpecHandle, UAbilitySystemComponent* TargetASC);
 	
 	UFUNCTION()
 	void HandleMontageBlendOut();
