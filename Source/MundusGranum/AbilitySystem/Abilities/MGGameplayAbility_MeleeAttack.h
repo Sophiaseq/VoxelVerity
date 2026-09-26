@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "MGGameplayAbility_Damage.h"
 #include "Items/Weapons/MeleeCombos.h"
-#include "Items/Weapons/MGWeaponItemDefinition.h"
 #include "MGGameplayAbility_MeleeAttack.generated.h"
 
 class UAbilityTask_PlayMontageAndWait;
@@ -40,19 +39,10 @@ protected:
 	UPROPERTY(BlueprintReadOnly);
 	TObjectPtr<UMeleeCombos> MeleeCombos;
 	
-	UPROPERTY(BlueprintReadOnly)
-	TObjectPtr<UAnimMontage> AttackMontage;
-	
-	UPROPERTY(BlueprintReadOnly)
-	FWeaponAttributes WeaponAttributes;
-	
 	UPROPERTY(Transient)
 	TObjectPtr<UAbilityTask_PlayMontageAndWait> MontageTask;
 	
 	FMeleeComboSection CurrentSection;
-
-	UFUNCTION(BlueprintCallable)
-	void SetSetByCallerMagnitudes(FGameplayEffectSpecHandle InSpecHandle, UAbilitySystemComponent* TargetASC);
 	
 	UFUNCTION()
 	void HandleMontageBlendOut();

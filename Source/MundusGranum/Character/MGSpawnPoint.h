@@ -15,6 +15,8 @@ class MUNDUSGRANUM_API AMGSpawnPoint : public ATargetPoint
 	GENERATED_BODY()
 
 public:
+	AMGSpawnPoint();
+	
 	void SpawnCharacter();
 
 protected:
@@ -38,5 +40,4 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawn", meta = (ClampMin = "0.0"))
 	float SpawnDelay = 0.0f;
-	
 };

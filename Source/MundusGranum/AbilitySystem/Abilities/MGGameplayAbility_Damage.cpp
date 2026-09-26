@@ -5,10 +5,43 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "Interaction/CombatInterface.h"
+
+UMGGameplayAbility_Damage::UMGGameplayAbility_Damage()
+{
+	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
+}
+
+void UMGGameplayAbility_Damage::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
+                                                const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+                                                const FGameplayEventData* TriggerEventData)
+{
+	ICombatInterface* CombatInterface = Cast<ICombatInterface>(GetAvatarActorFromActorInfo());
+	const UMGWeaponItemDefinition* WeaponDef = CombatInterface ? CombatInterface->GetCurrentWeapon() : nullptr;
+	
+	AttackMontage = WeaponDef->Montage;
+	WeaponAttributes = WeaponDef->WeaponAttributes;
+	
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+}
+
+bool UMGGameplayAbility_Damage::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
+                                                   const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
+                                                   const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
+{
+	ICombatInterface* CombatInterface = Cast<ICombatInterface>(GetAvatarActorFromActorInfo());
+	const UMGWeaponItemDefinition* WeaponDef = CombatInterface ? CombatInterface->GetCurrentWeapon() : nullptr;
+	if (!WeaponDef || !WeaponDef->Montage) return false;
+
+	return Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
+}
 
 void UMGGameplayAbility_Damage::CauseDamage(AActor* TargetActor)
 {
 	FGameplayEffectSpecHandle DamageSpecHandle = MakeOutgoingGameplayEffectSpec(DamageEffectClass, 1);
+	DamageSpecHandle.Data->SetSetByCallerMagnitude("Damage.Melee.Sharpness", WeaponAttributes.Sharpness);
+	DamageSpecHandle.Data->SetSetByCallerMagnitude("Damage.Melee.Quality", WeaponAttributes.Quality);
 	for (TTuple<FGameplayTag, FScalableFloat>& Pair : DamageTypes)
 	{
 		const float ScaledDamage = Pair.Value.GetValueAtLevel(GetAbilityLevel());

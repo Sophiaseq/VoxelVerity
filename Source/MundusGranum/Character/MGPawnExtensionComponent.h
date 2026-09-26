@@ -7,10 +7,10 @@
 #include "Components/PawnComponent.h"
 #include "MGPawnExtensionComponent.generated.h"
 
-
-
 class UMGAbilitySystemComponent;
 class UMGPawnData;
+
+DECLARE_MULTICAST_DELEGATE(FPostReplicatePawnDataDelegate);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class UMGPawnExtensionComponent : public UPawnComponent, public IGameFrameworkInitStateInterface
@@ -62,6 +62,8 @@ public:
 
 	/** Register with the OnAbilitySystemUninitialized delegate fired when our pawn is removed as the ability system's avatar actor */
 	void OnAbilitySystemUninitialized_Register(FSimpleMulticastDelegate::FDelegate Delegate);
+	
+	FPostReplicatePawnDataDelegate PostReplicatePawnDataDelegate;
 
 protected:
 	virtual void OnRegister() override;

@@ -3,10 +3,16 @@
 
 #include "MGSpawnPoint.h"
 
+#include "MGCharacterData.h"
 #include "MGCharacterWithAbilities.h"
 #include "MGPawnData.h"
 #include "MGPawnExtensionComponent.h"
 #include "GameFramework/Character.h"
+#include "Net/UnrealNetwork.h"
+
+AMGSpawnPoint::AMGSpawnPoint()
+{
+}
 
 void AMGSpawnPoint::SpawnCharacter()
 {
@@ -50,7 +56,21 @@ APawn* AMGSpawnPoint::PerformSpawn()
 	if (SpawnedPawn) return SpawnedPawn;
 	
 	const FTransform SpawnTransform = GetActorTransform();
+
+	// 1. 创建 AIController
+	FActorSpawnParameters ControllerSpawnInfo;
+	ControllerSpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	AMGAIController* MGAIController = World->SpawnActor<AMGAIController>(
+		AMGAIController::StaticClass(), SpawnTransform, ControllerSpawnInfo);
+
+	if (!IsValid(MGAIController))
+	{
+		UE_LOG(LogTemp, Error, TEXT("SpawnPoint: Failed to spawn AIController"));
+		return nullptr;
+	}
+	
 	FActorSpawnParameters SpawnInfo;
+	SpawnInfo.Owner = MGAIController;
 	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	SpawnInfo.ObjectFlags |= RF_Transient;  // 不保存到地图
 	SpawnInfo.bDeferConstruction = true;    // 关键：延迟构建
@@ -67,6 +87,18 @@ APawn* AMGSpawnPoint::PerformSpawn()
 			}
 
 			Pawn->FinishSpawning(SpawnTransform);
+			
+			if (IsValid(MGAIController) && IsValid(Pawn))
+			{
+				MGAIController->Possess(Pawn);
+
+				// 验证 Possess 是否成功
+				if (Pawn->GetController() != MGAIController)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("SpawnPoint: Possess failed! Character controller: %s"),
+						*GetNameSafe(Pawn->GetController()));
+				}
+			}
 
 			return Pawn;
 		}
@@ -116,6 +148,7 @@ void AMGSpawnPoint::SpawnItem(ACharacter* CharacterToAttach) const
 		NPC->SetWeaponDef(WeaponDef);
 	}
 }
+
 
 
 

@@ -2,6 +2,9 @@
 
 
 #include "MGPawnExtensionComponent.h"
+
+#include "MGCharacterData.h"
+#include "MGCharacterWithAbilities.h"
 #include "MGLogChannels.h"
 
 #include "MundusGranumGameplayTags.h"
@@ -295,6 +298,10 @@ void UMGPawnExtensionComponent::BeginPlay()
 void UMGPawnExtensionComponent::OnRep_PawnData()
 {
 	CheckDefaultInitialization();
+	if (!HasAuthority())
+	{
+		PostReplicatePawnDataDelegate.Broadcast();
+	}
 }
 
 

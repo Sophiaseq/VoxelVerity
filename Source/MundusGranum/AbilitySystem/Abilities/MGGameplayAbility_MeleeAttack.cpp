@@ -8,7 +8,6 @@
 #include "AbilitySystem/MGAbilitySystemComponent.h"
 #include "Interaction/CombatInterface.h"
 #include "Items/Weapons/MGWeaponItemDefinition.h"
-#include "MGLogChannels.h"
 #include "MundusGranumGameplayTags.h"
 #include "CollisionQueryParams.h"
 #include "CollisionShape.h"
@@ -25,21 +24,24 @@ bool UMGGameplayAbility_MeleeAttack::CanActivateAbility(const FGameplayAbilitySp
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags,
 	const FGameplayTagContainer* TargetTags, FGameplayTagContainer* OptionalRelevantTags) const
 {
-	ICombatInterface* CombatInterface = Cast<ICombatInterface>(GetAvatarActorFromActorInfo());
-	const UMGWeaponItemDefinition* WeaponDef = CombatInterface ? CombatInterface->GetCurrentWeapon() : nullptr;
-	if (!WeaponDef || !WeaponDef->Montage || !WeaponDef->MeleeCombos)
-	{
-		return false;
-	}
 	
-	if (!Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags))
-	{
-		return false;
-	}
+	if (!ActorInfo || !ActorInfo->AbilitySystemComponent.IsValid()) return false;
+	
+	const UAbilitySystemComponent* ASC = ActorInfo->AbilitySystemComponent.Get();
+	
+	if (!ASC->HasMatchingGameplayTag(MundusGranumGameplayTags::ItemCategory_Weapon)) return false;
 	
 	// 僵直状态下不能发起攻击
-	if (ActorInfo && ActorInfo->AbilitySystemComponent.IsValid() &&
-		ActorInfo->AbilitySystemComponent->HasMatchingGameplayTag(MundusGranumGameplayTags::CharacterState_Rigidity_SelfAction.GetTag().RequestDirectParent()))
+	if (ASC->HasMatchingGameplayTag(MundusGranumGameplayTags::CharacterState_Rigidity_SelfAction.GetTag().RequestDirectParent()))
+	{
+		return false;
+	}
+	
+	ICombatInterface* CombatInterface = Cast<ICombatInterface>(GetAvatarActorFromActorInfo());
+	const UMGWeaponItemDefinition* WeaponDef = CombatInterface ? CombatInterface->GetCurrentWeapon() : nullptr;
+	if (!WeaponDef->MeleeCombos) return false;
+	
+	if (!Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags))
 	{
 		return false;
 	}
@@ -60,14 +62,12 @@ void UMGGameplayAbility_MeleeAttack::ActivateAbility(const FGameplayAbilitySpecH
 		}
 	}
 	
-	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	
 	ICombatInterface* CombatInterface = Cast<ICombatInterface>(GetAvatarActorFromActorInfo());
 	const UMGWeaponItemDefinition* WeaponDef = CombatInterface ? CombatInterface->GetCurrentWeapon() : nullptr;
 	
 	MeleeCombos = WeaponDef->MeleeCombos;
-	AttackMontage = WeaponDef->Montage;
-	WeaponAttributes = WeaponDef->WeaponAttributes;
+	
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
 	/*UAbilityTask_MeleeTrace* MeleeTask = UAbilityTask_MeleeTrace::MeleeTrace(this, MundusGranumGameplayTags::CharacterState_Rigidity_SelfAction, FVector(5,5,0));
 	MeleeTask->ReadyForActivation();
@@ -157,14 +157,6 @@ void UMGGameplayAbility_MeleeAttack::PlaySection(const FMeleeComboSection& Secti
 	MontageTask->OnCancelled.AddDynamic(this, &UMGGameplayAbility_MeleeAttack::HandleMontageCancelled);
 
 	MontageTask->ReadyForActivation();
-}
-
-void UMGGameplayAbility_MeleeAttack::SetSetByCallerMagnitudes(FGameplayEffectSpecHandle InSpecHandle, UAbilitySystemComponent* TargetASC)
-{
-	UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
-	InSpecHandle.Data->SetSetByCallerMagnitude("Damage.Melee.Sharpness", WeaponAttributes.Sharpness);
-	InSpecHandle.Data->SetSetByCallerMagnitude("Damage.Melee.Quality", WeaponAttributes.Quality);
-	ASC->ApplyGameplayEffectSpecToTarget(*InSpecHandle.Data, TargetASC);
 }
 
 void UMGGameplayAbility_MeleeAttack::HandleMontageBlendOut()

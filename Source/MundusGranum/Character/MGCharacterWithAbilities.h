@@ -20,8 +20,6 @@ class MUNDUSGRANUM_API AMGCharacterWithAbilities : public AMGCharacter
 
 public:
 	AMGCharacterWithAbilities();
-	virtual void PostInitializeComponents() override;
-	virtual void BeginPlay() override;
 	
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	
@@ -33,11 +31,19 @@ public:
 	void SetPawnData();
 	
 protected:
+	virtual void PostInitializeComponents() override;
+	virtual void BeginPlay() override;
+	
 	//~Begin AController
 	virtual void PossessedBy(AController* NewController) override;
 	//~End AController
 	
+	UFUNCTION()
+	void OnRep_WeaponDef();
+	
 	virtual void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount) override;
+	
+	void PostReplicatedPawnData();
 	
 private:
 	// The ability system component sub-object used by player characters.
@@ -46,6 +52,12 @@ private:
 	
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UHealthBarComponent> HealthBarComponent;
+	
+	UPROPERTY()
+	TObjectPtr<UMGHealthSet> HealthSet;
+	
+	UPROPERTY()
+	TObjectPtr<UMGCombatSet> CombatSet;
 	
 	UPROPERTY(VisibleAnywhere, Category = "MundusGranum|NonPlayerState")
 	float NonPlayerLevel = 1;
@@ -56,7 +68,7 @@ private:
 	UPROPERTY()
 	TObjectPtr<AMGAIController> MGAIController;
 	
-	UPROPERTY()
+	UPROPERTY(ReplicatedUsing=OnRep_WeaponDef)
 	TObjectPtr<const UMGWeaponItemDefinition> WeaponDef;
 	
 public:
