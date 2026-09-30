@@ -44,4 +44,13 @@ public:
 	
 	UFUNCTION(BlueprintPure, Category="MGAbilitySystemLibrary|GameplayMechanics")
 	static AActor* GetClosestActor(AActor* Observer, const TArray<AActor*>& Actors);
+	
+	UFUNCTION(BlueprintCallable, Category="MGAbilitySystemLibrary|Montage")
+	static FName GetRandomSection(const UAnimMontage* Montage, bool bExcludeFirst = false);
+	
+	UFUNCTION(BlueprintCallable, Category="MGAbilitySystemLibrary|Montage")
+	static FName GetRandomSectionExclude(const UAnimMontage* Montage, const TArray<FName>& ExcludedSections);
+	
+	UFUNCTION(BlueprintPure, Category="MGAbilitySystemLibrary|Team")
+	static bool IsSameTeamByActorTags(const AActor* Actor1, const AActor* Actor2);
 };

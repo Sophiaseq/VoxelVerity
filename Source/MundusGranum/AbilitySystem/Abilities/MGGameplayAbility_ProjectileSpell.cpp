@@ -6,6 +6,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "MundusGranumGameplayTags.h"
+#include "AbilitySystem/MGGameplayEffectContext.h"
 #include "Actors/MGProjectile.h"
 #include "Interaction/CombatInterface.h"
 
@@ -25,7 +26,7 @@ void UMGGameplayAbility_ProjectileSpell::SpawnProjectile(const FVector& Projecti
 	const ICombatInterface* CombatInterface = Cast<ICombatInterface>(GetAvatarActorFromActorInfo());
 	if (CombatInterface)
 	{
-		const FVector SocketLocation = CombatInterface->GetSocketLocation(FName(), FName());
+		const FVector SocketLocation = CombatInterface->GetSocketLocation("Component.Mesh.Weapon", "TipSocket");
 		FRotator Rotation = (ProjectileTargetLocation - SocketLocation).Rotation();
 		Rotation.Pitch = 0.0f;
 		
@@ -40,19 +41,13 @@ void UMGGameplayAbility_ProjectileSpell::SpawnProjectile(const FVector& Projecti
 		FGameplayEffectContextHandle EffectContextHandle = SourceASC->MakeEffectContext();
 		EffectContextHandle.SetAbility(this);
 		EffectContextHandle.AddSourceObject(Projectile);
-		TArray<TWeakObjectPtr<AActor>> Actors;
+		/*TArray<TWeakObjectPtr<AActor>> Actors;
 		Actors.Add(Projectile);
 		FHitResult HitResult;
 		HitResult.Location = ProjectileTargetLocation;
-		EffectContextHandle.AddHitResult(HitResult);
+		EffectContextHandle.AddHitResult(HitResult);*/
 		
-		FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), SourceASC->MakeEffectContext());
-		
-		for (auto& Pair : DamageTypes)
-		{
-			const float ScaledDamage = Pair.Value.GetValueAtLevel(GetAbilityLevel());
-			UAbilitySystemBlueprintLibrary::AssignSetByCallerMagnitude(SpecHandle, Pair.Key.GetTagName(), ScaledDamage);
-		}
+		FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), EffectContextHandle);
 		
 		Projectile->DamageEffectSpecHandle = SpecHandle;
 		

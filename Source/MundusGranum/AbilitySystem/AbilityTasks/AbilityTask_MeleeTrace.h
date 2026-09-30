@@ -18,7 +18,7 @@ class MUNDUSGRANUM_API UAbilityTask_MeleeTrace : public UAbilityTask
 	
 public:
 	UFUNCTION(BlueprintCallable, meta = (DisplayName ="MeleeTrace", HidePin = "OwningAbility", DefaultToSelf = "OwningAbility", BlueprintInternalUseOnly = "true"), Category = "Ability|Tasks")
-	static UAbilityTask_MeleeTrace* MeleeTrace(UGameplayAbility* OwningAbility, FGameplayTag ActivationTag, FVector InBoxHalfExtent);
+	static UAbilityTask_MeleeTrace* MeleeTrace(UGameplayAbility* OwningAbility, const FGameplayTag ActivationTag, const FVector& InBoxHalfExtent);
 	
 	virtual void TickTask(float DeltaTime) override;
 	virtual void OnDestroy(bool bInOwnerFinished) override;
@@ -41,7 +41,6 @@ protected:
 	FVector BoxHalfExtent;
 	
 	FVector LastStart;
-	FVector LastEnd;
 	
 	bool bHasLast = true;
 	bool bWindowOpen = false;

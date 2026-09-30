@@ -9,7 +9,7 @@
 #include "MundusGranumGameplayTags.h"
 #include "Interaction/CombatInterface.h"
 
-UAbilityTask_MeleeTrace* UAbilityTask_MeleeTrace::MeleeTrace(UGameplayAbility* OwningAbility, FGameplayTag ActivationTag, FVector InBoxHalfExtent)
+UAbilityTask_MeleeTrace* UAbilityTask_MeleeTrace::MeleeTrace(UGameplayAbility* OwningAbility, const FGameplayTag ActivationTag, const FVector& InBoxHalfExtent)
 {
 	UAbilityTask_MeleeTrace* MyObj = NewAbilityTask<UAbilityTask_MeleeTrace>(OwningAbility);
 	MyObj->OnActivatedTag = ActivationTag;
@@ -87,19 +87,17 @@ void UAbilityTask_MeleeTrace::PerformTrace()
 	ICombatInterface* CombatInterface = Cast<ICombatInterface>(Avatar);
 	if (!CombatInterface) return;
 	
-	FVector CurrentStart = CombatInterface->GetSocketLocation("Component.Mesh.Weapon", "TraceStart");
-	FVector CurrentEnd = CombatInterface->GetSocketLocation("Component.Mesh.Weapon","TraceEnd");
+	FVector CurrentStart = CombatInterface->GetSocketLocation("Component.Mesh.Weapon", "CenterTrace");
 	
 	if (!bHasLast)
 	{
 		LastStart = CurrentStart;
-		LastEnd = CurrentEnd;
 		bHasLast = true;
 		return;
 	}
 
 	// 用上一帧到这一帧的位移做扫掠
-	FQuat Orientation = (CurrentEnd - CurrentStart).GetSafeNormal().Rotation().Quaternion();
+	FQuat Orientation = (CurrentStart - LastStart).GetSafeNormal().Rotation().Quaternion();
 
 	TArray<FHitResult> Hits;
 	FCollisionQueryParams Params;
@@ -152,7 +150,6 @@ void UAbilityTask_MeleeTrace::PerformTrace()
 	}
 
 	LastStart = CurrentStart;
-	LastEnd = CurrentEnd;
 }
 
 

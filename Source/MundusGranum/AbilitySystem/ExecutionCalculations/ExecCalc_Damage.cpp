@@ -4,7 +4,6 @@
 #include "ExecCalc_Damage.h"
 
 #include "MundusGranumGameplayTags.h"
-#include "VectorUtil.h"
 #include "AbilitySystem/MGAbilitySystemComponent.h"
 #include "AbilitySystem/MGAbilitySystemLibrary.h"
 #include "AbilitySystem/Attributes/MGCombatSet.h"
@@ -91,7 +90,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 		checkf(MGDamageStatics().TagsToCaptureDefs.Contains(ResistanceTag), TEXT("TagsToCaptureDefs在ExecCalc_Damage中没有标签[%s]"), *ResistanceTag.ToString());
 		const FGameplayEffectAttributeCaptureDefinition CaptureDef = MGDamageStatics().TagsToCaptureDefs[ResistanceTag];
 		
-		float DamageTypeValue = Spec.GetSetByCallerMagnitude(Pair.Key);
+		float DamageTypeValue = Spec.GetSetByCallerMagnitude(Pair.Key, false);
 		
 		float Resistance = 0.f;
 		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(CaptureDef, EvaluateParameters, Resistance);

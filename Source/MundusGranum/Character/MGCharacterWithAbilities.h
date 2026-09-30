@@ -31,8 +31,13 @@ public:
 	void SetPawnData();
 	
 protected:
+	virtual void OnAbilitySystemInitialized() override;
 	virtual void PostInitializeComponents() override;
 	virtual void BeginPlay() override;
+	
+	//~Begin APawn
+	virtual void OnRep_Controller() override;
+	//~End APawn
 	
 	//~Begin AController
 	virtual void PossessedBy(AController* NewController) override;
@@ -46,7 +51,6 @@ protected:
 	void PostReplicatedPawnData();
 	
 private:
-	// The ability system component sub-object used by player characters.
 	UPROPERTY(VisibleAnywhere, Category = "MundusGranum|NonPlayerState")
 	TObjectPtr<UMGAbilitySystemComponent> AbilitySystemComponent;
 	

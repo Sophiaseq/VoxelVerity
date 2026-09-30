@@ -18,7 +18,8 @@ class MUNDUSGRANUM_API AMGProjectile : public AActor
 
 public:
 	AMGProjectile();
-
+	virtual void Destroyed() override;
+	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovement;
 	
@@ -30,8 +31,10 @@ protected:
 	
 	UFUNCTION(BlueprintCallable)
 	void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UPROPERTY(VisibleInstanceOnly)
+	TSet<AActor*> DamagedActors;
 	
-	virtual void Destroyed() override;
 private:
 	UPROPERTY(EditDefaultsOnly)
 	float LifeSpan = 15.f;

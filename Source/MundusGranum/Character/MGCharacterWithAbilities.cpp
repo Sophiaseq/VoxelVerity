@@ -49,22 +49,48 @@ void AMGCharacterWithAbilities::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 	DOREPLIFETIME(AMGCharacterWithAbilities, WeaponDef);
 }
 
+void AMGCharacterWithAbilities::OnAbilitySystemInitialized()
+{
+	check(AbilitySystemComponent);
+	
+	if (HasAuthority())
+	{
+		SetPawnData();
+	}
+	
+	if (HealthBarComponent)
+	{
+		HealthBarComponent->InitWidget();
+		
+		if (UUserWidget* WidgetObj = HealthBarComponent->GetUserWidgetObject())
+		{
+			if (UMGUserWidget* MGWidget = Cast<UMGUserWidget>(WidgetObj))
+			{
+				MGWidget->SetWidgetController(HealthComponent);
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("HealthBarComponent 尚未分配 Widget Class"));
+		}
+	}
+	
+	Super::OnAbilitySystemInitialized();
+}
+
 void AMGCharacterWithAbilities::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-
-	check(AbilitySystemComponent);
-	AbilitySystemComponent->InitAbilityActorInfo(this, this);
-
-	SetPawnData();
-
-	// SetPawnData 会通过 AbilitySet 生成 HealthSet 并应用默认 GE，所以必须在它之后初始化 HealthComponent
-	//HealthComponent->InitializeWithAbilitySystem(AbilitySystemComponent);
 }
 
 void AMGCharacterWithAbilities::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void AMGCharacterWithAbilities::OnRep_Controller()
+{
+	Super::OnRep_Controller();
 }
 
 UAbilitySystemComponent* AMGCharacterWithAbilities::GetAbilitySystemComponent() const
@@ -118,6 +144,11 @@ void AMGCharacterWithAbilities::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	
+	if (UMGUserWidget* MGWidget = Cast<UMGUserWidget>(HealthBarComponent->GetUserWidgetObject()))
+	{
+		MGWidget->SetWidgetController(HealthComponent);
+	}
+	
 	if (!HasAuthority()) return;
 	MGAIController = Cast<AMGAIController>(NewController);
 	MGAIController->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
@@ -133,17 +164,18 @@ void AMGCharacterWithAbilities::OnRep_WeaponDef()
 	if (EquipDisplayData.SkeletalMesh)
 	{
 		USkeletalMeshComponent* WeaponSkeletalMesh = NewObject<USkeletalMeshComponent>(this);
-		WeaponSkeletalMesh->SetupAttachment(GetMesh(), FName("hand_r"));
+		WeaponSkeletalMesh->SetupAttachment(GetMesh(), FName("WeaponSocket"));
 		WeaponSkeletalMesh->RegisterComponent();
 		WeaponSkeletalMesh->SetSkeletalMesh(EquipDisplayData.SkeletalMesh);
 		WeaponSkeletalMesh->SetRelativeTransform(EquipDisplayData.EquippedTransform);
 		WeaponSkeletalMesh->ComponentTags.Add(FName("Component.Mesh.Weapon"));
 		WeaponSkeletalMesh->SetCollisionResponseToAllChannels(ECR_Overlap);
+		WeaponSkeletalMesh->SetAnimInstanceClass(EquipDisplayData.EquipAnimClass);
 	}
 	else if (EquipDisplayData.StaticMesh)
 	{
 		UStaticMeshComponent* WeaponStaticMesh = NewObject<UStaticMeshComponent>(this);
-		WeaponStaticMesh->SetupAttachment(GetMesh(), FName("hand_r"));
+		WeaponStaticMesh->SetupAttachment(GetMesh(), FName("WeaponSocket"));
 		WeaponStaticMesh->RegisterComponent();
 		WeaponStaticMesh->SetStaticMesh(EquipDisplayData.StaticMesh);
 		WeaponStaticMesh->SetRelativeTransform(EquipDisplayData.EquippedTransform);
@@ -163,12 +195,6 @@ void AMGCharacterWithAbilities::PostReplicatedPawnData()
 {
 	SetPawnData();
 
-	// SetPawnData 会通过 AbilitySet 生成 HealthSet 并应用默认 GE，所以必须在它之后初始化 HealthComponent
-	HealthComponent->InitializeWithAbilitySystem(AbilitySystemComponent);
-	
-	if (UMGUserWidget* MGWidget = Cast<UMGUserWidget>(HealthBarComponent->GetUserWidgetObject()))
-	{
-		MGWidget->SetWidgetController(HealthComponent);
-	}
+	//HealthComponent->InitializeWithAbilitySystem(AbilitySystemComponent);
 }
 

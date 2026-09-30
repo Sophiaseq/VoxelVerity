@@ -3,7 +3,9 @@
 
 #include "MGAnimInstance.h"
 
+#include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
+#include "Character/MGPawnExtensionComponent.h"
 
 void UMGAnimInstance::InitializeWithAbilitySystem(UAbilitySystemComponent* ASC)
 {
@@ -13,15 +15,25 @@ void UMGAnimInstance::InitializeWithAbilitySystem(UAbilitySystemComponent* ASC)
 	GameplayTagPropertyMap.ApplyCurrentTags();
 }
 
+void UMGAnimInstance::OnAbilitySystemInitialized()
+{
+	if (UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(GetOwningActor()))
+	{
+		InitializeWithAbilitySystem(ASC);
+	}
+}
+
 void UMGAnimInstance::NativeInitializeAnimation()
 {
 	Super::NativeInitializeAnimation();
-	
+
 	if (const AActor* OwningActor = GetOwningActor())
-	{
-		if (UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(OwningActor))
+	{	
+		if (UMGPawnExtensionComponent* PawnExtComp = UMGPawnExtensionComponent::FindPawnExtensionComponent(OwningActor))
 		{
-			InitializeWithAbilitySystem(ASC);
+			PawnExtComp->OnAbilitySystemInitialized_RegisterAndCall(
+				FSimpleMulticastDelegate::FDelegate::CreateUObject(this, &ThisClass::OnAbilitySystemInitialized)
+			);
 		}
 	}
 }

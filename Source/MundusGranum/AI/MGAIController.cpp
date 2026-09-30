@@ -9,8 +9,11 @@
 
 AMGAIController::AMGAIController()
 {
+	bReplicates = true;
 	Blackboard = CreateDefaultSubobject<UBlackboardComponent>("BlackboardComp");
 	check(Blackboard);
 	BTComp = CreateDefaultSubobject<UBehaviorTreeComponent>("BTComp");
 	check(BTComp);
 }
+
+

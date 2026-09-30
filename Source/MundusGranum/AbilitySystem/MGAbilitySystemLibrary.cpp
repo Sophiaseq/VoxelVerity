@@ -266,3 +266,51 @@ AActor* UMGAbilitySystemLibrary::GetClosestActor(AActor* Observer, const TArray<
 	}
 	return ClosestActor;
 }
+
+FName UMGAbilitySystemLibrary::GetRandomSection(const UAnimMontage* Montage, bool bExcludeFirst)
+{
+	if (!Montage) return NAME_None;
+
+	const int32 NumSections = Montage->CompositeSections.Num();
+	if (NumSections <= 0) return NAME_None;
+
+	int32 MinIndex = bExcludeFirst ? 1 : 0;
+	if (MinIndex >= NumSections)
+	{
+		MinIndex = 0;
+	}
+
+	const int32 RandomIndex = FMath::RandRange(MinIndex, NumSections - 1);
+	return Montage->GetSectionName(RandomIndex);
+}
+
+FName UMGAbilitySystemLibrary::GetRandomSectionExclude(const UAnimMontage* Montage,
+	const TArray<FName>& ExcludedSections)
+{
+	if (!Montage) return NAME_None;
+
+	TArray<FName> Candidates;
+	for (int32 i = 0; i < Montage->CompositeSections.Num(); ++i)
+	{
+		const FName SectionName = Montage->GetSectionName(i);
+		if (!ExcludedSections.Contains(SectionName))
+		{
+			Candidates.Add(SectionName);
+		}
+	}
+
+	if (Candidates.Num() == 0) return NAME_None;
+
+	const int32 RandomIndex = FMath::RandRange(0, Candidates.Num() - 1);
+	return Candidates[RandomIndex];
+}
+
+bool UMGAbilitySystemLibrary::IsSameTeamByActorTags(const AActor* Actor1, const AActor* Actor2)
+{
+	for (const FName& Tag : Actor1->Tags)
+	{
+		if (Actor2->Tags.Contains(Tag))
+			return true;
+	}
+	return false;
+}

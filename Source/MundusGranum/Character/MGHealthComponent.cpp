@@ -7,9 +7,7 @@
 #include "MundusGranumGameplayTags.h"
 #include "AbilitySystem/MGAbilitySystemComponent.h"
 #include "AbilitySystem/Attributes/MGHealthSet.h"
-#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
-#include "Player/MGPlayerController.h"
 
 
 UMGHealthComponent::UMGHealthComponent(const FObjectInitializer& ObjectInitializer)
@@ -68,12 +66,16 @@ void UMGHealthComponent::InitializeWithAbilitySystem(UMGAbilitySystemComponent* 
 	HealthSet->OnHealthChanged.AddUObject(this, &ThisClass::HandleHealthChanged);
 	HealthSet->OnMaxHealthChanged.AddUObject(this, &ThisClass::HandleMaxHealthChanged);
 	HealthSet->OnOutOfHealth.AddUObject(this, &ThisClass::HandleOutOfHealth);
+	HealthSet->OnStaminaChanged.AddUObject(this, &ThisClass::HandleStaminaChanged);
+	HealthSet->OnMaxStaminaChanged.AddUObject(this, &ThisClass::HandleMaxStaminaChanged);
+	HealthSet->OnOutOfStamina.AddUObject(this, &ThisClass::HandleOutOfStamina);
 	
 	ClearGameplayTags();
 
 	OnHealthChanged.Broadcast(this, HealthSet->GetHealth(), HealthSet->GetHealth(), nullptr);
 	OnMaxHealthChanged.Broadcast(this, HealthSet->GetMaxHealth(), HealthSet->GetMaxHealth(), nullptr);
-
+	OnStaminaChanged.Broadcast(this, HealthSet->GetStamina(), HealthSet->GetStamina(), nullptr);
+	OnMaxStaminaChanged.Broadcast(this, HealthSet->GetMaxStamina(), HealthSet->GetMaxStamina(), nullptr);
 }
 
 float UMGHealthComponent::GetHealth() const
@@ -95,6 +97,9 @@ void UMGHealthComponent::UninitializeFromAbilitySystem()
 		HealthSet->OnHealthChanged.RemoveAll(this);
 		HealthSet->OnMaxHealthChanged.RemoveAll(this);
 		HealthSet->OnOutOfHealth.RemoveAll(this);
+		HealthSet->OnStaminaChanged.RemoveAll(this);
+		HealthSet->OnMaxStaminaChanged.RemoveAll(this);
+		HealthSet->OnOutOfStamina.RemoveAll(this);
 	}
 
 	HealthSet = nullptr;

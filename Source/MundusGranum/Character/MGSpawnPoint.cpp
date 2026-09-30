@@ -3,10 +3,13 @@
 
 #include "MGSpawnPoint.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
 #include "MGCharacterData.h"
 #include "MGCharacterWithAbilities.h"
 #include "MGPawnData.h"
 #include "MGPawnExtensionComponent.h"
+#include "AbilitySystem/MGAbilitySystemComponent.h"
 #include "GameFramework/Character.h"
 #include "Net/UnrealNetwork.h"
 
@@ -84,6 +87,10 @@ APawn* AMGSpawnPoint::PerformSpawn()
 			if (UMGPawnExtensionComponent* PawnExtComp = UMGPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
 			{
 				PawnExtComp->SetPawnData(PawnData);
+				if (UMGAbilitySystemComponent* ASC = Cast<UMGAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Pawn)))
+				{
+					PawnExtComp->InitializeAbilitySystem(ASC, Pawn);
+				}
 			}
 
 			Pawn->FinishSpawning(SpawnTransform);
@@ -122,17 +129,18 @@ void AMGSpawnPoint::SpawnItem(ACharacter* CharacterToAttach) const
 	if (EquipDisplayData.SkeletalMesh)
 	{
 		USkeletalMeshComponent* WeaponSkeletalMesh = NewObject<USkeletalMeshComponent>(CharacterToAttach);
-		WeaponSkeletalMesh->SetupAttachment(CharacterToAttach->GetMesh(), FName("hand_r"));
+		WeaponSkeletalMesh->SetupAttachment(CharacterToAttach->GetMesh(), FName("WeaponSocket"));
 		WeaponSkeletalMesh->RegisterComponent();
 		WeaponSkeletalMesh->SetSkeletalMesh(EquipDisplayData.SkeletalMesh);
 		WeaponSkeletalMesh->SetRelativeTransform(EquipDisplayData.EquippedTransform);
 		WeaponSkeletalMesh->ComponentTags.Add(FName("Component.Mesh.Weapon"));
 		WeaponSkeletalMesh->SetCollisionResponseToAllChannels(ECR_Overlap);
+		WeaponSkeletalMesh->SetAnimClass(EquipDisplayData.EquipAnimClass);
 	}
 	else if (EquipDisplayData.StaticMesh)
 	{
 		UStaticMeshComponent* WeaponStaticMesh = NewObject<UStaticMeshComponent>(CharacterToAttach);
-		WeaponStaticMesh->SetupAttachment(CharacterToAttach->GetMesh(), FName("hand_r"));
+		WeaponStaticMesh->SetupAttachment(CharacterToAttach->GetMesh(), FName("WeaponSocket"));
 		WeaponStaticMesh->RegisterComponent();
 		WeaponStaticMesh->SetStaticMesh(EquipDisplayData.StaticMesh);
 		WeaponStaticMesh->SetRelativeTransform(EquipDisplayData.EquippedTransform);

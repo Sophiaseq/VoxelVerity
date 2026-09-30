@@ -38,7 +38,7 @@ public:
 	
 	//~Begin ICombatInterface
 	virtual float GetCharacterLevel() override;
-	virtual const UMGWeaponItemDefinition* GetCurrentWeapon() const override;//TODO 或许可以改成通过GameplayTag
+	virtual const UMGWeaponItemDefinition* GetCurrentWeapon() const override;//或许可以改成通过GameplayTag
 	virtual FVector GetSocketLocation(FName TagName, FName SocketName) const override;
 	virtual UAnimMontage* GetHitReactMontage() const override;
 	virtual bool IsDead_Implementation() const override;
@@ -96,4 +96,11 @@ protected:
 	
 	UPROPERTY(BlueprintReadWrite, Category = "MundusGranum|Combat")
 	TObjectPtr<const AActor> CombatTarget;
+	
+public:
+	UFUNCTION(BlueprintCallable, Category="MundusGranum|Movement")
+	void SetWalkSpeed(const float InWalkSpeed) { WalkSpeed = InWalkSpeed; }
+	
+	UFUNCTION(BlueprintCallable, Category="MundusGranum|Movement")
+	void SetSprintSpeed(const float InSprintSpeed) { SprintSpeed = InSprintSpeed; }
 };

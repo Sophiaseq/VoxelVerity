@@ -158,12 +158,11 @@ UMGAbilitySystemComponent* AMGCharacter::GetMGAbilitySystemComponent() const
 
 UAbilitySystemComponent* AMGCharacter::GetAbilitySystemComponent() const
 {
-	if (PawnExtComponent == nullptr)
+	if (PawnExtComponent)
 	{
-		return nullptr;
+		return PawnExtComponent->GetMGAbilitySystemComponent();
 	}
-
-	return PawnExtComponent->GetMGAbilitySystemComponent();
+	return nullptr;
 }
 
 //~Begin CombatInterface
@@ -308,9 +307,7 @@ void AMGCharacter::OnAbilitySystemInitialized()
 {
 	UMGAbilitySystemComponent* MGASC = GetMGAbilitySystemComponent();
 	check(MGASC);
-
 	HealthComponent->InitializeWithAbilitySystem(MGASC);
-
 	InitializeGameplayTags();
 }
 

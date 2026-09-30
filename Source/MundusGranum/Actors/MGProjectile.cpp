@@ -6,10 +6,10 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "MundusGranum.h"
-#include "NiagaraFunctionLibrary.h"
-#include "Components/AudioComponent.h"
+#include "AbilitySystem/MGAbilitySystemLibrary.h"
+#include "AbilitySystem/Abilities/MGGameplayAbility_Damage.h"
 #include "Components/SphereComponent.h"
-#include "Kismet/GameplayStatics.h"
+
 
 
 AMGProjectile::AMGProjectile()
@@ -35,22 +35,40 @@ void AMGProjectile::BeginPlay()
 	Super::BeginPlay();
 	SetLifeSpan(LifeSpan);
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &AMGProjectile::OnSphereOverlap);
-	UAudioComponent* AudioComponent = UGameplayStatics::SpawnSoundAttached(LoopingSound, GetRootComponent());
+	//UAudioComponent* AudioComponent = UGameplayStatics::SpawnSoundAttached(LoopingSound, GetRootComponent());
 }
 
 void AMGProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
-	bool bFromSweep, const FHitResult& SweepResult)
+                                    bool bFromSweep, const FHitResult& SweepResult)
 {
-	UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation());
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
-	LoopingSoundComponent->Stop();
+	//UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation());
+	//UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
+	//LoopingSoundComponent->Stop();
+	if (OtherActor == nullptr || OtherActor == GetInstigator() || UMGAbilitySystemLibrary::IsSameTeamByActorTags(OtherActor, GetInstigator()) || OtherActor == this)
+	{
+		return;
+	}
 	if (HasAuthority())
 	{
-		if (UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
+		if (DamagedActors.Contains(OtherActor))
 		{
-			TargetASC->ApplyGameplayEffectSpecToSelf(*DamageEffectSpecHandle.Data.Get());
+			return;
 		}
-		Destroy();
+		
+		FGameplayEffectSpec* EffectSpec = DamageEffectSpecHandle.Data.Get();
+		if (EffectSpec)
+		{
+			FGameplayEffectContextHandle ContextHandle = EffectSpec->GetContext();
+			if (ContextHandle.IsValid())
+			{
+				if (const UMGGameplayAbility_Damage* DamageAbility = Cast<UMGGameplayAbility_Damage>(ContextHandle.GetAbilityInstance_NotReplicated()))
+				{
+					DamageAbility->CauseDamage(OtherActor);
+					DamagedActors.Add(OtherActor);
+				}
+			}
+		}
+		//Destroy();
 	}
 	else
 	{
@@ -62,9 +80,9 @@ void AMGProjectile::Destroyed()
 {
 	if (!bHit && !HasAuthority())
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation());
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
-		LoopingSoundComponent->Stop();
+		//UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation());
+		//UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation());
+		//LoopingSoundComponent->Stop();
 	}
 	Super::Destroyed();
 }
