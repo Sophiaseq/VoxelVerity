@@ -18,5 +18,6 @@ Content/Audio
 *.vcxproj.user
 *.DotSettings.user
 *.log
+*.zip
 
 build_log.txt
