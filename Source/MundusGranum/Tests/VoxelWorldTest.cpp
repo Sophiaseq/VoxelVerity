@@ -221,10 +221,12 @@ bool FVoxelWorldWatertight::RunTest(const FString& Parameters)
 
 	const float Extent = float(ChunkSize * 2);
 	TestTrue(TEXT("立方体有顶点"), TotalVerts > 0);
+	// 0.01 容差：密度加了 1e-4 的 epsilon（避免 Roundness=0.5 浮点退化），表面会内缩 ~1e-4。
+	constexpr float Tol = 0.01f;
 	TestTrue(TEXT("包围盒覆盖世界边缘（无外墙缺失）"),
-		MinX <= 0.5f && MaxX >= Extent - 0.5f &&
-		MinY <= 0.5f && MaxY >= Extent - 0.5f &&
-		MinZ <= 0.5f && MaxZ >= Extent - 0.5f);
+		MinX <= 0.5f + Tol && MaxX >= Extent - 0.5f - Tol &&
+		MinY <= 0.5f + Tol && MaxY >= Extent - 0.5f - Tol &&
+		MinZ <= 0.5f + Tol && MaxZ >= Extent - 0.5f - Tol);
 
 	return true;
 }
@@ -407,6 +409,55 @@ bool FVoxelWorldEditSerialization::RunTest(const FString& Parameters)
 	}
 	TestEqual(TEXT("被挖的体素是空气"), int32(B.Get(FIntVector(3, 3, 3))), 0);
 	TestEqual(TEXT("未挖的体素仍是实心"), int32(B.Get(FIntVector(0, 0, 0))), 1);
+
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FVoxelWorldSameLODSeamRoundness,
+	"MundusGranum.Voxel.WorldSameLODSeamRoundness",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FVoxelWorldSameLODSeamRoundness::RunTest(const FString& Parameters)
+{
+	// 同 WorldSameLODSeam，但用非零圆角，验证圆角场跨块一致性。
+	const int32 ChunkSize = 8;
+	FVoxelMaterialTable Materials;
+	Materials.SetNum(2);
+	Materials[1].Roundness = 0.5f; // 非零圆角
+
+	FVoxelChunkedWorld World(ChunkSize, Materials);
+	FillSphere(World, FVector(float(ChunkSize), 4.0f, 4.0f), 3.0f);
+	World.RemeshAll();
+
+	const int32 BoundaryEdges = CountBoundaryEdges(World, ChunkSize);
+	TestTrue(FString::Printf(TEXT("同 LOD 圆角接缝 watertight（边界边 == 0，实际 %d）"), BoundaryEdges), BoundaryEdges == 0);
+
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FVoxelWorldMultiChunkSeam,
+	"MundusGranum.Voxel.WorldMultiChunkSeam",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FVoxelWorldMultiChunkSeam::RunTest(const FString& Parameters)
+{
+	// 3×3×3 块（每块 8³）= 24³，中心 (12,12,12) 半径 10 的球，跨越 X/Y/Z 多个块边界与角落。
+	const int32 ChunkSize = 8;
+	FVoxelMaterialTable Materials;
+	Materials.SetNum(2);
+	Materials[1].Roundness = 0.0f; // 先测锐利，隔离圆角影响
+
+	FVoxelChunkedWorld World(ChunkSize, Materials);
+	FillSphere(World, FVector(12.0f, 12.0f, 12.0f), 10.0f);
+	World.RemeshAll();
+
+	TArray<FVector> Samples;
+	const int32 BoundaryEdges = CountBoundaryEdges(World, ChunkSize, &Samples);
+	for (int32 i = 0; i < Samples.Num() && i < 16; ++i)
+	{
+		AddInfo(FString::Printf(TEXT("多块边界边[%d] 中点(世界)=(%.2f, %.2f, %.2f)"), i, Samples[i].X, Samples[i].Y, Samples[i].Z));
+	}
+	TestTrue(FString::Printf(TEXT("多块接缝 watertight（边界边 == 0，实际 %d）"), BoundaryEdges), BoundaryEdges == 0);
 
 	return true;
 }

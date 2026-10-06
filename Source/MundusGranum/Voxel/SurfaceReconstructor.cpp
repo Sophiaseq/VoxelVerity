@@ -60,14 +60,16 @@ FReconstructedMesh ReconstructSurface(const FVoxelGrid& Grid, const FVoxelMateri
 		// 若直接 Sample(整数角)，会在 halo 边界处做跨块插值（越界 clamp），
 		// 使相邻 chunk 对同一 corner 用不同体素集合 → 密度不一致 → 接缝裂缝。
 		const FVector P = ToVec(C) + FVector(0.5f, 0.5f, 0.5f);
-		return Sdf.Sample(P) - Sdf.SampleRoundness(P);
+		// +epsilon 避免密度恰为 0（如 Roundness=0.5 时 SDF-Roundness 在空气体素中心恰好 0），
+		// 否则等值面恰好穿过体素中心、边发射产生洞。
+		return Sdf.Sample(P) - Sdf.SampleRoundness(P) + 1e-4f;
 	};
 
 	auto DensityAt = [&Sdf](const FVector& P) -> float
 	{
 		// 与 Density 保持一致：采样体素中心（P + 0.5），否则梯度/法线/绕序会偏移 0.5。
 		const FVector Q = P + FVector(0.5f, 0.5f, 0.5f);
-		return Sdf.Sample(Q) - Sdf.SampleRoundness(Q);
+		return Sdf.Sample(Q) - Sdf.SampleRoundness(Q) + 1e-4f;
 	};
 
 	auto DensityGradient = [&DensityAt](const FVector& P) -> FVector

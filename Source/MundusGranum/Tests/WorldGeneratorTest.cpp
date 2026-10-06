@@ -14,8 +14,8 @@ bool FVoxelBaseLayerDeterminism::RunTest(const FString& Parameters)
 	FWorldGenParams P;
 	P.Seed = 12345u;
 
-	// 同 seed 同坐标（含负坐标区块）两次生成必须一致。
-	const FIntVector Coord(3, -2, 1);
+	// 同 seed 同坐标（含负坐标区块）两次生成必须一致。Z=0 使区块跨越地表（TerrainHeight=0）。
+	const FIntVector Coord(3, -2, 0);
 	const FVoxelGrid A = GenerateChunkVoxels(Coord, 8, P);
 	const FVoxelGrid B = GenerateChunkVoxels(Coord, 8, P);
 	TestTrue(TEXT("同 seed 两次生成一致"), A.Cells == B.Cells);

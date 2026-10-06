@@ -84,10 +84,10 @@ void UAbilityTask_MeleeTrace::PerformTrace()
 	AActor* Avatar = Ability->GetAvatarActorFromActorInfo();
 	if (!Avatar) return;
 
-	ICombatInterface* CombatInterface = Cast<ICombatInterface>(Avatar);
+	const ICombatInterface* CombatInterface = Cast<ICombatInterface>(Avatar);
 	if (!CombatInterface) return;
-	
-	FVector CurrentStart = CombatInterface->GetSocketLocation("Component.Mesh.Weapon", "CenterTrace");
+
+	const FVector CurrentStart = CombatInterface->GetSocketLocation("Component.Mesh.Weapon", "CenterTrace");
 	
 	if (!bHasLast)
 	{

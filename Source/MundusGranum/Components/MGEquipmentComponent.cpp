@@ -145,9 +145,13 @@ void UMGEquipmentComponent::UpdateEquippedItem(UMGItemDefinition* NewItem)
 
 	CurrentItem = NewItem;
 
+	const IAbilitySystemInterface* ASI = Cast<IAbilitySystemInterface>(GetOwner());
+	
 	// 2. 空手：清理完毕直接返回
 	if (!CurrentItem)
 	{
+		ASI->GetAbilitySystemComponent()->RemoveLooseGameplayTags(EquippedTags, 1, EGameplayTagReplicationState::TagOnly);
+		EquippedTags.Reset();
 		return;
 	}
 
@@ -167,13 +171,9 @@ void UMGEquipmentComponent::UpdateEquippedItem(UMGItemDefinition* NewItem)
 		UE_LOG(LogTemp, Warning, TEXT("[Equipment] Item '%s' has no display mesh."), *CurrentItem->GetName());
 	}
 	
-	// 需要优化
-	if (IAbilitySystemInterface* ASI = Cast<IAbilitySystemInterface>(GetOwner()))
-	{
-		ASI->GetAbilitySystemComponent()->RemoveLooseGameplayTags(EquippedTags, 1, EGameplayTagReplicationState::TagOnly);
-		ASI->GetAbilitySystemComponent()->AddLooseGameplayTags(CurrentItem->ItemTags, 1, EGameplayTagReplicationState::TagOnly);
-		EquippedTags = CurrentItem->ItemTags;
-	}
+	ASI->GetAbilitySystemComponent()->RemoveLooseGameplayTags(EquippedTags, 1, EGameplayTagReplicationState::TagOnly);
+	ASI->GetAbilitySystemComponent()->AddLooseGameplayTags(CurrentItem->ItemTags, 1, EGameplayTagReplicationState::TagOnly);
+	EquippedTags = CurrentItem->ItemTags;
 }
 
 // ------------------------------------------------------------------ //
