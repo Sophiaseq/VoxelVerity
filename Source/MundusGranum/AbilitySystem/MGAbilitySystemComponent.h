@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
 #include "NativeGameplayTags.h"
+#include "Abilities/MGGameplayAbility.h"
 #include "MGAbilitySystemComponent.generated.h"
 
 class UMGAbilityTagRelationshipMapping;
@@ -52,9 +53,9 @@ protected:
 	TArray<FGameplayAbilitySpecHandle> InputHeldSpecHandles;
 
 	FGameplayTagContainer CachedInputTag;
+	
 	// Number of abilities running in each activation group.
-	//TODO 为激活的技能分类并写成数组
-	int32 ActivationGroupCounts;
+	int32 ActivationGroupCounts[(uint8)EMGAbilityActivationGroup::MAX];
 	
 public:
 	const FGameplayTagContainer& GetCachedInputTag() const { return CachedInputTag; }

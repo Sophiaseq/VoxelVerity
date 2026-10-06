@@ -179,11 +179,34 @@ FReconstructedMesh ReconstructSurface(const FVoxelGrid& Grid, const FVoxelMateri
 			++Count;
 		}
 
+		FVector Pos = Count > 0 ? Sum / float(Count) : ToVec(Min);
+
+		// 过渡单元格：把窄轴（面向粗邻居）的顶点坐标吸附到粗网格，使与粗块顶点焊接。
+		if (Size != FIntVector(1, 1, 1))
+		{
+			auto AxisLen = [&](int32 Axis) { return Axis == 0 ? CW : (Axis == 1 ? CH : CD); };
+			for (int32 A = 0; A < 3; ++A)
+			{
+				if (Size[A] != 1)
+				{
+					continue;
+				}
+				if (Transition.CoarsePlus[A] && Min[A] == AxisLen(A) - 1)
+				{
+					Pos[A] = float(Min[A]);          // 吸附到 -A 面（粗网格）
+				}
+				else if (Transition.CoarseMinus[A] && Min[A] == 1)
+				{
+					Pos[A] = float(Min[A] + 1);      // 吸附到 +A 面
+				}
+			}
+		}
+
 		FCell Cell;
 		Cell.Min = Min;
 		Cell.Size = Size;
 		Cell.Vertex = Mesh.Vertices.Num();
-		Mesh.Vertices.Add(Count > 0 ? Sum / float(Count) : ToVec(Min));
+		Mesh.Vertices.Add(Pos);
 		Cells.Add(Cell);
 	}
 

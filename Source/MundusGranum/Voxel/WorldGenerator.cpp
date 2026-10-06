@@ -94,11 +94,12 @@ namespace NoiseInternal
 FMaterialId SampleBaseLayer(const FIntVector& WorldVoxel, const FWorldGenParams& Params)
 {
 	// 2D 高度图打底：高度在 (X, Y) 平面变化，Z 为竖直轴（UE 的 up）。
+	// FBM2D ∈ [0,1] 映射到 [-1,1]，使地表以 TerrainHeight 为中心上下起伏。
 	const float H = Params.TerrainHeight
-		+ Params.TerrainAmplitude * NoiseInternal::FBM2D(
+		+ Params.TerrainAmplitude * (2.0f * NoiseInternal::FBM2D(
 			float(WorldVoxel.X) * Params.TerrainScale,
 			float(WorldVoxel.Y) * Params.TerrainScale,
-			Params.Seed, Params.Octaves);
+			Params.Seed, Params.Octaves) - 1.0f);
 
 	const float Z = float(WorldVoxel.Z);
 	if (Z > H)

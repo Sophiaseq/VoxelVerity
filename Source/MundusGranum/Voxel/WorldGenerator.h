@@ -13,8 +13,8 @@ struct FWorldGenParams
 {
 	uint32 Seed = 12345u;
 
-	/** 平均地表高度（体素）。 */
-	float TerrainHeight = 20.0f;
+	/** 平均地表高度（体素）。0 = 与原点齐平（海平面），地表在其上下起伏。 */
+	float TerrainHeight = 0.0f;
 
 	/** 地表高度起伏幅度（体素）。 */
 	float TerrainAmplitude = 14.0f;

@@ -43,7 +43,7 @@ public:
 	int32 Seed = 12345;
 
 	UPROPERTY(EditAnywhere, Category = "Voxel")
-	float TerrainHeight = 20.0f;
+	float TerrainHeight = 0.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Voxel")
 	float TerrainAmplitude = 14.0f;
@@ -55,9 +55,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Voxel")
 	float SurfaceRoundness = 0.5f;
 
-	/** 自动 LOD 的最大级别（越远越粗）。 */
+	/** 自动 LOD 的最大级别（越远越粗）。0 = 全分辨率，无跨 LOD 缝（transvoxel 未完成前先关 LOD）。 */
 	UPROPERTY(EditAnywhere, Category = "Voxel")
-	int32 MaxLOD = 2;
+	int32 MaxLOD = 0;
 
 	/** 一个体素的 UE 单位长度（1 体素 = VoxelSize 单位）。 */
 	UPROPERTY(EditAnywhere, Category = "Voxel")

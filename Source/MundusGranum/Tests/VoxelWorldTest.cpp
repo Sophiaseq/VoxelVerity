@@ -313,11 +313,10 @@ bool FVoxelWorldSameLODSeam::RunTest(const FString& Parameters)
 	return true;
 }
 
-// 【已禁用 2026-09-04】跨 LOD transvoxel 过渡尚未完成，测试暂禁用。
-// 根因：过渡单元格生成在「细块」（Transition.CoarsePlus 表示邻居更粗），
-//       细块的 fan 只连得到自己的单元格、够不到粗块网格 → 16 处裂缝（X=7.5 细 / X=7.0 粗）。
-// 修法方向：把过渡单元格挪到「粗块」（面向更细邻居时生成），过渡顶点落在粗网格。
-// TODO: 完成 transvoxel 重构后删掉 #if 0 重新启用。
+// 【已禁用】跨 LOD transvoxel 过渡仍未完成。
+// 已做：过渡单元格窄轴顶点吸附到粗网格（X 对齐到 7.0）。
+// 剩余难点：细/粗网格对曲面近似分辨率不同 → Y/Z 顶点不重合（细 3.62/4.38 vs 粗 3.25/4.25），
+//           需靠 fan 正确连接两套网格（完整 transvoxel），非单靠顶点吸附能解决。
 #if 0
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FVoxelWorldLODSeam,
 	"MundusGranum.Voxel.WorldLODSeam",

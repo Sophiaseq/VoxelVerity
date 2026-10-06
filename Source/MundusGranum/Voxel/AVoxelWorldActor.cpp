@@ -308,7 +308,8 @@ void AVoxelWorldActor::AutoDigDemo()
 {
 	// 在 actor 正上方（体素柱 (0,0,z)）找地表并挖洞（演示局部重网格化）。
 	int32 SurfaceZ = -1;
-	for (int32 z = FMath::CeilToInt(TerrainHeight + TerrainAmplitude + 4.0f); z >= 0; --z)
+	const int32 SearchTop = FMath::CeilToInt(TerrainHeight + TerrainAmplitude + 4.0f);
+	for (int32 z = SearchTop; z >= -SearchTop; --z)
 	{
 		if (World->Get(FIntVector(0, 0, z)) != 0)
 		{
