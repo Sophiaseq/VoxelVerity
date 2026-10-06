@@ -144,11 +144,6 @@ void AMGCharacterWithAbilities::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	
-	if (UMGUserWidget* MGWidget = Cast<UMGUserWidget>(HealthBarComponent->GetUserWidgetObject()))
-	{
-		MGWidget->SetWidgetController(HealthComponent);
-	}
-	
 	if (!HasAuthority()) return;
 	MGAIController = Cast<AMGAIController>(NewController);
 	MGAIController->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
@@ -194,7 +189,13 @@ void AMGCharacterWithAbilities::HitReactTagChanged(const FGameplayTag CallbackTa
 void AMGCharacterWithAbilities::PostReplicatedPawnData()
 {
 	SetPawnData();
-
-	//HealthComponent->InitializeWithAbilitySystem(AbilitySystemComponent);
+	
+	HealthBarComponent->InitWidget();
+	if (UMGUserWidget* MGWidget = Cast<UMGUserWidget>(HealthBarComponent->GetUserWidgetObject()))
+	{
+		MGWidget->SetWidgetController(HealthComponent);
+	}
+	
+	HealthComponent->InitializeWithAbilitySystem(AbilitySystemComponent);
 }
 

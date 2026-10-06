@@ -42,6 +42,7 @@ class MUNDUSGRANUM_API UOverlayWidgetController : public UMGWidgetController
 	GENERATED_BODY()
 	
 public:
+	UFUNCTION(BlueprintCallable)
 	virtual void BroadcastInitialValues() override;
 	virtual void BindCallbackToDependencies() override;
 	
