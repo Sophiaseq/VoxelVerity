@@ -1,0 +1,150 @@
+<mxfile host="Electron" modified="2026-09-19T00:00:00.000Z">
+  <diagram name="GAS-数据结构与协作图" id="gas-architecture-1">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="720" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- 标题 -->
+        <mxCell id="title" value="GAS 数据结构与协作（MundusGranum / UE 5.7）" style="text;html=1;fontSize=18;fontStyle=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="60" y="10" width="720" height="36" as="geometry" />
+        </mxCell>
+
+        <!-- ============ 定义层（绿） ============ -->
+        <mxCell id="def_ability" value="UGameplayAbility&#10;能力类（CDO）&#10;Tags / Cost / Cooldown" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="60" y="80" width="215" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="def_effect" value="UGameplayEffect&#10;效果定义（CDO，不可变）&#10;Modifiers / Executions / 堆叠" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="60" y="220" width="215" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="def_attrset" value="UAttributeSet&#10;属性集（CDO）&#10;复写 6 个回调" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="60" y="360" width="215" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ============ 运行时实例层（橙） ============ -->
+        <mxCell id="rt_spec" value="FGameplayAbilitySpec&#10;Handle / Level / InputID&#10;Instances[] / ActiveCount" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="410" y="80" width="235" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="rt_gespec" value="FGameplayEffectSpec&#10;Def / Modifiers[] / 捕获属性&#10;CapturedTags / EffectContext" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="410" y="220" width="235" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="rt_active" value="FActiveGameplayEffect&#10;Handle + Spec&#10;GrantedAbilityHandles / 计时器" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="410" y="360" width="235" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="rt_attrdata" value="FGameplayAttributeData&#10;BaseValue + CurrentValue&#10;（每个属性一个）" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="410" y="500" width="235" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ============ ASC 容器（蓝） ============ -->
+        <mxCell id="asc" value="UAbilitySystemComponent（宿主）" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=14;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="770" y="50" width="400" height="580" as="geometry" />
+        </mxCell>
+        <mxCell id="asc_ab" value="ActivatableAbilities&#10;FGameplayAbilitySpecContainer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="800" y="100" width="340" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="asc_age" value="ActiveGameplayEffects&#10;FActiveGameplayEffectsContainer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="800" y="172" width="340" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="asc_attr" value="SpawnedAttributes&#10;TArray&lt;UAttributeSet*&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="800" y="244" width="340" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="asc_tag" value="GameplayTagCountContainer&#10;自身拥有的 Tag 计数（GE 授予）" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="800" y="316" width="340" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="asc_block" value="BlockedAbilityTags&#10;命中即禁止激活能力" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="800" y="388" width="340" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="asc_ai" value="FGameplayAbilityActorInfo&#10;Owner / Avatar / Controller 上下文" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="800" y="460" width="340" height="54" as="geometry" />
+        </mxCell>
+
+        <!-- ============ 计算层（紫） ============ -->
+        <mxCell id="calc_exec" value="UGameplayEffectExecutionCalculation&#10;ExecCalc：自定义执行" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="1280" y="80" width="290" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="calc_agg" value="FAggregator（每属性一个）&#10;持 FAggregatorMod 列表&#10;按 Channel + ModOp 求值" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="1280" y="220" width="290" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="calc_mmc" value="UGameplayModMagnitudeCalculation&#10;MMC：算 modifier 的量" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="1280" y="360" width="290" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- ============ 回调（红） ============ -->
+        <mxCell id="cb" value="属性回调链&#10;PreAttributeChange（钳制）&#10;PostGameplayEffectExecute（副作用/死亡）" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="1280" y="500" width="290" height="78" as="geometry" />
+        </mxCell>
+
+        <!-- ============ 边：定义 → 实例 ============ -->
+        <mxCell id="e1" value="授予 / 实例化" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;fontSize=11;strokeColor=#82b366;" edge="1" parent="1" source="def_ability" target="rt_spec">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" value="构造 Spec" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;fontSize=11;strokeColor=#82b366;" edge="1" parent="1" source="def_effect" target="rt_gespec">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" value="应用（持续型）" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;fontSize=11;strokeColor=#d79b00;" edge="1" parent="1" source="rt_gespec" target="rt_active">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" value="持有 N 个" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;fontSize=11;strokeColor=#82b366;" edge="1" parent="1" source="def_attrset" target="rt_attrdata">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ============ 边：注册进 ASC ============ -->
+        <mxCell id="e5" value="注册" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;fontSize=11;strokeColor=#6c8ebf;" edge="1" parent="1" source="rt_spec" target="asc_ab">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" value="注册" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;fontSize=11;strokeColor=#6c8ebf;" edge="1" parent="1" source="rt_active" target="asc_age">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" value="注册" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;fontSize=11;strokeColor=#6c8ebf;" edge="1" parent="1" source="def_attrset" target="asc_attr">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ============ 边：计算 ============ -->
+        <mxCell id="e8" value="捕获属性（Source/Target）" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;dashed=1;fontSize=11;strokeColor=#9673a6;" edge="1" parent="1" source="rt_gespec" target="calc_agg">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" value="持续型 mod 挂入" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;dashed=1;fontSize=11;strokeColor=#9673a6;" edge="1" parent="1" source="rt_active" target="calc_agg">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" value="执行" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;fontSize=11;strokeColor=#9673a6;" edge="1" parent="1" source="def_effect" target="calc_exec">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" value="算量" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;fontSize=11;strokeColor=#9673a6;" edge="1" parent="1" source="def_effect" target="calc_mmc">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" value="返回 magnitude" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;dashed=1;fontSize=11;strokeColor=#9673a6;" edge="1" parent="1" source="calc_mmc" target="rt_gespec">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e13" value="AddOutputModifier" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;fontSize=11;strokeColor=#9673a6;" edge="1" parent="1" source="calc_exec" target="rt_attrdata">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e14" value="求值 CurrentValue" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;fontSize=11;strokeColor=#9673a6;" edge="1" parent="1" source="calc_agg" target="rt_attrdata">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ============ 边：回调 ============ -->
+        <mxCell id="e15" value="触发回调" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;fontSize=11;strokeColor=#b85450;" edge="1" parent="1" source="rt_attrdata" target="cb">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ============ 图例 ============ -->
+        <mxCell id="lg1" value="静态定义（CDO）" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="60" y="640" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="lg2" value="运行时实例" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="215" y="640" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="lg3" value="ASC 容器" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="370" y="640" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="lg4" value="计算（聚合/执行）" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="525" y="640" width="160" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="lg5" value="回调 / 副作用" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="700" y="640" width="140" height="30" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

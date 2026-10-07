@@ -1,0 +1,135 @@
+<mxfile host="Electron" modified="2026-08-19T00:00:00.000Z">
+  <diagram name="体素世界-抽象关系图" id="iwJqLglzPlXaKrD-qNla">
+    <mxGraphModel dx="1030" dy="708" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1500" pageHeight="1050" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- 生成轴（灰蓝） -->
+        <mxCell id="g1" value="基础层生成（程序化）&#10;seed + chunk坐标 → 体素（确定性）" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="200" y="40" width="250" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="g3" value="编辑层（Edit Overlay）&#10;稀疏 diff / 可序列化命令" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="500" y="40" width="240" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="g2" value="Streaming（流式）&#10;按需加载/卸载 chunk" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="790" y="40" width="240" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- 存储列（蓝） -->
+        <mxCell id="2" value="World（世界）&#10;根容器" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="70" y="210" width="180" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="3" value="Chunk（区块）&#10;空间分区单元" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="70" y="330" width="180" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="4" value="Voxel（体素）&#10;最小可编辑单元 = 1/8&#10;= 基础层 ⊕ 编辑层" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="70" y="450" width="180" height="66" as="geometry" />
+        </mxCell>
+        <mxCell id="5" value="Material（材质）&#10;视觉+物理+曲面函数" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="70" y="580" width="180" height="56" as="geometry" />
+        </mxCell>
+
+        <!-- 定义/生成列（绿） -->
+        <mxCell id="6" value="Block Template（方块模板）&#10;方块定义" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="430" y="210" width="210" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="7" value="Block（方块）&#10;多体素可放置结构" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="430" y="330" width="210" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="8" value="Surface Reconstruction&#10;（曲面重建 / 标量场提取）&#10;合并相邻面 → 平滑曲面" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="430" y="450" width="240" height="66" as="geometry" />
+        </mxCell>
+        <mxCell id="9" value="Surface（曲面）&#10;单一连续曲面" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="430" y="580" width="210" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="10" value="Mesh（网格）&#10;视觉 + 碰撞" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="430" y="700" width="210" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="lod" value="LOD（多分辨率）&#10;transvoxel" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="720" y="700" width="200" height="56" as="geometry" />
+        </mxCell>
+
+        <!-- 玩法列（紫/红） -->
+        <mxCell id="11" value="Tool（工具）&#10;进阶工具获取原版方块" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="960" y="210" width="200" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="12" value="加工（Crafting）&#10;体素/材质 → 方块" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="960" y="330" width="200" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="13" value="Edit（编辑操作）&#10;生成 / 破坏" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="960" y="470" width="200" height="56" as="geometry" />
+        </mxCell>
+
+        <!-- 生成/编辑层边 -->
+        <mxCell id="30" value="生成基础体素" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;fontSize=11;strokeColor=#6c8ebf;" edge="1" parent="1" source="g1" target="3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="31" value="加载/卸载" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;fontSize=11;strokeColor=#6c8ebf;" edge="1" parent="1" source="g2" target="3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="32" value="叠加 diff" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;dashed=1;fontSize=11;strokeColor=#9673a6;" edge="1" parent="1" source="g3" target="4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="33" value="记录命令" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;fontSize=11;strokeColor=#b85450;" edge="1" parent="1" source="13" target="g3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 结构边 -->
+        <mxCell id="20" value="1:N 分区" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;fontSize=11;" edge="1" parent="1" source="2" target="3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="21" value="1:N 存储" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;fontSize=11;" edge="1" parent="1" source="3" target="4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="22" value="1:N 定义" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;fontSize=11;" edge="1" parent="1" source="6" target="7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="23" value="输入邻域" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;fontSize=11;" edge="1" parent="1" source="7" target="8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="24" value="生成曲面" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;fontSize=11;" edge="1" parent="1" source="8" target="9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="25" value="重建" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;fontSize=11;" edge="1" parent="1" source="9" target="10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="26" value="多级细节" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;fontSize=11;" edge="1" parent="1" source="10" target="lod">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 引用/采样边（虚线） -->
+        <mxCell id="40" value="N:1 引用材质" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;dashed=1;fontSize=11;" edge="1" parent="1" source="4" target="5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="41" value="N:1 引用材质" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;dashed=1;fontSize=11;" edge="1" parent="1" source="6" target="5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="42" value="由体素构成" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;dashed=1;fontSize=11;" edge="1" parent="1" source="7" target="4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="43" value="采样：占据+材质" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;dashed=1;fontSize=11;" edge="1" parent="1" source="4" target="8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="44" value="提供曲面函数" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;dashed=1;fontSize=11;" edge="1" parent="1" source="5" target="8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 编辑/玩法边 -->
+        <mxCell id="51" value="触发重网格化" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#b85450;fontSize=11;" edge="1" parent="1" source="13" target="10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="52" value="原料" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;dashed=1;strokeColor=#9673a6;fontSize=11;" edge="1" parent="1" source="4" target="12">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="53" value="加工后放置" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#9673a6;fontSize=11;" edge="1" parent="1" source="12" target="7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="54" value="进阶工具获取" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#9673a6;fontSize=11;" edge="1" parent="1" source="11" target="7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
