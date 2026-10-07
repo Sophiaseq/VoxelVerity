@@ -1,11 +1,13 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
+//调试绘制
+#undef ENABLE_DRAW_DEBUG
+#define ENABLE_DRAW_DEBUG 0
 
 #include "AbilityTask_MeleeTrace.h"
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
-#include "KismetTraceUtils.h"
 #include "MundusGranumGameplayTags.h"
 #include "Interaction/CombatInterface.h"
 

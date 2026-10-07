@@ -204,11 +204,27 @@ FReconstructedMesh ReconstructSurface(const FVoxelGrid& Grid, const FVoxelMateri
 			}
 		}
 
+		// 顶点材质 = 第一个实心角的材质（用于着色）。
+		FMaterialId VertexMat = 0;
+		for (int32 i = 0; i < 8; ++i)
+		{
+			if (bIn[i])
+			{
+				const FIntVector Corner = Min + FIntVector(Size.X * GCorners[i].X, Size.Y * GCorners[i].Y, Size.Z * GCorners[i].Z);
+				VertexMat = Grid.Get(Corner);
+				if (VertexMat != 0)
+				{
+					break;
+				}
+			}
+		}
+
 		FCell Cell;
 		Cell.Min = Min;
 		Cell.Size = Size;
 		Cell.Vertex = Mesh.Vertices.Num();
 		Mesh.Vertices.Add(Pos);
+		Mesh.MaterialIds.Add(VertexMat);
 		Cells.Add(Cell);
 	}
 

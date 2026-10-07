@@ -5,13 +5,11 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
-#include "MGCharacterData.h"
 #include "MGCharacterWithAbilities.h"
 #include "MGPawnData.h"
 #include "MGPawnExtensionComponent.h"
 #include "AbilitySystem/MGAbilitySystemComponent.h"
 #include "GameFramework/Character.h"
-#include "Net/UnrealNetwork.h"
 
 AMGSpawnPoint::AMGSpawnPoint()
 {
@@ -59,8 +57,7 @@ APawn* AMGSpawnPoint::PerformSpawn()
 	if (SpawnedPawn) return SpawnedPawn;
 	
 	const FTransform SpawnTransform = GetActorTransform();
-
-	// 1. 创建 AIController
+	
 	FActorSpawnParameters ControllerSpawnInfo;
 	ControllerSpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	AMGAIController* MGAIController = World->SpawnActor<AMGAIController>(
@@ -135,7 +132,7 @@ void AMGSpawnPoint::SpawnItem(ACharacter* CharacterToAttach) const
 		WeaponSkeletalMesh->SetRelativeTransform(EquipDisplayData.EquippedTransform);
 		WeaponSkeletalMesh->ComponentTags.Add(FName("Component.Mesh.Weapon"));
 		WeaponSkeletalMesh->SetCollisionResponseToAllChannels(ECR_Overlap);
-		WeaponSkeletalMesh->SetAnimClass(EquipDisplayData.EquipAnimClass);
+		WeaponSkeletalMesh->SetAnimInstanceClass(EquipDisplayData.EquipAnimClass);
 	}
 	else if (EquipDisplayData.StaticMesh)
 	{

@@ -11,6 +11,7 @@ struct FReconstructedMesh
 	TArray<FVector> Vertices;
 	TArray<FVector> Normals;
 	TArray<int32> Indices;
+	TArray<FMaterialId> MaterialIds; // 每顶点材质（用于着色，与 Vertices 一一对应）
 };
 
 /** 单元格保留判定：返回 false 的单元格不参与重建（用于分块重网格化的边界裁剪）。 */

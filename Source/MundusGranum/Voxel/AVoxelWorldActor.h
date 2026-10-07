@@ -10,6 +10,7 @@
 #include "AVoxelWorldActor.generated.h"
 
 class UProceduralMeshComponent;
+class UMaterialInterface;
 
 /**
  * 分块体素世界的可视化入口：每个区块一个 ProceduralMeshComponent，
@@ -86,12 +87,16 @@ private:
 	void UpdateChunkMesh(const FIntVector& ChunkCoord);
 	void FrustumCull();
 	void AutoDigDemo();
+	void OnDigClick();
 
 	TUniquePtr<FVoxelChunkedWorld> World;
 	FVoxelMaterialTable Materials;
 	FWorldGenParams GenParams;
 	TMap<FIntVector, UProceduralMeshComponent*> ChunkMeshes;
 	FTimerHandle AutoDigTimer;
+
+	/** 读顶点色的材质（运行时创建），让石/表层显示不同颜色。 */
+	TObjectPtr<UMaterialInterface> TerrainMaterial;
 
 	/** 后台重网格化的结果（游戏线程 Tick 里消费）。 */
 	TFuture<TMap<FIntVector, FReconstructedMesh>> RemeshFuture;

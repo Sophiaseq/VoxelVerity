@@ -8,6 +8,28 @@
 #include "TimerManager.h"
 #include "Engine/LocalPlayer.h"
 #include "SceneView.h"
+#include "Materials/Material.h"
+#include "Materials/MaterialExpressionVertexColor.h"
+#include "Engine/World.h"
+#include "CollisionQueryParams.h"
+
+namespace
+{
+	/** 运行时创建一个"读顶点色"的默认光照材质，让石/表层显示不同颜色。 */
+	UMaterial* CreateVertexColorMaterial(UObject* Outer)
+	{
+		UMaterial* Mat = NewObject<UMaterial>(Outer, NAME_None, RF_Public | RF_Standalone);
+		Mat->MaterialDomain = MD_Surface;
+		Mat->BlendMode = BLEND_Opaque;
+
+		UMaterialExpressionVertexColor* VertexColor = NewObject<UMaterialExpressionVertexColor>(Mat);
+		Mat->GetExpressionCollection().AddExpression(VertexColor);
+		Mat->GetEditorOnlyData()->BaseColor.Connect(0, VertexColor);
+
+		Mat->PostEditChange();
+		return Mat;
+	}
+}
 
 AVoxelWorldActor::AVoxelWorldActor()
 {
@@ -28,6 +50,9 @@ void AVoxelWorldActor::BeginPlay()
 
 	World = MakeUnique<FVoxelChunkedWorld>(ChunkSize, Materials);
 
+	// 运行时创建读顶点色的材质。
+	TerrainMaterial = CreateVertexColorMaterial(this);
+
 	GenParams.Seed = uint32(Seed);
 	GenParams.TerrainHeight = TerrainHeight;
 	GenParams.TerrainAmplitude = TerrainAmplitude;
@@ -35,6 +60,16 @@ void AVoxelWorldActor::BeginPlay()
 	if (bAutoDigDemo)
 	{
 		GetWorldTimerManager().SetTimer(AutoDigTimer, this, &AVoxelWorldActor::AutoDigDemo, DigDelay, false);
+	}
+
+	// 鼠标左键挖洞（演示"可破坏"）。
+	if (APlayerController* PC = GetWorld()->GetFirstPlayerController())
+	{
+		EnableInput(PC);
+		if (InputComponent)
+		{
+			InputComponent->BindAction("LeftMouseButton", IE_Pressed, this, &AVoxelWorldActor::OnDigClick);
+		}
 	}
 }
 
@@ -128,6 +163,9 @@ void AVoxelWorldActor::UpdateChunkMesh(const FIntVector& ChunkCoord)
 	{
 		Comp = NewObject<UProceduralMeshComponent>(this);
 		Comp->SetupAttachment(GetRootComponent());
+		Comp->SetMaterial(0, TerrainMaterial); // 读顶点色的光照材质
+		Comp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		Comp->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 		Comp->RegisterComponent();
 		ChunkMeshes.Add(ChunkCoord, Comp);
 	}
@@ -146,8 +184,29 @@ void AVoxelWorldActor::UpdateChunkMesh(const FIntVector& ChunkCoord)
 		{
 			V = (V + Origin) * Scale;
 		}
+
+		// 按材质给顶点上色：2 = 表层草绿，1 = 深层石棕，其它 = 灰。
+		TArray<FColor> Colors;
+		Colors.SetNumZeroed(Vertices.Num());
+		for (int32 i = 0; i < Vertices.Num() && i < Chunk->Mesh.MaterialIds.Num(); ++i)
+		{
+			const FMaterialId M = Chunk->Mesh.MaterialIds[i];
+			if (M == 2)
+			{
+				Colors[i] = FColor(76, 153, 62);
+			}
+			else if (M == 1)
+			{
+				Colors[i] = FColor(120, 105, 90);
+			}
+			else
+			{
+				Colors[i] = FColor(200, 200, 200);
+			}
+		}
+
 		Comp->CreateMeshSection(0, Vertices, Chunk->Mesh.Indices, Chunk->Mesh.Normals,
-			TArray<FVector2D>(), TArray<FColor>(), TArray<FProcMeshTangent>(), /*bCreateCollision=*/true);
+			TArray<FVector2D>(), Colors, TArray<FProcMeshTangent>(), /*bCreateCollision=*/true);
 	}
 }
 
@@ -324,4 +383,28 @@ void AVoxelWorldActor::AutoDigDemo()
 
 	const FVector WorldPos = GetActorLocation() + FVector(0.0f, 0.0f, float(SurfaceZ) + 0.5f) * VoxelSize;
 	Dig(WorldPos, ChunkSize * 0.5f * VoxelSize);
+}
+
+void AVoxelWorldActor::OnDigClick()
+{
+	APlayerController* PC = GetWorld() ? GetWorld()->GetFirstPlayerController() : nullptr;
+	if (!PC)
+	{
+		return;
+	}
+
+	FVector Start, Dir;
+	if (!PC->DeprojectMousePositionToWorld(Start, Dir))
+	{
+		return;
+	}
+
+	const FVector End = Start + Dir * 1000000.0f;
+	FHitResult Hit;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+	if (GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, Params))
+	{
+		Dig(Hit.Location, ChunkSize * 0.4f * VoxelSize);
+	}
 }
