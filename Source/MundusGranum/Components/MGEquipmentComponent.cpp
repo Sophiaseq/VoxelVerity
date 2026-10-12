@@ -69,10 +69,6 @@ void UMGEquipmentComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
-// ------------------------------------------------------------------ //
-//  初始化
-// ------------------------------------------------------------------ //
-
 void UMGEquipmentComponent::SetupEquipMeshes(UStaticMeshComponent* InStaticMesh)
 {
 	EquippedStaticMeshComp = InStaticMesh;
@@ -115,10 +111,6 @@ void UMGEquipmentComponent::BindToInventory(UMGInventoryComponent* InInventory)
 	}
 }
 
-// ------------------------------------------------------------------ //
-//  核心：更新手持显示
-// ------------------------------------------------------------------ //
-
 void UMGEquipmentComponent::HandleSelectedItemChanged(UMGItemDefinition* NewItem)
 {
 	UpdateEquippedItem(NewItem);
@@ -137,17 +129,17 @@ void UMGEquipmentComponent::UpdateEquippedItem(UMGItemDefinition* NewItem)
 {
 	if (CurrentItem == NewItem)
 	{
-		return; // 没变化就跳过
+		return;
 	}
 
-	// 1. 清理旧状态
+	// 清理旧状态
 	ClearEquippedDisplay();
 
 	CurrentItem = NewItem;
 
 	const IAbilitySystemInterface* ASI = Cast<IAbilitySystemInterface>(GetOwner());
 	
-	// 2. 空手：清理完毕直接返回
+	// 空手：清理完毕直接返回
 	if (!CurrentItem)
 	{
 		ASI->GetAbilitySystemComponent()->RemoveLooseGameplayTags(EquippedTags, 1, EGameplayTagReplicationState::TagOnly);
@@ -155,7 +147,7 @@ void UMGEquipmentComponent::UpdateEquippedItem(UMGItemDefinition* NewItem)
 		return;
 	}
 
-	// 3. 显示新物品
+	// 显示新物品
 	const FEquipDisplayData& Display = CurrentItem->EquipDisplayData;
 
 	if (Display.SkeletalMesh)
@@ -175,10 +167,6 @@ void UMGEquipmentComponent::UpdateEquippedItem(UMGItemDefinition* NewItem)
 	ASI->GetAbilitySystemComponent()->AddLooseGameplayTags(CurrentItem->ItemTags, 1, EGameplayTagReplicationState::TagOnly);
 	EquippedTags = CurrentItem->ItemTags;
 }
-
-// ------------------------------------------------------------------ //
-//  显示辅助
-// ------------------------------------------------------------------ //
 
 void UMGEquipmentComponent::ClearEquippedDisplay()
 {
@@ -207,8 +195,7 @@ void UMGEquipmentComponent::ShowSkeletalMesh(USkeletalMesh* Mesh, const FTransfo
 	{
 		return;
 	}
-
-	// 懒创建（仅第一次）
+	
 	if (!EquippedMeshComp)
 	{
 		EquippedMeshComp = NewObject<USkeletalMeshComponent>(GetOuter(), TEXT("EquippedSkeletalMesh"));
@@ -281,10 +268,6 @@ void UMGEquipmentComponent::ShowStaticMesh(UStaticMesh* Mesh, const FTransform& 
 	}
 }
 
-// ------------------------------------------------------------------ //
-//  访问器
-// ------------------------------------------------------------------ //
-
 UMeshComponent* UMGEquipmentComponent::GetPriorityMeshComponent() const
 {
 	if (IsValid(EquippedMeshComp) && EquippedMeshComp->IsVisible())
@@ -304,56 +287,3 @@ void UMGEquipmentComponent::InitializeComponent()
 	
 	UE_LOG(LogMG, Log, TEXT("InitializeEquipmentComponent, Owner is [%s]"), *GetOwner()->GetName());
 }
-
-// ------------------------------------------------------------------ //
-//  编辑器预览
-// ------------------------------------------------------------------ //
-#if WITH_EDITOR
-
-void UMGEquipmentComponent::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
-{
-	Super::PostEditChangeProperty(PropertyChangedEvent);
-
-	if (!bAutoUpdatePreview)
-	{
-		return;
-	}
-
-	const FName PropName = PropertyChangedEvent.Property
-		                       ? PropertyChangedEvent.Property->GetFName()
-		                       : NAME_None;
-
-	if (PropName == GET_MEMBER_NAME_CHECKED(UMGEquipmentComponent, PreviewItem))
-	{
-		UpdatePreviewFromDataAsset();
-	}
-}
-
-void UMGEquipmentComponent::RefreshPreview()
-{
-	UpdatePreviewFromDataAsset();
-}
-
-void UMGEquipmentComponent::UpdatePreviewFromDataAsset()
-{
-	if (!PreviewItem)
-	{
-		if (PreviewWeaponMesh)
-		{
-			PreviewWeaponMesh->DestroyComponent();
-		}
-		return;
-	}
-
-	if (!PreviewWeaponMesh)
-	{
-		EquippedMeshComp = NewObject<USkeletalMeshComponent>(GetOuter(), TEXT("EquippedSkeletalMesh"));
-		EquippedMeshComp->SetupAttachment(GetOwner()->GetRootComponent(), HandSocketName);
-		EquippedMeshComp->RegisterComponent();
-		EquippedMeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	}
-
-	PreviewWeaponMesh->SetStaticMesh(PreviewItem->EquipDisplayData.StaticMesh);
-}
-
-#endif // WITH_EDITOR

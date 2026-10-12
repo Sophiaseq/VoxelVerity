@@ -70,14 +70,12 @@ protected:
 	void HandleCharacterDeath(AActor* OwningActor);
 
 private:
-	// ========== 显示组件（懒创建，复用）==========
 	UPROPERTY(Transient)
 	TObjectPtr<USkeletalMeshComponent> EquippedMeshComp;
 
 	UPROPERTY(Transient)
 	TObjectPtr<UStaticMeshComponent> EquippedStaticMeshComp;
-
-	// ========== 当前状态 ==========
+	
 	UPROPERTY(Transient)
 	TObjectPtr<UMGItemDefinition> CurrentItem;
 
@@ -89,30 +87,6 @@ private:
 	
 	UPROPERTY(VisibleInstanceOnly)
 	FGameplayTagContainer EquippedTags;
-
-#if WITH_EDITORONLY_DATA
-	// ========== 编辑器预览 ==========
-	UPROPERTY(Transient)
-	TObjectPtr<UStaticMeshComponent> PreviewWeaponMesh;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Editor Preview")
-	bool bAutoUpdatePreview = false;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Editor Preview")
-	TObjectPtr<UMGItemDefinition> PreviewItem;
-#endif
-
-#if WITH_EDITOR
-
-public:
-	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
-
-	UFUNCTION(CallInEditor, Category = "Editor Preview")
-	void RefreshPreview();
-
-private:
-	void UpdatePreviewFromDataAsset();
-#endif
 };
 
 

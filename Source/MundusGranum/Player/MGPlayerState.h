@@ -58,7 +58,7 @@ public:
 	virtual void PostInitializeComponents() override;
 	//~End of AActor interface
 	
-	virtual float GetCharacterLevel() override { return PlayerLevel; };
+	virtual float GetCharacterLevel() override { return PlayerLevel; }
 	
 	//~APlayerState interface
 	virtual void Reset() override;
