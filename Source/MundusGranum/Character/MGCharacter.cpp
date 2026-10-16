@@ -13,6 +13,7 @@
 #include "Components/MGEquipmentComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Player/MGPlayerState.h"
+#include "UI/Widget/HealthBarComponent.h"
 
 // Sets default values
 AMGCharacter::AMGCharacter()
@@ -131,14 +132,6 @@ void AMGCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PawnExtComponent->SetupPlayerInputComponent();
 }
 
-void AMGCharacter::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
-{
-	// 需不需要将它变为成员变量
-	bool bHitReacting = NewCount > 0;
-	// TODO 派生自己的MovementComponent
-	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : WalkSpeed;
-}
-
 void AMGCharacter::SetupAttributeByLevel(TSubclassOf<UGameplayEffect> AttributeEffect, float Level) const
 {
 	check(IsValid(GetAbilitySystemComponent()));
@@ -226,6 +219,11 @@ void AMGCharacter::OnDeathStarted(AActor* OwningActor)
 	GetMesh()->SetEnableGravity(true);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+	
+	if (UHealthBarComponent* HealthBarComponent = FindComponentByClass<UHealthBarComponent>())
+	{
+		HealthBarComponent->SetVisibility(false);
+	}
 }
 
 void AMGCharacter::OnDeathFinished(AActor* OwningActor)

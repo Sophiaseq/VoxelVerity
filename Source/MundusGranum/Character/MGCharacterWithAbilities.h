@@ -46,8 +46,6 @@ protected:
 	UFUNCTION()
 	void OnRep_WeaponDef();
 	
-	virtual void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount) override;
-	
 	void PostReplicatedPawnData();
 	
 private:

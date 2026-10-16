@@ -76,8 +76,6 @@ protected:
 	// Called when the death sequence for the character has completed
 	UFUNCTION(BlueprintImplementableEvent, meta=(DisplayName="OnDeathFinished"))
 	void K2_OnDeathFinished();
-	
-	virtual void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
 	//暂时没用
 	void SetupAttributeByLevel(TSubclassOf<UGameplayEffect> AttributeEffect, float Level) const;

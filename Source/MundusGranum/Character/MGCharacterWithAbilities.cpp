@@ -179,13 +179,6 @@ void AMGCharacterWithAbilities::OnRep_WeaponDef()
 	}
 }
 
-void AMGCharacterWithAbilities::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
-{
-	Super::HitReactTagChanged(CallbackTag, NewCount);
-	
-	MGAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), true);
-}
-
 void AMGCharacterWithAbilities::PostReplicatedPawnData()
 {
 	SetPawnData();
