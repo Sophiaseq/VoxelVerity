@@ -27,12 +27,21 @@ public:
 	virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
 	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
 	virtual APawn* SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform) override;
+	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
+	virtual void FinishRestartPlayer(AController* NewPlayer, const FRotator& StartRotation) override;
+	virtual bool PlayerCanRestart_Implementation(APlayerController* Player) override;
 	virtual void InitGameState() override;
 	//~End of AGameModeBase interface
+	
+	virtual bool ControllerCanRestart(AController* Controller);
+	
+	UFUNCTION(BlueprintCallable)
+	void RequestPlayerRestartNextFrame(AController* Controller, bool bForceReset = false);
 	
 	// 让所有的TargetPoint根据它们携带的PawnData生成pawn
 	UFUNCTION(BlueprintCallable, Category = "MundusGranum|Pawn")
 	void SpawnAllCharactersFromSpawnPoints();
+	
 protected:
 	void OnExperienceLoaded(const UMGExperienceDefinition* CurrentExperience);
 	bool IsExperienceLoaded() const;

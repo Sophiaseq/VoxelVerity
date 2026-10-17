@@ -13,6 +13,7 @@
 #include "Engine/AssetManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/MGPlayerController.h"
+#include "Player/MGPlayerSpawningManagerComponent.h"
 #include "Player/MGPlayerState.h"
 #include "System/MGAssetManager.h"
 #include "UI/HUD/MGHUD.h"
@@ -127,6 +128,69 @@ APawn* AMGGameMode::SpawnDefaultPawnAtTransform_Implementation(AController* NewP
 	}
 
 	return nullptr;
+}
+
+AActor* AMGGameMode::ChoosePlayerStart_Implementation(AController* Player)
+{
+	if (UMGPlayerSpawningManagerComponent* PlayerSpawningComponent = GameState->FindComponentByClass<UMGPlayerSpawningManagerComponent>())
+	{
+		return PlayerSpawningComponent->ChoosePlayerStart(Player);
+	}
+	
+	return Super::ChoosePlayerStart_Implementation(Player);
+}
+
+void AMGGameMode::FinishRestartPlayer(AController* NewPlayer, const FRotator& StartRotation)
+{
+	if (UMGPlayerSpawningManagerComponent* PlayerSpawningComponent = GameState->FindComponentByClass<UMGPlayerSpawningManagerComponent>())
+	{
+		PlayerSpawningComponent->FinishRestartPlayer(NewPlayer, StartRotation);
+	}
+	Super::FinishRestartPlayer(NewPlayer, StartRotation);
+}
+
+bool AMGGameMode::PlayerCanRestart_Implementation(APlayerController* Player)
+{
+	return ControllerCanRestart(Player);
+}
+
+bool AMGGameMode::ControllerCanRestart(AController* Controller)
+{
+	if (APlayerController* PC = Cast<APlayerController>(Controller))
+	{	
+		if (!Super::PlayerCanRestart_Implementation(PC))
+		{
+			return false;
+		}
+	}
+	else
+	{
+		// Bot version of Super::PlayerCanRestart_Implementation
+		if ((Controller == nullptr) || Controller->IsPendingKillPending())
+		{
+			return false;
+		}
+	}
+
+	if (UMGPlayerSpawningManagerComponent* PlayerSpawningComponent = GameState->FindComponentByClass<UMGPlayerSpawningManagerComponent>())
+	{
+		return PlayerSpawningComponent->ControllerCanRestart(Controller);
+	}
+
+	return true;
+}
+
+void AMGGameMode::RequestPlayerRestartNextFrame(AController* Controller, bool bForceReset)
+{
+	if (bForceReset && (Controller != nullptr))
+	{
+		Controller->Reset();
+	}
+
+	if (APlayerController* PC = Cast<APlayerController>(Controller))
+	{
+		GetWorldTimerManager().SetTimerForNextTick(PC, &APlayerController::ServerRestartPlayer_Implementation);
+	}
 }
 
 void AMGGameMode::InitGameState()
