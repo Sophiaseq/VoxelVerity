@@ -6,7 +6,7 @@ Build
 Content/Audio
 Source/MundusGranum/Voxel
 Source/MundusGranum/Tests
-Source/MundusGranum/Docs/adr
+/Docs/adr
 CONTEXT.md
 
 .claude
@@ -22,5 +22,7 @@ CONTEXT.md
 *.DotSettings.user
 *.log
 *.zip
+*.bkp
 
 build_log.txt
+

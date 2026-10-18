@@ -49,4 +49,7 @@ private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UAttributeMenuWidgetController> AttributeMenuWidgetControllerClass;
 	
+public:
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "MundusGranum|HUD")
+	UMGUserWidget* GetOverlayWidget() { return OverlayWidget; };
 };
