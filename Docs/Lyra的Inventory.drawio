@@ -1,0 +1,519 @@
+<mxfile host="Electron">
+  <diagram name="第 1 页" id="1RoMMSrcz0iPBIinnVQq">
+    <mxGraphModel dx="4236" dy="1136" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="0" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-1" parent="1" style="swimlane;fontStyle=3;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;" value="ULyraInventoryManagerComponent" vertex="1">
+          <mxGeometry height="149" width="682" x="1066" y="251.5" as="geometry" />
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-2" parent="4OV-WDt5KJ_VW9DOspJ9-1" style="text;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="+ULyraInventoryItemInstance* AddItemDefinition(TSubclassOf&lt;ULyraInventoryItemDefinition&gt; ItemDef, int32 StackCount = 1)&#xa;+void AddItemInstance(ULyraInventoryItemInstance* ItemInstance)&#xa;+void RemoveItemInstance(ULyraInventoryItemInstance* ItemInstance)&#xa;+TArray&lt;ULyraInventoryItemInstance*&gt; GetAllItems() const&#xa;+ULyraInventoryItemInstance* FindFirstItemStackByDefinition(TSubclassOf&lt;ULyraInventoryItemDefinition&gt; ItemDef) const&#xa;+bool ConsumeItemsByDefinition(TSubclassOf&lt;ULyraInventoryItemDefinition&gt; ItemDef, int32 NumToConsume)" vertex="1">
+          <mxGeometry height="95" width="682" y="29" as="geometry" />
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-3" parent="4OV-WDt5KJ_VW9DOspJ9-1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="-FLyraInventoryList InventoryList" vertex="1">
+          <mxGeometry height="25" width="682" y="124" as="geometry" />
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-69" edge="1" parent="4OV-WDt5KJ_VW9DOspJ9-1" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=open;endFill=0;rounded=0;libavoidRouting=1;" target="4OV-WDt5KJ_VW9DOspJ9-65" value="Message1 label">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint x="278" y="-2" as="sourcePoint" />
+            <mxPoint x="438" y="-2" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-4" parent="1" style="swimlane;fontStyle=3;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;" value="FLyraInventoryList" vertex="1">
+          <mxGeometry height="241" width="900" x="138" y="198" as="geometry" />
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-5" parent="4OV-WDt5KJ_VW9DOspJ9-4" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="+void AddEntry(ULyraInventoryItemInstance* Instance)&lt;br&gt;+void RemoveEntry(ULyraInventoryItemInstance* Instance)&lt;br&gt;-void BroadcastChangeMessage(FLyraInventoryEntry&amp;amp; Entry, int32 OldCount, int32 NewCount)&lt;br&gt;+bool NetDeltaSerialize(FNetDeltaSerializeInfo&amp;amp; DeltaParms)&lt;br&gt;{return FFastArraySerializer::FastArrayDeltaSerialize&amp;lt;FMGInventoryEntry, FMGInventoryList&amp;gt;(Entries, DeltaParms, *this);}继承FFastArraySerializer所必须添加的函数" vertex="1">
+          <mxGeometry height="95" width="900" y="29" as="geometry" />
+        </mxCell>
+        <mxCell id="RMdz0tVG34XLr6AN7apm-10" parent="4OV-WDt5KJ_VW9DOspJ9-4" style="text;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" value="template&lt;&gt;&#xa;struct TStructOpsTypeTraits&lt;FMGInventoryList&gt; : public TStructOpsTypeTraitsBase2&lt;FMGInventoryList&gt;&#xa;{&#xa;    enum { WithNetDeltaSerializer = true };&#xa;};也是必须添加的" vertex="1">
+          <mxGeometry height="79" width="900" y="124" as="geometry" />
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-6" parent="4OV-WDt5KJ_VW9DOspJ9-4" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;convertToSvg=0;svgWhiteSpace=wrap;html=1;" value="-TArray&amp;lt;FLyraInventoryEntry&amp;gt; Entries&lt;br&gt;-&lt;u&gt;TObjectPtr&amp;lt;UActorComponent&amp;gt; OwnerComponent&lt;/u&gt;" vertex="1">
+          <mxGeometry height="38" width="900" y="203" as="geometry" />
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-8" edge="1" parent="1" source="4OV-WDt5KJ_VW9DOspJ9-4" style="endArrow=none;startArrow=diamondThin;endFill=0;startFill=1;html=1;verticalAlign=bottom;labelBackgroundColor=none;strokeWidth=1;startSize=8;endSize=8;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="4OV-WDt5KJ_VW9DOspJ9-2" value="">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint x="393.88" y="435" as="sourcePoint" />
+            <mxPoint x="553.88" y="435" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-9" edge="1" parent="1" source="4OV-WDt5KJ_VW9DOspJ9-4" style="endArrow=open;startArrow=none;endFill=0;startFill=0;endSize=8;html=1;verticalAlign=bottom;labelBackgroundColor=none;strokeWidth=1;rounded=0;exitX=1.002;exitY=0.165;exitDx=0;exitDy=0;exitPerimeter=0;entryX=-0.004;entryY=0.162;entryDx=0;entryDy=0;entryPerimeter=0;" target="4OV-WDt5KJ_VW9DOspJ9-1" value="">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint x="420.88" y="373" as="sourcePoint" />
+            <mxPoint x="580.88" y="373" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-10" edge="1" parent="1" source="4OV-WDt5KJ_VW9DOspJ9-11" style="endArrow=none;startArrow=diamondThin;endFill=0;startFill=1;html=1;verticalAlign=bottom;labelBackgroundColor=none;strokeWidth=1;startSize=8;endSize=8;rounded=0;" target="4OV-WDt5KJ_VW9DOspJ9-4" value="">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint x="135" y="243" as="sourcePoint" />
+            <mxPoint x="183.885" y="316.07000000000005" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-11" parent="1" style="swimlane;fontStyle=3;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;" value="FLyraInventoryEntry" vertex="1">
+          <mxGeometry height="99" width="290" x="-178" y="272.75" as="geometry" />
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-13" parent="4OV-WDt5KJ_VW9DOspJ9-11" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;fontStyle=0;horizontal=1;html=1;" value="-TObjectPtr&amp;lt;ULyraInventoryItemInstance&amp;gt; Instance&lt;br&gt;-int32 StackCount&lt;br&gt;-&lt;u&gt;int32 LastObservedCount&lt;/u&gt;" vertex="1">
+          <mxGeometry height="70" width="290" y="29" as="geometry" />
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-14" parent="1" style="swimlane;fontStyle=3;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;" value="ULyraInventoryItemInstance" vertex="1">
+          <mxGeometry height="156.5" width="404" x="-606" y="244" as="geometry" />
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-15" parent="4OV-WDt5KJ_VW9DOspJ9-14" style="text;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="+void AddStatTagStack(FGameplayTag Tag, int32 StackCount)&#xa;+void RemoveStatTagStack(FGameplayTag Tag, int32 StackCount)" vertex="1">
+          <mxGeometry height="40" width="404" y="29" as="geometry" />
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-72" parent="4OV-WDt5KJ_VW9DOspJ9-14" style="shape=partialRectangle;top=1;align=left;dashed=1;" value="template &lt;typename ResultClass&gt;&#xa;const ResultClass* FindFragmentByClass()" vertex="1">
+          <mxGeometry height="37.5" width="404" y="69" as="geometry" />
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-16" parent="4OV-WDt5KJ_VW9DOspJ9-14" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;fontStyle=0" value="-FGameplayTagStackContainer StatTags&#xa;-TSubclassOf&lt;ULyraInventoryItemDefinition&gt; ItemDef" vertex="1">
+          <mxGeometry height="50" width="404" y="106.5" as="geometry" />
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-17" edge="1" parent="1" source="4OV-WDt5KJ_VW9DOspJ9-14" style="endArrow=none;startArrow=diamondThin;endFill=0;startFill=0;html=1;verticalAlign=bottom;labelBackgroundColor=none;strokeWidth=1;startSize=8;endSize=8;rounded=0;libavoidRouting=1;" target="4OV-WDt5KJ_VW9DOspJ9-11" value="">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint x="-312" y="247" as="sourcePoint" />
+            <mxPoint x="-152" y="247" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <UserObject label="用下划线替代NotReplicated，斜体表示一个Object网络复制为true" placeholders="1" name="Variable" id="4OV-WDt5KJ_VW9DOspJ9-18">
+          <mxCell parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontStyle=1;labelBackgroundColor=light-dark(#f3f556, #ededed);" vertex="1">
+            <mxGeometry height="28" width="368" x="-827" y="21" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-19" parent="1" style="swimlane;fontStyle=3;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;" value="ULyraInventoryItemDefinition" vertex="1">
+          <mxGeometry height="111" width="693" x="-413" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-20" parent="4OV-WDt5KJ_VW9DOspJ9-19" style="text;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="const ULyraInventoryItemFragment* FindFragmentByClass(TSubclassOf&lt;ULyraInventoryItemFragment&gt; FragmentClass) const" vertex="1">
+          <mxGeometry height="25" width="693" y="29" as="geometry" />
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-21" parent="4OV-WDt5KJ_VW9DOspJ9-19" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="-FText DisplayName&lt;br&gt;-TArray&amp;lt;TObjectPtr&amp;lt;ULyraInventoryItemFragment&amp;gt;&amp;gt; Fragments" vertex="1">
+          <mxGeometry height="57" width="693" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-24" edge="1" parent="1" source="4OV-WDt5KJ_VW9DOspJ9-19" style="endArrow=none;startArrow=diamondThin;endFill=0;startFill=1;html=1;verticalAlign=bottom;labelBackgroundColor=none;strokeWidth=1;startSize=8;endSize=8;rounded=0;exitX=0.325;exitY=0.006;exitDx=0;exitDy=0;exitPerimeter=0;" target="4OV-WDt5KJ_VW9DOspJ9-14" value="">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint x="-394.5" y="447" as="sourcePoint" />
+            <mxPoint x="-301" y="450" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-25" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;" value="ULyraInventoryItemFragment" vertex="1">
+          <mxGeometry height="54" width="404" x="324" y="478.5" as="geometry" />
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-26" parent="4OV-WDt5KJ_VW9DOspJ9-25" style="text;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="+virtual void OnInstanceCreated(ULyraInventoryItemInstance* Instance)" vertex="1">
+          <mxGeometry height="25" width="404" y="29" as="geometry" />
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-28" edge="1" parent="1" source="4OV-WDt5KJ_VW9DOspJ9-25" style="endArrow=none;startArrow=diamondThin;endFill=0;startFill=1;html=1;verticalAlign=bottom;labelBackgroundColor=none;strokeWidth=1;startSize=8;endSize=8;rounded=0;libavoidRouting=1;" target="4OV-WDt5KJ_VW9DOspJ9-19" value="">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint x="97" y="694" as="sourcePoint" />
+            <mxPoint x="97" y="614" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-29" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;" value="UInventoryFragment_QuickBarIcon" vertex="1">
+          <mxGeometry height="91.5" width="216" x="395" y="595.75" as="geometry" />
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-31" parent="4OV-WDt5KJ_VW9DOspJ9-29" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="+FSlateBrush Brush&#xa;+FSlateBrush AmmoBrush&#xa;+FText DisplayNameWhenEquipped" vertex="1">
+          <mxGeometry height="62.5" width="216" y="29" as="geometry" />
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-32" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;" value="UInventoryFragment_EquippableItem" vertex="1">
+          <mxGeometry height="66.5" width="354" x="920" y="595.75" as="geometry" />
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-34" parent="4OV-WDt5KJ_VW9DOspJ9-32" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="+&lt;span style=&quot;text-align: center;&quot;&gt;TSubclassOf&amp;lt;ULyraEquipmentDefinition&amp;gt; EquipmentDefinition&lt;/span&gt;" vertex="1">
+          <mxGeometry height="37.5" width="354" y="29" as="geometry" />
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-35" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;" value="UInventoryFragment_PickupIcon" vertex="1">
+          <mxGeometry height="79" width="261" x="633" y="595.75" as="geometry" />
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-37" parent="4OV-WDt5KJ_VW9DOspJ9-35" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="+TObjectPtr&lt;USkeletalMesh&gt; SkeletalMesh&#xa;+FText DisplayName&#xa;+FLinearColor PadColor" vertex="1">
+          <mxGeometry height="50" width="261" y="29" as="geometry" />
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-38" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;" value="UInventoryFragment_SetStats" vertex="1">
+          <mxGeometry height="91.5" width="517" x="-144" y="595.75" as="geometry" />
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-39" parent="4OV-WDt5KJ_VW9DOspJ9-38" style="text;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="+virtual void OnInstanceCreated(ULyraInventoryItemInstance* Instance) const override&#xa;+int32 GetItemStatByTag(FGameplayTag Tag) const" vertex="1">
+          <mxGeometry height="37.5" width="517" y="29" as="geometry" />
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-40" parent="4OV-WDt5KJ_VW9DOspJ9-38" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="#TMap&lt;FGameplayTag, int32&gt; InitialItemStats" vertex="1">
+          <mxGeometry height="25" width="517" y="66.5" as="geometry" />
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-48" edge="1" parent="1" source="4OV-WDt5KJ_VW9DOspJ9-25" style="endArrow=none;html=1;rounded=0;" target="4OV-WDt5KJ_VW9DOspJ9-38" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="690" y="486" as="sourcePoint" />
+            <mxPoint x="850" y="486" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-49" connectable="0" parent="4OV-WDt5KJ_VW9DOspJ9-48" style="edgeLabel;resizable=0;html=1;align=left;verticalAlign=bottom;" value="parent" vertex="1">
+          <mxGeometry relative="1" x="-1" as="geometry">
+            <mxPoint x="-3" y="19" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-50" connectable="0" parent="4OV-WDt5KJ_VW9DOspJ9-48" style="edgeLabel;resizable=0;html=1;align=right;verticalAlign=bottom;" value="child" vertex="1">
+          <mxGeometry relative="1" x="1" as="geometry" />
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-51" edge="1" parent="1" source="4OV-WDt5KJ_VW9DOspJ9-25" style="endArrow=none;html=1;rounded=0;" target="4OV-WDt5KJ_VW9DOspJ9-29" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="697" y="495" as="sourcePoint" />
+            <mxPoint x="857" y="495" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-52" connectable="0" parent="4OV-WDt5KJ_VW9DOspJ9-51" style="edgeLabel;resizable=0;html=1;align=left;verticalAlign=bottom;" value="parent" vertex="1">
+          <mxGeometry relative="1" x="-1" as="geometry">
+            <mxPoint x="6" y="24" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-53" connectable="0" parent="4OV-WDt5KJ_VW9DOspJ9-51" style="edgeLabel;resizable=0;html=1;align=right;verticalAlign=bottom;" value="child" vertex="1">
+          <mxGeometry relative="1" x="1" as="geometry" />
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-54" edge="1" parent="1" source="4OV-WDt5KJ_VW9DOspJ9-25" style="endArrow=none;html=1;rounded=0;" target="4OV-WDt5KJ_VW9DOspJ9-35" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="717" y="504" as="sourcePoint" />
+            <mxPoint x="877" y="504" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-55" connectable="0" parent="4OV-WDt5KJ_VW9DOspJ9-54" style="edgeLabel;resizable=0;html=1;align=left;verticalAlign=bottom;" value="parent" vertex="1">
+          <mxGeometry relative="1" x="-1" as="geometry">
+            <mxPoint x="11" y="20" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-56" connectable="0" parent="4OV-WDt5KJ_VW9DOspJ9-54" style="edgeLabel;resizable=0;html=1;align=right;verticalAlign=bottom;" value="child" vertex="1">
+          <mxGeometry relative="1" x="1" as="geometry" />
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-57" edge="1" parent="1" source="4OV-WDt5KJ_VW9DOspJ9-25" style="endArrow=none;html=1;rounded=0;" target="4OV-WDt5KJ_VW9DOspJ9-32" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="514" y="507" as="sourcePoint" />
+            <mxPoint x="674" y="507" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-58" connectable="0" parent="4OV-WDt5KJ_VW9DOspJ9-57" style="edgeLabel;resizable=0;html=1;align=left;verticalAlign=bottom;" value="parent" vertex="1">
+          <mxGeometry relative="1" x="-1" as="geometry">
+            <mxPoint x="65" y="19" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-59" connectable="0" parent="4OV-WDt5KJ_VW9DOspJ9-57" style="edgeLabel;resizable=0;html=1;align=right;verticalAlign=bottom;" value="child" vertex="1">
+          <mxGeometry relative="1" x="1" as="geometry" />
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-65" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;" value="FLyraInventoryChangeMessage" vertex="1">
+          <mxGeometry height="54" width="186" x="1248" y="149.5" as="geometry" />
+        </mxCell>
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-67" parent="4OV-WDt5KJ_VW9DOspJ9-65" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="stereotype property 1" vertex="1">
+          <mxGeometry height="25" width="186" y="29" as="geometry" />
+        </mxCell>
+        <mxCell id="6BV9pi6SpYE4oN45KVS8-3" parent="1" style="swimlane;fontStyle=3;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;" value="ULyraQuickBarComponent" vertex="1">
+          <mxGeometry height="143" width="424" x="-703" y="616" as="geometry" />
+        </mxCell>
+        <mxCell id="6BV9pi6SpYE4oN45KVS8-4" parent="6BV9pi6SpYE4oN45KVS8-3" style="text;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="+void SetActiveSlotIndex(int32 NewIndex)&#xa;+void AddItemToSlot(int32 SlotIndex, ULyraInventoryItemInstance* Item)&#xa;+ULyraInventoryItemInstance* RemoveItemFromSlot(int32 SlotIndex)" vertex="1">
+          <mxGeometry height="50" width="424" y="29" as="geometry" />
+        </mxCell>
+        <mxCell id="6BV9pi6SpYE4oN45KVS8-5" parent="6BV9pi6SpYE4oN45KVS8-3" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="-TArray&lt;TObjectPtr&lt;ULyraInventoryItemInstance&gt;&gt; Slots&#xa;-TObjectPtr&lt;ULyraEquipmentInstance&gt; EquippedItem&#xa;#int32 NumSlots = 3&#xa;-int32 ActiveSlotIndex = -1" vertex="1">
+          <mxGeometry height="64" width="424" y="79" as="geometry" />
+        </mxCell>
+        <mxCell id="6BV9pi6SpYE4oN45KVS8-6" edge="1" parent="1" source="4OV-WDt5KJ_VW9DOspJ9-14" style="endArrow=none;startArrow=diamondThin;endFill=0;startFill=1;html=1;verticalAlign=bottom;labelBackgroundColor=none;strokeWidth=1;startSize=8;endSize=8;rounded=0;" target="6BV9pi6SpYE4oN45KVS8-3" value="">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint x="-514.4" y="651.8" as="sourcePoint" />
+            <mxPoint x="-487.2" y="474.2" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="hI0E7sr4PfcEe4r38BoZ-3" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;" value="FLyraAppliedEquipmentEntry" vertex="1">
+          <mxGeometry height="87" width="351" x="-623" y="1005" as="geometry" />
+        </mxCell>
+        <mxCell id="hI0E7sr4PfcEe4r38BoZ-5" parent="hI0E7sr4PfcEe4r38BoZ-3" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;fontStyle=0;html=1;" value="-TSubclassOf&amp;lt;ULyraEquipmentDefinition&amp;gt; EquipmentDefinition&lt;br&gt;-TObjectPtr&amp;lt;ULyraEquipmentInstance&amp;gt; Instance&lt;br&gt;-&lt;u&gt;FLyraAbilitySet_GrantedHandles GrantedHandles&lt;/u&gt;" vertex="1">
+          <mxGeometry height="58" width="351" y="29" as="geometry" />
+        </mxCell>
+        <mxCell id="hI0E7sr4PfcEe4r38BoZ-6" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;" value="FLyraEquipmentList" vertex="1">
+          <mxGeometry height="109" width="600" x="-144" y="1000" as="geometry" />
+        </mxCell>
+        <mxCell id="hI0E7sr4PfcEe4r38BoZ-7" parent="hI0E7sr4PfcEe4r38BoZ-6" style="text;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="+ULyraEquipmentInstance* AddEntry(TSubclassOf&lt;ULyraEquipmentDefinition&gt; EquipmentDefinition)&#xa;+void RemoveEntry(ULyraEquipmentInstance* Instance)" vertex="1">
+          <mxGeometry height="38" width="600" y="29" as="geometry" />
+        </mxCell>
+        <mxCell id="hI0E7sr4PfcEe4r38BoZ-8" parent="hI0E7sr4PfcEe4r38BoZ-6" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="-TArray&lt;FLyraAppliedEquipmentEntry&gt; Entries&#xa;-TObjectPtr&lt;UActorComponent&gt; OwnerComponent" vertex="1">
+          <mxGeometry height="42" width="600" y="67" as="geometry" />
+        </mxCell>
+        <mxCell id="hI0E7sr4PfcEe4r38BoZ-9" edge="1" parent="1" source="hI0E7sr4PfcEe4r38BoZ-3" style="endArrow=none;startArrow=diamondThin;endFill=0;startFill=1;html=1;verticalAlign=bottom;labelBackgroundColor=none;strokeWidth=1;startSize=8;endSize=8;rounded=0;defaultLabelBackgroundColor=page;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" target="hI0E7sr4PfcEe4r38BoZ-6" value="">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint x="-274" y="956" as="sourcePoint" />
+            <mxPoint x="-114" y="956" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="hI0E7sr4PfcEe4r38BoZ-11" parent="1" style="swimlane;fontStyle=3;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;" value="ULyraEquipmentManagerComponent" vertex="1">
+          <mxGeometry height="95" width="557" y="852" as="geometry" />
+        </mxCell>
+        <mxCell id="hI0E7sr4PfcEe4r38BoZ-12" parent="hI0E7sr4PfcEe4r38BoZ-11" style="text;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="+void UnequipItem(ULyraEquipmentInstance* ItemInstance)&#xa;+ULyraEquipmentInstance* EquipItem(TSubclassOf&lt;ULyraEquipmentDefinition&gt; EquipmentDefinition)" vertex="1">
+          <mxGeometry height="41" width="557" y="29" as="geometry" />
+        </mxCell>
+        <mxCell id="hI0E7sr4PfcEe4r38BoZ-13" parent="hI0E7sr4PfcEe4r38BoZ-11" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="-FLyraEquipmentList EquipmentList" vertex="1">
+          <mxGeometry height="25" width="557" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="hI0E7sr4PfcEe4r38BoZ-14" edge="1" parent="1" source="hI0E7sr4PfcEe4r38BoZ-6" style="endArrow=none;startArrow=diamondThin;endFill=0;startFill=1;html=1;verticalAlign=bottom;labelBackgroundColor=none;strokeWidth=1;startSize=8;endSize=8;rounded=0;defaultLabelBackgroundColor=page;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" target="hI0E7sr4PfcEe4r38BoZ-11" value="">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint x="17" y="938" as="sourcePoint" />
+            <mxPoint x="145" y="938" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="hI0E7sr4PfcEe4r38BoZ-15" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;" value="ULyraEquipmentInstance" vertex="1">
+          <mxGeometry height="105" width="600" x="-791" y="842" as="geometry" />
+        </mxCell>
+        <mxCell id="hI0E7sr4PfcEe4r38BoZ-16" parent="hI0E7sr4PfcEe4r38BoZ-15" style="text;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="+virtual void SpawnEquipmentActors(const TArray&lt;FLyraEquipmentActorToSpawn&gt;&amp; ActorsToSpawn)&#xa;+virtual void DestroyEquipmentActors()" vertex="1">
+          <mxGeometry height="32" width="600" y="29" as="geometry" />
+        </mxCell>
+        <mxCell id="hI0E7sr4PfcEe4r38BoZ-17" parent="hI0E7sr4PfcEe4r38BoZ-15" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="-TObjectPtr&lt;UObject&gt; Instigator&#xa;-TArray&lt;TObjectPtr&lt;AActor&gt;&gt; SpawnedActors" vertex="1">
+          <mxGeometry height="44" width="600" y="61" as="geometry" />
+        </mxCell>
+        <mxCell id="hI0E7sr4PfcEe4r38BoZ-18" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;" value="ULyraEquipmentDefinition" vertex="1">
+          <mxGeometry height="101" width="354" x="-1041" y="1000" as="geometry" />
+        </mxCell>
+        <mxCell id="hI0E7sr4PfcEe4r38BoZ-20" parent="hI0E7sr4PfcEe4r38BoZ-18" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="+TSubclassOf&lt;ULyraEquipmentInstance&gt; InstanceType&#xa;+TArray&lt;TObjectPtr&lt;const ULyraAbilitySet&gt;&gt; AbilitySetsToGrant&#xa;+TArray&lt;FLyraEquipmentActorToSpawn&gt; ActorsToSpawn" vertex="1">
+          <mxGeometry height="72" width="354" y="29" as="geometry" />
+        </mxCell>
+        <mxCell id="zSV0O6VYYa8cPoDn1Vqi-1" edge="1" parent="1" source="hI0E7sr4PfcEe4r38BoZ-3" style="endArrow=open;startArrow=none;endFill=0;startFill=0;endSize=8;html=1;verticalAlign=bottom;labelBackgroundColor=none;strokeWidth=1;rounded=0;defaultLabelBackgroundColor=page;" target="hI0E7sr4PfcEe4r38BoZ-18" value="">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint x="-380" y="1191" as="sourcePoint" />
+            <mxPoint x="-509.33" y="1116.67" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="zSV0O6VYYa8cPoDn1Vqi-2" edge="1" parent="1" source="hI0E7sr4PfcEe4r38BoZ-15" style="endArrow=none;startArrow=diamondThin;endFill=0;startFill=0;html=1;verticalAlign=bottom;labelBackgroundColor=none;strokeWidth=1;startSize=8;endSize=8;rounded=0;defaultLabelBackgroundColor=page;" target="hI0E7sr4PfcEe4r38BoZ-3" value="">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint x="-684" y="1059" as="sourcePoint" />
+            <mxPoint x="-459" y="980" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="zSV0O6VYYa8cPoDn1Vqi-3" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;" value="ULyraGameplayAbility_FromEquipment" vertex="1">
+          <mxGeometry height="79" width="248" x="644" y="933" as="geometry" />
+        </mxCell>
+        <mxCell id="zSV0O6VYYa8cPoDn1Vqi-4" parent="zSV0O6VYYa8cPoDn1Vqi-3" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="&amp;lt;&amp;lt;stereotype1&amp;gt;&amp;gt;" vertex="1">
+          <mxGeometry height="25" width="248" y="29" as="geometry" />
+        </mxCell>
+        <mxCell id="zSV0O6VYYa8cPoDn1Vqi-5" parent="zSV0O6VYYa8cPoDn1Vqi-3" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="stereotype property 1" vertex="1">
+          <mxGeometry height="25" width="248" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="zSV0O6VYYa8cPoDn1Vqi-6" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;" value="IPickupable" vertex="1">
+          <mxGeometry height="54" width="327" x="-1921" y="310" as="geometry" />
+        </mxCell>
+        <mxCell id="zSV0O6VYYa8cPoDn1Vqi-7" parent="zSV0O6VYYa8cPoDn1Vqi-6" style="text;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="+virtual FInventoryPickup GetPickupInventory() const = 0" vertex="1">
+          <mxGeometry height="25" width="327" y="29" as="geometry" />
+        </mxCell>
+        <mxCell id="zSV0O6VYYa8cPoDn1Vqi-12" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;" value="FInventoryPickup" vertex="1">
+          <mxGeometry height="64" width="233" x="-1500" y="308" as="geometry" />
+        </mxCell>
+        <mxCell id="zSV0O6VYYa8cPoDn1Vqi-14" parent="zSV0O6VYYa8cPoDn1Vqi-12" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="+TArray&lt;FPickupInstance&gt; Instances&#xa;+TArray&lt;FPickupTemplate&gt; Templates" vertex="1">
+          <mxGeometry height="35" width="233" y="29" as="geometry" />
+        </mxCell>
+        <mxCell id="zSV0O6VYYa8cPoDn1Vqi-15" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;" value="FPickupTemplate" vertex="1">
+          <mxGeometry height="61" width="302" x="-1270" y="471" as="geometry" />
+        </mxCell>
+        <mxCell id="zSV0O6VYYa8cPoDn1Vqi-17" parent="zSV0O6VYYa8cPoDn1Vqi-15" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="+int32 StackCount&#xa;+TSubclassOf&lt;ULyraInventoryItemDefinition&gt; ItemDef" vertex="1">
+          <mxGeometry height="32" width="302" y="29" as="geometry" />
+        </mxCell>
+        <mxCell id="zSV0O6VYYa8cPoDn1Vqi-18" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;" value="FPickupInstance" vertex="1">
+          <mxGeometry height="54" width="267" x="-1540" y="398" as="geometry" />
+        </mxCell>
+        <mxCell id="zSV0O6VYYa8cPoDn1Vqi-20" parent="zSV0O6VYYa8cPoDn1Vqi-18" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="+TObjectPtr&lt;ULyraInventoryItemInstance&gt; Item" vertex="1">
+          <mxGeometry height="25" width="267" y="29" as="geometry" />
+        </mxCell>
+        <mxCell id="zSV0O6VYYa8cPoDn1Vqi-22" edge="1" parent="1" source="zSV0O6VYYa8cPoDn1Vqi-18" style="endArrow=none;startArrow=diamondThin;endFill=0;startFill=1;html=1;verticalAlign=bottom;labelBackgroundColor=none;strokeWidth=1;startSize=8;endSize=8;rounded=0;defaultLabelBackgroundColor=page;exitX=0.561;exitY=0.043;exitDx=0;exitDy=0;exitPerimeter=0;" target="zSV0O6VYYa8cPoDn1Vqi-12" value="">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint x="-1394" y="507" as="sourcePoint" />
+            <mxPoint x="-1394" y="404" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="zSV0O6VYYa8cPoDn1Vqi-23" edge="1" parent="1" source="zSV0O6VYYa8cPoDn1Vqi-15" style="endArrow=none;startArrow=diamondThin;endFill=0;startFill=1;html=1;verticalAlign=bottom;labelBackgroundColor=none;strokeWidth=1;startSize=8;endSize=8;rounded=0;defaultLabelBackgroundColor=page;exitX=0.451;exitY=0.038;exitDx=0;exitDy=0;exitPerimeter=0;" target="zSV0O6VYYa8cPoDn1Vqi-12" value="">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint x="-1179" y="467" as="sourcePoint" />
+            <mxPoint x="-1179" y="364" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="zSV0O6VYYa8cPoDn1Vqi-27" edge="1" parent="1" source="zSV0O6VYYa8cPoDn1Vqi-18" style="endArrow=open;startArrow=none;endFill=0;startFill=0;endSize=8;html=1;verticalAlign=bottom;labelBackgroundColor=none;strokeWidth=1;rounded=0;defaultLabelBackgroundColor=page;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" target="4OV-WDt5KJ_VW9DOspJ9-14" value="">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint x="-1001" y="374" as="sourcePoint" />
+            <mxPoint x="-448" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="zSV0O6VYYa8cPoDn1Vqi-28" edge="1" parent="1" source="zSV0O6VYYa8cPoDn1Vqi-6" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=open;endFill=0;dashed=1;rounded=0;defaultLabelBackgroundColor=page;entryX=0;entryY=0.25;entryDx=0;entryDy=0;exitX=1;exitY=0.25;exitDx=0;exitDy=0;" target="zSV0O6VYYa8cPoDn1Vqi-12" value="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint x="-1794" y="437" as="sourcePoint" />
+            <mxPoint x="-1634" y="437" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MEMEd12jBsFFhM1GvvVE-1" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;" value="ULyraPickupDefinition" vertex="1">
+          <mxGeometry height="63" width="382" x="-1349.5" y="585" as="geometry" />
+        </mxCell>
+        <mxCell id="MEMEd12jBsFFhM1GvvVE-3" parent="MEMEd12jBsFFhM1GvvVE-1" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="+TSubclassOf&lt;ULyraInventoryItemDefinition&gt; InventoryItemDefinition&#xa;+" vertex="1">
+          <mxGeometry height="34" width="382" y="29" as="geometry" />
+        </mxCell>
+        <mxCell id="MEMEd12jBsFFhM1GvvVE-5" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;" value="ULyraWeaponPickupDefinition" vertex="1">
+          <mxGeometry height="54" width="197" x="-1257" y="710" as="geometry" />
+        </mxCell>
+        <mxCell id="MEMEd12jBsFFhM1GvvVE-7" parent="MEMEd12jBsFFhM1GvvVE-5" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="+" vertex="1">
+          <mxGeometry height="25" width="197" y="29" as="geometry" />
+        </mxCell>
+        <mxCell id="MEMEd12jBsFFhM1GvvVE-8" edge="1" parent="1" source="MEMEd12jBsFFhM1GvvVE-1" style="endArrow=none;html=1;rounded=0;" target="MEMEd12jBsFFhM1GvvVE-5" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-1254.5" y="589" as="sourcePoint" />
+            <mxPoint x="-1138.5" y="652" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MEMEd12jBsFFhM1GvvVE-9" connectable="0" parent="MEMEd12jBsFFhM1GvvVE-8" style="edgeLabel;resizable=0;html=1;align=left;verticalAlign=bottom;" value="parent" vertex="1">
+          <mxGeometry relative="1" x="-1" as="geometry">
+            <mxPoint x="11" y="20" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MEMEd12jBsFFhM1GvvVE-10" connectable="0" parent="MEMEd12jBsFFhM1GvvVE-8" style="edgeLabel;resizable=0;html=1;align=right;verticalAlign=bottom;" value="child" vertex="1">
+          <mxGeometry relative="1" x="0.9986" as="geometry" />
+        </mxCell>
+        <mxCell id="wp-3L8VneXYLb-zm6HgA-11" connectable="0" parent="MEMEd12jBsFFhM1GvvVE-8" style="edgeLabel;resizable=0;html=1;align=right;verticalAlign=bottom;" value="child" vertex="1">
+          <mxGeometry relative="1" x="0.9986" as="geometry">
+            <mxPoint x="148" y="158" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MEMEd12jBsFFhM1GvvVE-11" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;" value="ALyraWeaponSpawner" vertex="1">
+          <mxGeometry height="97" width="382" x="-1845.5" y="585" as="geometry" />
+        </mxCell>
+        <mxCell id="MEMEd12jBsFFhM1GvvVE-12" parent="MEMEd12jBsFFhM1GvvVE-11" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="&amp;lt;&amp;lt;stereotype1&amp;gt;&amp;gt;" vertex="1">
+          <mxGeometry height="25" width="382" y="29" as="geometry" />
+        </mxCell>
+        <mxCell id="MEMEd12jBsFFhM1GvvVE-13" parent="MEMEd12jBsFFhM1GvvVE-11" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="#TObjectPtr&lt;ULyraWeaponPickupDefinition&gt; WeaponDefinition&#xa;#" vertex="1">
+          <mxGeometry height="43" width="382" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="MEMEd12jBsFFhM1GvvVE-14" edge="1" parent="1" source="zSV0O6VYYa8cPoDn1Vqi-15" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=open;endFill=0;dashed=1;rounded=0;defaultLabelBackgroundColor=page;exitX=0.987;exitY=0.367;exitDx=0;exitDy=0;exitPerimeter=0;" target="4OV-WDt5KJ_VW9DOspJ9-19" value="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint x="-887" y="448" as="sourcePoint" />
+            <mxPoint x="-727" y="448" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MEMEd12jBsFFhM1GvvVE-15" edge="1" parent="1" source="MEMEd12jBsFFhM1GvvVE-1" style="html=1;verticalAlign=bottom;labelBackgroundColor=none;endArrow=open;endFill=0;dashed=1;rounded=0;defaultLabelBackgroundColor=page;exitX=1;exitY=0.25;exitDx=0;exitDy=0;" target="4OV-WDt5KJ_VW9DOspJ9-19" value="&amp;lt;&amp;lt;include&amp;gt;&amp;gt;">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint x="-890" y="566" as="sourcePoint" />
+            <mxPoint x="-331" y="574" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MEMEd12jBsFFhM1GvvVE-16" edge="1" parent="1" source="MEMEd12jBsFFhM1GvvVE-1" style="endArrow=none;startArrow=diamondThin;endFill=0;startFill=0;html=1;verticalAlign=bottom;labelBackgroundColor=none;strokeWidth=1;startSize=8;endSize=8;rounded=0;defaultLabelBackgroundColor=page;exitX=0;exitY=0.25;exitDx=0;exitDy=0;entryX=0.999;entryY=0.167;entryDx=0;entryDy=0;entryPerimeter=0;" target="MEMEd12jBsFFhM1GvvVE-11" value="">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint x="-1598.5" y="732" as="sourcePoint" />
+            <mxPoint x="-1438.5" y="732" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MEMEd12jBsFFhM1GvvVE-17" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;" value="UInventoryFragment_ReticleConfig" vertex="1">
+          <mxGeometry height="54" width="368" x="1325" y="596" as="geometry" />
+        </mxCell>
+        <mxCell id="MEMEd12jBsFFhM1GvvVE-19" parent="MEMEd12jBsFFhM1GvvVE-17" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="+TArray&lt;TSubclassOf&lt;ULyraReticleWidgetBase&gt;&gt; ReticleWidgets" vertex="1">
+          <mxGeometry height="25" width="368" y="29" as="geometry" />
+        </mxCell>
+        <mxCell id="MEMEd12jBsFFhM1GvvVE-20" edge="1" parent="1" source="4OV-WDt5KJ_VW9DOspJ9-25" style="endArrow=none;html=1;rounded=0;exitX=1;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0;entryDx=0;entryDy=0;" target="MEMEd12jBsFFhM1GvvVE-17" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="978" y="532" as="sourcePoint" />
+            <mxPoint x="1270" y="595" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MEMEd12jBsFFhM1GvvVE-21" connectable="0" parent="MEMEd12jBsFFhM1GvvVE-20" style="edgeLabel;resizable=0;html=1;align=left;verticalAlign=bottom;" value="parent" vertex="1">
+          <mxGeometry relative="1" x="-1" as="geometry">
+            <mxPoint x="65" y="19" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MEMEd12jBsFFhM1GvvVE-22" connectable="0" parent="MEMEd12jBsFFhM1GvvVE-20" style="edgeLabel;resizable=0;html=1;align=right;verticalAlign=bottom;" value="child" vertex="1">
+          <mxGeometry relative="1" x="1" as="geometry" />
+        </mxCell>
+        <mxCell id="hI0E7sr4PfcEe4r38BoZ-23" edge="1" parent="1" source="hI0E7sr4PfcEe4r38BoZ-15" style="endArrow=none;startArrow=diamondThin;endFill=0;startFill=0;html=1;verticalAlign=bottom;labelBackgroundColor=none;strokeWidth=1;startSize=8;endSize=8;rounded=0;defaultLabelBackgroundColor=page;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" target="6BV9pi6SpYE4oN45KVS8-3" value="">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint x="-353" y="840" as="sourcePoint" />
+            <mxPoint x="-193" y="840" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MEMEd12jBsFFhM1GvvVE-25" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontColor=#CC6600;" value="可自由扩展的仓库物品的一些属性定义" vertex="1">
+          <mxGeometry height="30" width="226" x="423" y="444" as="geometry" />
+        </mxCell>
+        <mxCell id="MEMEd12jBsFFhM1GvvVE-26" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontColor=#CC6600;" value="将物品对象和它的条目相关的属性分开封装，类似数量的属性只由Inventory来处理" vertex="1">
+          <mxGeometry height="30" width="397" x="-261" y="214" as="geometry" />
+        </mxCell>
+        <mxCell id="MEMEd12jBsFFhM1GvvVE-30" parent="1" style="text;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontColor=#0000CC;whiteSpace=wrap;" value="需求：物品需要能展示仓库UI、拾取时触发的UI等，角色手持仓库中的物品时应该能根据Definition创建出对应的物品，需要支持快速网络复制的物品统计，可能有定制功能需要可扩展" vertex="1">
+          <mxGeometry height="30" width="545" x="748" y="478.5" as="geometry" />
+        </mxCell>
+        <mxCell id="MEMEd12jBsFFhM1GvvVE-31" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontColor=#FF0000;" value="定义--实例--条目--管理者" vertex="1">
+          <mxGeometry height="30" width="226" x="-877" y="132.5" as="geometry" />
+        </mxCell>
+        <mxCell id="MEMEd12jBsFFhM1GvvVE-32" parent="1" style="text;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontColor=#0000CC;whiteSpace=wrap;" value="需求：添加移除物品" vertex="1">
+          <mxGeometry height="30" width="545" x="1231" y="216.5" as="geometry" />
+        </mxCell>
+        <mxCell id="MEMEd12jBsFFhM1GvvVE-34" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontColor=#CC6600;" value="同时装备多个物品" vertex="1">
+          <mxGeometry height="30" width="133" x="59" y="1116" as="geometry" />
+        </mxCell>
+        <mxCell id="MEMEd12jBsFFhM1GvvVE-35" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontColor=#CC6600;" value="装备的物品具备独属的GAS相关属性" vertex="1">
+          <mxGeometry height="30" width="226" x="-582" y="1096" as="geometry" />
+        </mxCell>
+        <mxCell id="MEMEd12jBsFFhM1GvvVE-36" parent="1" style="text;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontColor=#CC6600;whiteSpace=wrap;html=1;" value="实例对象的指针，实际上只存状态标签和一个ULyraInventoryItemDefinition子类型(CDO)" vertex="1">
+          <mxGeometry height="30" width="261" x="-157" y="375" as="geometry" />
+        </mxCell>
+        <mxCell id="wp-3L8VneXYLb-zm6HgA-1" parent="1" style="text;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontColor=#FF0000;html=1;" value="ULyraInventoryManagerComponent管理物品状态、数量，ULyraEquipmentManagerComponent管理物品在World中的一些功能，网格体由Cosmetics进行管理" vertex="1">
+          <mxGeometry height="30" width="383" x="-624" y="144" as="geometry" />
+        </mxCell>
+        <mxCell id="wp-3L8VneXYLb-zm6HgA-2" parent="1" style="text;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontColor=#0000CC;whiteSpace=wrap;" value="需求：在World中物品，GAS相关功能" vertex="1">
+          <mxGeometry height="30" width="310" x="371" y="819" as="geometry" />
+        </mxCell>
+        <mxCell id="wp-3L8VneXYLb-zm6HgA-3" edge="1" parent="1" source="hI0E7sr4PfcEe4r38BoZ-18" style="endArrow=open;startArrow=none;endFill=0;startFill=0;endSize=8;html=1;verticalAlign=bottom;labelBackgroundColor=none;strokeWidth=1;rounded=0;defaultLabelBackgroundColor=page;exitX=0.682;exitY=0.015;exitDx=0;exitDy=0;exitPerimeter=0;" target="hI0E7sr4PfcEe4r38BoZ-15" value="">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint x="-741" y="952" as="sourcePoint" />
+            <mxPoint x="-805" y="953" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="wp-3L8VneXYLb-zm6HgA-4" edge="1" parent="1" source="4OV-WDt5KJ_VW9DOspJ9-32" style="endArrow=open;startArrow=none;endFill=0;startFill=0;endSize=8;html=1;verticalAlign=bottom;labelBackgroundColor=none;strokeWidth=1;rounded=0;defaultLabelBackgroundColor=page;exitX=0;exitY=1;exitDx=0;exitDy=0;" target="hI0E7sr4PfcEe4r38BoZ-18" value="">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint x="130" y="789" as="sourcePoint" />
+            <mxPoint x="66" y="790" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="wp-3L8VneXYLb-zm6HgA-5" edge="1" parent="1" source="hI0E7sr4PfcEe4r38BoZ-15" style="endArrow=none;html=1;rounded=0;exitX=0;exitY=0.25;exitDx=0;exitDy=0;entryX=1;entryY=0.25;entryDx=0;entryDy=0;" target="wp-3L8VneXYLb-zm6HgA-8" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-678" y="843" as="sourcePoint" />
+            <mxPoint x="-1020.31" y="885.83" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="wp-3L8VneXYLb-zm6HgA-6" connectable="0" parent="wp-3L8VneXYLb-zm6HgA-5" style="edgeLabel;resizable=0;html=1;align=left;verticalAlign=bottom;" value="parent" vertex="1">
+          <mxGeometry relative="1" x="-1" as="geometry">
+            <mxPoint x="-43" y="20" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="wp-3L8VneXYLb-zm6HgA-7" connectable="0" parent="wp-3L8VneXYLb-zm6HgA-5" style="edgeLabel;resizable=0;html=1;align=right;verticalAlign=bottom;" value="child" vertex="1">
+          <mxGeometry relative="1" x="1" as="geometry" />
+        </mxCell>
+        <mxCell id="wp-3L8VneXYLb-zm6HgA-8" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;html=1;" value="ULyraWeaponInstance" vertex="1">
+          <mxGeometry height="79" width="140" x="-1181" y="847" as="geometry" />
+        </mxCell>
+        <mxCell id="wp-3L8VneXYLb-zm6HgA-9" parent="wp-3L8VneXYLb-zm6HgA-8" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="&amp;lt;&amp;lt;stereotype1&amp;gt;&amp;gt;" vertex="1">
+          <mxGeometry height="25" width="140" y="29" as="geometry" />
+        </mxCell>
+        <mxCell id="wp-3L8VneXYLb-zm6HgA-10" parent="wp-3L8VneXYLb-zm6HgA-8" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="stereotype property 1" vertex="1">
+          <mxGeometry height="25" width="140" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="RMdz0tVG34XLr6AN7apm-1" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;" value="FFastArraySerializer" vertex="1">
+          <mxGeometry height="79" width="140" x="228" y="99" as="geometry" />
+        </mxCell>
+        <mxCell id="RMdz0tVG34XLr6AN7apm-2" parent="RMdz0tVG34XLr6AN7apm-1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="&amp;lt;&amp;lt;stereotype1&amp;gt;&amp;gt;" vertex="1">
+          <mxGeometry height="25" width="140" y="29" as="geometry" />
+        </mxCell>
+        <mxCell id="RMdz0tVG34XLr6AN7apm-3" parent="RMdz0tVG34XLr6AN7apm-1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="stereotype property 1" vertex="1">
+          <mxGeometry height="25" width="140" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="RMdz0tVG34XLr6AN7apm-4" edge="1" parent="1" source="RMdz0tVG34XLr6AN7apm-1" style="endArrow=none;html=1;rounded=0;entryX=0.469;entryY=-0.012;entryDx=0;entryDy=0;entryPerimeter=0;" target="4OV-WDt5KJ_VW9DOspJ9-4" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="753" y="163" as="sourcePoint" />
+            <mxPoint x="562" y="226" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="RMdz0tVG34XLr6AN7apm-5" connectable="0" parent="RMdz0tVG34XLr6AN7apm-4" style="edgeLabel;resizable=0;html=1;align=left;verticalAlign=bottom;" value="parent" vertex="1">
+          <mxGeometry relative="1" x="-1" as="geometry">
+            <mxPoint x="-3" y="19" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="RMdz0tVG34XLr6AN7apm-6" connectable="0" parent="RMdz0tVG34XLr6AN7apm-4" style="edgeLabel;resizable=0;html=1;align=right;verticalAlign=bottom;" value="child" vertex="1">
+          <mxGeometry relative="1" x="0.9988" as="geometry" />
+        </mxCell>
+        <mxCell id="RMdz0tVG34XLr6AN7apm-7" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;html=1;whiteSpace=wrap;" value="Class1" vertex="1">
+          <mxGeometry height="79" width="140" x="-110" y="132" as="geometry" />
+        </mxCell>
+        <mxCell id="RMdz0tVG34XLr6AN7apm-8" parent="RMdz0tVG34XLr6AN7apm-7" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="&amp;lt;&amp;lt;stereotype1&amp;gt;&amp;gt;" vertex="1">
+          <mxGeometry height="25" width="140" y="29" as="geometry" />
+        </mxCell>
+        <mxCell id="RMdz0tVG34XLr6AN7apm-9" parent="RMdz0tVG34XLr6AN7apm-7" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="stereotype property 1" vertex="1">
+          <mxGeometry height="25" width="140" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="RMdz0tVG34XLr6AN7apm-12" parent="1" style="text;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontColor=#CC6600;whiteSpace=wrap;html=1;" value="只对增量进行网络复制，而不是改变一点就对整个结构体进行网络复制" vertex="1">
+          <mxGeometry height="30" width="261" x="474" y="132" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

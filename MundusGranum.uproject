@@ -67,6 +67,10 @@
 		{
 			"Name": "MotionWarping",
 			"Enabled": true
+		},
+		{
+			"Name": "GameplayMessageRouter",
+			"Enabled": true
 		}
 	]
 }

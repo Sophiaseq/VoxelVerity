@@ -1,0 +1,16 @@
+<mxfile host="Electron">
+  <diagram name="第 1 页" id="yfcqBiK92pTC9LXbvzrc">
+    <mxGraphModel dx="1048" dy="549" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="pVjk9BXiD4ZpLowiF_oC-35" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;html=1;whiteSpace=wrap;" value="AGameModeBase" vertex="1">
+          <mxGeometry height="109" width="640" x="414" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="pVjk9BXiD4ZpLowiF_oC-46" parent="pVjk9BXiD4ZpLowiF_oC-35" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;autosize=1;resizable=0;" value="&lt;div style=&quot;background-color: rgb(255, 255, 255); color: rgb(32, 32, 32);&quot;&gt;&lt;pre style=&quot;font-family:&#39;JetBrains Mono&#39;,monospace;font-size:9.0pt;&quot;&gt;&lt;span style=&quot;color: rgb(107, 47, 186);&quot;&gt;AActor&lt;/span&gt;&lt;span style=&quot;color: rgb(56, 56, 56);&quot;&gt;* &lt;/span&gt;&lt;span style=&quot;color: rgb(0, 133, 95);&quot;&gt;FindPlayerStart&lt;/span&gt;&lt;span style=&quot;color: rgb(56, 56, 56);&quot;&gt;(&lt;/span&gt;&lt;span style=&quot;color: rgb(107, 47, 186);&quot;&gt;AController&lt;/span&gt;&lt;span style=&quot;color: rgb(56, 56, 56);&quot;&gt;* Player, &lt;/span&gt;&lt;span style=&quot;color: rgb(15, 84, 214);&quot;&gt;const &lt;/span&gt;&lt;span style=&quot;color: rgb(107, 47, 186);&quot;&gt;FString&lt;/span&gt;&lt;span style=&quot;color: rgb(56, 56, 56);&quot;&gt;&amp;amp; IncomingName &lt;/span&gt;&lt;span style=&quot;color: rgb(0, 133, 95);&quot;&gt;= &lt;/span&gt;&lt;span style=&quot;color: rgb(15, 84, 214);&quot;&gt;TEXT&lt;/span&gt;&lt;span style=&quot;color: rgb(56, 56, 56);&quot;&gt;(&lt;/span&gt;&lt;span style=&quot;color: rgb(140, 108, 65);&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span style=&quot;color: rgb(56, 56, 56);&quot;&gt;))&lt;br&gt;找合适的PlayerStart，先找有没有指定的&lt;/span&gt;IncomingName ，再找游戏开始时的起点（PlayerStart），&lt;br&gt;最后调用ChoosePlayerStart，没有就在世界原点。&lt;/pre&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="80" width="640" y="29" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
