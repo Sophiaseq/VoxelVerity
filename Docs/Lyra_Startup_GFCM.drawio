@@ -1,0 +1,409 @@
+<mxfile host="Electron" agent="claude">
+  <diagram id="Lyra_Startup_GFCM" name="Lyra 启动链路 · GFCM 组件初始化协调">
+    <mxGraphModel dx="588" dy="381" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2320" pageHeight="2420" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="colbg0" parent="1" style="rounded=0;fillColor=#EDE7FB;strokeColor=none;opacity=30;" value="" vertex="1">
+          <mxGeometry height="1450" width="250" x="40" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="hdr0" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EDE7FB;strokeColor=#6D28D9;fontSize=12;fontColor=#111827;" value="&lt;b&gt;GFCM&lt;/b&gt;&lt;br&gt;UGameFrameworkComponentManager&lt;br&gt;&lt;font style=&quot;font-size:9px&quot;&gt;引擎插件 · 子系统&lt;/font&gt;" vertex="1">
+          <mxGeometry height="60" width="250" x="40" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="colbg1" parent="1" style="rounded=0;fillColor=#FBE9D2;strokeColor=none;opacity=30;" value="" vertex="1">
+          <mxGeometry height="1450" width="250" x="310" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="hdr1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FBE9D2;strokeColor=#B45309;fontSize=12;fontColor=#111827;" value="&lt;b&gt;GameMode&lt;/b&gt;&lt;br&gt;ALyraGameMode" vertex="1">
+          <mxGeometry height="60" width="250" x="310" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="colbg2" parent="1" style="rounded=0;fillColor=#FDF2D0;strokeColor=none;opacity=30;" value="" vertex="1">
+          <mxGeometry height="1450" width="250" x="580" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="hdr2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDF2D0;strokeColor=#A16207;fontSize=12;fontColor=#111827;" value="&lt;b&gt;GameState&lt;/b&gt;&lt;br&gt;ALyraGameState&lt;br&gt;&lt;font style=&quot;font-size:9px&quot;&gt;Experience&lt;/font&gt;" vertex="1">
+          <mxGeometry height="60" width="250" x="580" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="colbg3" parent="1" style="rounded=0;fillColor=#DCEBF7;strokeColor=none;opacity=30;" value="" vertex="1">
+          <mxGeometry height="1450" width="250" x="850" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="hdr3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DCEBF7;strokeColor=#1D4ED8;fontSize=12;fontColor=#111827;" value="&lt;b&gt;PlayerState&lt;/b&gt;&lt;br&gt;ALyraPlayerState" vertex="1">
+          <mxGeometry height="60" width="250" x="850" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="colbg4" parent="1" style="rounded=0;fillColor=#DFF0E2;strokeColor=none;opacity=30;" value="" vertex="1">
+          <mxGeometry height="1450" width="250" x="1120" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="hdr4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DFF0E2;strokeColor=#15803D;fontSize=12;fontColor=#111827;" value="&lt;b&gt;Pawn&lt;/b&gt;&lt;br&gt;ALyraCharacter" vertex="1">
+          <mxGeometry height="60" width="250" x="1120" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="colbg5" parent="1" style="rounded=0;fillColor=#D9F0EC;strokeColor=none;opacity=30;" value="" vertex="1">
+          <mxGeometry height="1450" width="250" x="1390" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="hdr5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D9F0EC;strokeColor=#0F766E;fontSize=12;fontColor=#111827;" value="&lt;b&gt;PawnExtension&lt;/b&gt;&lt;br&gt;ULyraPawnExtensionComponent" vertex="1">
+          <mxGeometry height="60" width="250" x="1390" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="colbg6" parent="1" style="rounded=0;fillColor=#D6EEF4;strokeColor=none;opacity=30;" value="" vertex="1">
+          <mxGeometry height="1450" width="250" x="1660" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="hdr6" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D6EEF4;strokeColor=#0369A1;fontSize=12;fontColor=#111827;" value="&lt;b&gt;Hero&lt;/b&gt;&lt;br&gt;ULyraHeroComponent" vertex="1">
+          <mxGeometry height="60" width="250" x="1660" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="colbg7" parent="1" style="rounded=0;fillColor=#F9DDDD;strokeColor=none;opacity=30;" value="" vertex="1">
+          <mxGeometry height="1450" width="250" x="1930" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="hdr7" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9DDDD;strokeColor=#B91C1C;fontSize=12;fontColor=#111827;" value="&lt;b&gt;Health&lt;/b&gt;&lt;br&gt;ULyraHealthComponent" vertex="1">
+          <mxGeometry height="60" width="250" x="1930" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="phband0" parent="1" style="rounded=0;fillColor=#FFE9A8;strokeColor=none;opacity=18;" value="" vertex="1">
+          <mxGeometry height="249" width="2140" x="40" y="271" as="geometry" />
+        </mxCell>
+        <mxCell id="phlbl0" parent="1" style="text;html=1;fontSize=12;fontStyle=1;fontColor=#6B7280;align=left;" value="阶段一 · Experience 加载" vertex="1">
+          <mxGeometry height="18" width="720" x="48" y="271" as="geometry" />
+        </mxCell>
+        <mxCell id="phband1" parent="1" style="rounded=0;fillColor=#C9E4F5;strokeColor=none;opacity=18;" value="" vertex="1">
+          <mxGeometry height="400" width="2140" x="40" y="520" as="geometry" />
+        </mxCell>
+        <mxCell id="phlbl1" parent="1" style="text;html=1;fontSize=12;fontStyle=1;fontColor=#6B7280;align=left;" value="阶段二 · 并行监听触发" vertex="1">
+          <mxGeometry height="18" width="720" x="48" y="524" as="geometry" />
+        </mxCell>
+        <mxCell id="phband2" parent="1" style="rounded=0;fillColor=#D4E8CF;strokeColor=none;opacity=18;" value="" vertex="1">
+          <mxGeometry height="260" width="2140" x="40" y="920" as="geometry" />
+        </mxCell>
+        <mxCell id="phlbl2" parent="1" style="text;html=1;fontSize=12;fontStyle=1;fontColor=#6B7280;align=left;" value="阶段三 · 生成 Pawn" vertex="1">
+          <mxGeometry height="18" width="720" x="48" y="924" as="geometry" />
+        </mxCell>
+        <mxCell id="phband3" parent="1" style="rounded=0;fillColor=#F9CFE0;strokeColor=none;opacity=18;" value="" vertex="1">
+          <mxGeometry height="482" width="2140" x="40" y="1168" as="geometry" />
+        </mxCell>
+        <mxCell id="phlbl3" parent="1" style="text;html=1;fontSize=12;fontStyle=1;fontColor=#6B7280;align=left;" value="阶段四 · InitState 状态机推进（GFCM 协调）" vertex="1">
+          <mxGeometry height="18" width="720" x="48" y="1168" as="geometry" />
+        </mxCell>
+        <mxCell id="title" parent="1" style="text;html=1;fontSize=16;fontStyle=1;fontColor=#111827;align=left;" value="Lyra 启动链路及GameFrameworkComponentManager 组件初始化协调" vertex="1">
+          <mxGeometry height="26" width="1100" x="40" as="geometry" />
+        </mxCell>
+        <mxCell id="p1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5E7EB;strokeColor=#4B5563;fontSize=11;fontColor=#111827;" value="&lt;b&gt;编译入口&lt;/b&gt;&lt;br&gt;LyraGame.Target.cs" vertex="1">
+          <mxGeometry height="56" width="250" x="40" y="34" as="geometry" />
+        </mxCell>
+        <mxCell id="p2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5E7EB;strokeColor=#4B5563;fontSize=11;fontColor=#111827;" value="&lt;b&gt;模块注册&lt;/b&gt;&lt;br&gt;FLyraGameModule&lt;br&gt;IMPLEMENT_PRIMARY_GAME_MODULE" vertex="1">
+          <mxGeometry height="56" width="250" x="310" y="34" as="geometry" />
+        </mxCell>
+        <mxCell id="p3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5E7EB;strokeColor=#4B5563;fontSize=11;fontColor=#111827;" value="&lt;b&gt;引擎启动&lt;/b&gt;&lt;br&gt;ULyraGameEngine::Init()" vertex="1">
+          <mxGeometry height="56" width="250" x="580" y="34" as="geometry" />
+        </mxCell>
+        <mxCell id="p4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5E7EB;strokeColor=#4B5563;fontSize=11;fontColor=#111827;" value="&lt;b&gt;游戏实例&lt;/b&gt;&lt;br&gt;ULyraGameInstance::Init()&lt;br&gt;注册 InitState 状态机" vertex="1">
+          <mxGeometry height="64" width="250" x="850" y="34" as="geometry" />
+        </mxCell>
+        <mxCell id="p5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5E7EB;strokeColor=#4B5563;fontSize=11;fontColor=#111827;" value="&lt;b&gt;资源管理&lt;/b&gt;&lt;br&gt;ULyraAssetManager" vertex="1">
+          <mxGeometry height="56" width="250" x="1120" y="34" as="geometry" />
+        </mxCell>
+        <mxCell id="p6" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FAFAFA;strokeColor=#9CA3AF;fontSize=10;fontColor=#374151;align=left;spacingLeft=8;verticalAlign=top;" value="Config/DefaultEngine.ini&lt;br&gt;• GameEngine = /Script/LyraGame.LyraGameEngine&lt;br&gt;• AssetManagerClassName = ...LyraAssetManager&lt;br&gt;• LocalPlayerClassName = ...LyraLocalPlayer&lt;br&gt;• GameInstanceClass = /Game/B_LyraGameInstance&lt;br&gt;• GlobalDefaultGameMode = /Game/B_LyraGameMode&lt;br&gt;• GameDefaultMap = .../L_LyraFrontEnd" vertex="1">
+          <mxGeometry height="160" width="360" x="1390" y="34" as="geometry" />
+        </mxCell>
+        <mxCell id="gfcm0" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F3FF;strokeColor=#8B5CF6;fontSize=10;fontColor=#4C1D95;align=left;spacingLeft=8;verticalAlign=middle;" value="GFCM 子系统已就绪&lt;br&gt;（引擎插件 · GetSubsystem 获取）" vertex="1">
+          <mxGeometry height="40" width="230" x="50" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="E1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;fontSize=11;fontColor=#111827;align=left;spacingLeft=8;spacingRight=6;verticalAlign=middle;" value="HandleMatchAssignmentIfNotExpectingOne&lt;br&gt;→ 决定 ExperienceId" vertex="1">
+          <mxGeometry height="48" width="230" x="320" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="E2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;fontSize=11;fontColor=#111827;align=left;spacingLeft=8;spacingRight=6;verticalAlign=middle;" value="OnMatchAssignmentGiven" vertex="1">
+          <mxGeometry height="38" width="230" x="320" y="358" as="geometry" />
+        </mxCell>
+        <mxCell id="E3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;fontSize=11;fontColor=#111827;align=left;spacingLeft=8;spacingRight=6;verticalAlign=middle;" value="ULyraExperienceManagerComponent&lt;br&gt;（GameState 构造创建）" vertex="1">
+          <mxGeometry height="44" width="230" x="590" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="E4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;fontSize=11;fontColor=#111827;align=left;spacingLeft=8;spacingRight=6;verticalAlign=middle;" value="SetCurrentExperience(ExperienceId)" vertex="1">
+          <mxGeometry height="40" width="230" x="590" y="356" as="geometry" />
+        </mxCell>
+        <mxCell id="E5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;fontSize=11;fontColor=#111827;align=left;spacingLeft=8;spacingRight=6;verticalAlign=middle;" value="StartExperienceLoad()&lt;br&gt;加载资产 + GameFeatures" vertex="1">
+          <mxGeometry height="48" width="230" x="590" y="408" as="geometry" />
+        </mxCell>
+        <mxCell id="E6" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;fontSize=11;fontColor=#111827;align=left;spacingLeft=8;spacingRight=6;verticalAlign=middle;" value="OnExperienceFullLoadCompleted&lt;br&gt;→ 执行 GameFeature Actions" vertex="1">
+          <mxGeometry height="40" width="230" x="590" y="466" as="geometry" />
+        </mxCell>
+        <mxCell id="E7" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;fontSize=11;fontColor=#111827;align=left;spacingLeft=8;spacingRight=6;verticalAlign=middle;" value="OnExperienceLoaded.Broadcast&lt;br&gt;（High / Normal / Low 三优先级）" vertex="1">
+          <mxGeometry height="44" width="230" x="590" y="530" as="geometry" />
+        </mxCell>
+        <mxCell id="B1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;fontSize=11;fontColor=#111827;align=left;spacingLeft=8;spacingRight=6;verticalAlign=middle;" value="&lt;b&gt;OnExperienceLoaded&lt;/b&gt;&lt;br&gt;遍历无 Pawn 的 PC → RestartPlayer" vertex="1">
+          <mxGeometry height="52" width="230" x="320" y="600" as="geometry" />
+        </mxCell>
+        <mxCell id="B2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;fontSize=11;fontColor=#111827;align=left;spacingLeft=8;spacingRight=6;verticalAlign=middle;" value="&lt;b&gt;OnExperienceLoaded&lt;/b&gt;&lt;br&gt;GetPawnDataForController → SetPawnData" vertex="1">
+          <mxGeometry height="52" width="230" x="860" y="600" as="geometry" />
+        </mxCell>
+        <mxCell id="B3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;fontSize=11;fontColor=#111827;align=left;spacingLeft=8;spacingRight=6;verticalAlign=middle;" value="SetPawnData(PawnData) [Authority]&lt;br&gt;复制 OnRep_PawnData" vertex="1">
+          <mxGeometry height="44" width="230" x="860" y="668" as="geometry" />
+        </mxCell>
+        <mxCell id="B3c" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3F4F6;strokeColor=#94A3B8;fontSize=10;fontColor=#64748B;dashed=1;align=left;spacingLeft=8;verticalAlign=middle;" value="◌ 客户端 OnRep_PawnData" vertex="1">
+          <mxGeometry height="34" width="230" x="860" y="724" as="geometry" />
+        </mxCell>
+        <mxCell id="B4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;fontSize=11;fontColor=#111827;align=left;spacingLeft=8;spacingRight=6;verticalAlign=middle;" value="遍历 PawnData-&gt;AbilitySets&lt;br&gt;AbilitySet-&gt;GiveToAbilitySystem(ASC)&lt;br&gt;（授予能力 / GE / 属性集）" vertex="1">
+          <mxGeometry height="60" width="230" x="860" y="772" as="geometry" />
+        </mxCell>
+        <mxCell id="B5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEF3C7;strokeColor=#D97706;fontSize=10;fontColor=#92400E;align=left;spacingLeft=8;spacingRight=6;verticalAlign=middle;" value="&lt;b&gt;扩展事件&lt;/b&gt; SendExtensionEvent&lt;br&gt;NAME_LyraAbilityReady&lt;br&gt;= &quot;LyraAbilitiesReady&quot;&lt;br&gt;（→ AddAbilities 类 GF Action 响应）" vertex="1">
+          <mxGeometry height="62" width="230" x="860" y="844" as="geometry" />
+        </mxCell>
+        <mxCell id="P1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;fontSize=11;fontColor=#111827;align=left;spacingLeft=8;spacingRight=6;verticalAlign=middle;" value="RestartPlayer(PC)" vertex="1">
+          <mxGeometry height="40" width="230" x="320" y="940" as="geometry" />
+        </mxCell>
+        <mxCell id="P2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;fontSize=11;fontColor=#111827;align=left;spacingLeft=8;spacingRight=6;verticalAlign=middle;" value="SpawnDefaultPawnAtTransform_Implementation" vertex="1">
+          <mxGeometry height="52" width="230" x="320" y="996" as="geometry" />
+        </mxCell>
+        <mxCell id="P3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;fontSize=11;fontColor=#111827;align=left;spacingLeft=8;spacingRight=6;verticalAlign=middle;" value="GetDefaultPawnClassForController&lt;br&gt;→ PawnData-&gt;PawnClass" vertex="1">
+          <mxGeometry height="44" width="230" x="320" y="1062" as="geometry" />
+        </mxCell>
+        <mxCell id="P4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;fontSize=11;fontColor=#111827;align=left;spacingLeft=8;spacingRight=6;verticalAlign=middle;" value="SpawnActor(PawnClass)&lt;br&gt;bDeferConstruction = true" vertex="1">
+          <mxGeometry height="44" width="230" x="1130" y="996" as="geometry" />
+        </mxCell>
+        <mxCell id="P5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;fontSize=11;fontColor=#111827;align=left;spacingLeft=8;spacingRight=6;verticalAlign=middle;" value="SetPawnData(PawnData)&lt;br&gt;（Pawn 上的 PawnData）" vertex="1">
+          <mxGeometry height="44" width="230" x="1400" y="1062" as="geometry" />
+        </mxCell>
+        <mxCell id="P6" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;fontSize=11;fontColor=#111827;align=left;spacingLeft=8;spacingRight=6;verticalAlign=middle;" value="FinishSpawning → Possess&lt;br&gt;→ PossessedBy" vertex="1">
+          <mxGeometry height="44" width="230" x="1130" y="1062" as="geometry" />
+        </mxCell>
+        <mxCell id="P7" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;fontSize=11;fontColor=#111827;align=left;spacingLeft=8;spacingRight=6;verticalAlign=middle;" value="HandleControllerChanged()" vertex="1">
+          <mxGeometry height="48" width="230" x="1400" y="1120" as="geometry" />
+        </mxCell>
+        <mxCell id="evt_gameactor" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEF3C7;strokeColor=#D97706;fontSize=10;fontColor=#92400E;align=left;spacingLeft=8;spacingRight=6;verticalAlign=middle;" value="&lt;b&gt;扩展事件&lt;/b&gt; GameActorReady&lt;br&gt;Modular 基类 BeginPlay 各自广播&lt;br&gt;（GameState / PS / PC / Pawn）&lt;br&gt;→ AddWidget 类 GF Action" vertex="1">
+          <mxGeometry height="72" width="230" x="590" y="1000" as="geometry" />
+        </mxCell>
+        <mxCell id="F1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;fontSize=11;fontColor=#111827;align=left;spacingLeft=8;spacingRight=6;verticalAlign=middle;" value="BeginPlay：RegisterInitStateFeature&lt;br&gt;TryToChangeInitState(Spawned)&lt;br&gt;CheckDefaultInitialization" vertex="1">
+          <mxGeometry height="56" width="230" x="1400" y="1196" as="geometry" />
+        </mxCell>
+        <mxCell id="F2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;fontSize=11;fontColor=#111827;align=left;spacingLeft=8;spacingRight=6;verticalAlign=middle;" value="BeginPlay：RegisterInitStateFeature&lt;br&gt;BindOnActorInitStateChanged(PawnExtension)&lt;br&gt;TryToChangeInitState(Spawned)" vertex="1">
+          <mxGeometry height="56" width="230" x="1670" y="1180" as="geometry" />
+        </mxCell>
+        <mxCell id="F3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F3FF;strokeColor=#8B5CF6;fontSize=10;fontColor=#4C1D95;align=left;spacingLeft=8;verticalAlign=middle;" value="GFCM 协调中心：&lt;br&gt;RegisterInitStateFeature /&lt;br&gt;BindOnActorInitStateChanged /&lt;br&gt;HaveAllFeaturesReachedInitState" vertex="1">
+          <mxGeometry height="52" width="230" x="50" y="1196" as="geometry" />
+        </mxCell>
+        <mxCell id="F4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;fontSize=11;fontColor=#111827;align=left;spacingLeft=8;spacingRight=6;verticalAlign=middle;" value="Spawned → DataAvailable&lt;br&gt;门控：有 PawnData + Controller" vertex="1">
+          <mxGeometry height="52" width="230" x="1400" y="1266" as="geometry" />
+        </mxCell>
+        <mxCell id="F5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;fontSize=11;fontColor=#111827;align=left;spacingLeft=8;spacingRight=6;verticalAlign=middle;" value="Spawned → DataAvailable&lt;br&gt;门控：PS + Controller + Input" vertex="1">
+          <mxGeometry height="52" width="230" x="1670" y="1250" as="geometry" />
+        </mxCell>
+        <mxCell id="F6" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F3FF;strokeColor=#8B5CF6;fontSize=10;fontColor=#4C1D95;align=left;spacingLeft=8;verticalAlign=middle;" value="HaveAllFeaturesReachedInitState&lt;br&gt;(Pawn, DataAvailable)" vertex="1">
+          <mxGeometry height="44" width="230" x="50" y="1276" as="geometry" />
+        </mxCell>
+        <mxCell id="F7" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;fontSize=11;fontColor=#111827;align=left;spacingLeft=8;spacingRight=6;verticalAlign=middle;" value="DataAvailable → DataInitialized&lt;br&gt;门控：所有 feature 都 DataAvailable" vertex="1">
+          <mxGeometry height="52" width="230" x="1400" y="1336" as="geometry" />
+        </mxCell>
+        <mxCell id="F8" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;fontSize=11;fontColor=#111827;align=left;spacingLeft=8;spacingRight=6;verticalAlign=middle;" value="OnActorInitStateChanged&lt;br&gt;(PawnExtension = DataInitialized)" vertex="1">
+          <mxGeometry height="52" width="230" x="1670" y="1336" as="geometry" />
+        </mxCell>
+        <mxCell id="F9" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;fontSize=11;fontColor=#111827;align=left;spacingLeft=8;spacingRight=6;verticalAlign=middle;" value="DataAvailable → DataInitialized&lt;br&gt;门控：PawnExtension 已 DataInitialized" vertex="1">
+          <mxGeometry height="52" width="230" x="1670" y="1414" as="geometry" />
+        </mxCell>
+        <mxCell id="F10" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;fontSize=11;fontColor=#111827;align=left;spacingLeft=8;spacingRight=6;verticalAlign=middle;" value="HandleChangeInitState：&lt;br&gt;InitializeAbilitySystem + InitializePlayerInput()&lt;br&gt;绑相机 + 发扩展事件 BindInputsNow" vertex="1">
+          <mxGeometry height="84" width="230" x="1670" y="1486" as="geometry" />
+        </mxCell>
+        <mxCell id="F10b" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;fontSize=11;fontColor=#111827;align=left;spacingLeft=8;spacingRight=6;verticalAlign=middle;" value="InitializeAbilitySystem(PS的ASC, PS)&lt;br&gt;InitAbilityActorInfo(PlayerState, Pawn)&lt;br&gt;→ OnAbilitySystemInitialized.Broadcast()" vertex="1">
+          <mxGeometry height="64" width="230" x="1400" y="1466" as="geometry" />
+        </mxCell>
+        <mxCell id="F11" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;fontSize=11;fontColor=#111827;align=left;spacingLeft=8;spacingRight=6;verticalAlign=middle;" value="提供 ASC（Owner = PlayerState）" vertex="1">
+          <mxGeometry height="44" width="230" x="860" y="1466" as="geometry" />
+        </mxCell>
+        <mxCell id="F12" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;fontSize=11;fontColor=#111827;align=left;spacingLeft=8;spacingRight=6;verticalAlign=middle;" value="OnAbilitySystemInitialized&lt;br&gt;HealthComponent-&gt;InitializeWithAbilitySystem +&lt;br&gt;InitializeGameplayTags" vertex="1">
+          <mxGeometry height="52" width="230" x="1130" y="1546" as="geometry" />
+        </mxCell>
+        <mxCell id="F13" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;fontSize=11;fontColor=#111827;align=left;spacingLeft=8;spacingRight=6;verticalAlign=middle;" value="InitializeWithAbilitySystem(ASC)&lt;br&gt;拿 HealthSet → 注册委托 → 满血" vertex="1">
+          <mxGeometry height="52" width="230" x="1940" y="1546" as="geometry" />
+        </mxCell>
+        <mxCell id="F16" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3F4F6;strokeColor=#94A3B8;fontSize=10;fontColor=#64748B;dashed=1;align=left;spacingLeft=8;verticalAlign=middle;" value="◌ 客户端 OnRep_PawnData&lt;br&gt;→ CheckDefaultInitialization" vertex="1">
+          <mxGeometry height="40" width="230" x="1410" y="1545" as="geometry" />
+        </mxCell>
+        <mxCell id="F14" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;fontSize=11;fontColor=#111827;align=left;spacingLeft=8;spacingRight=6;verticalAlign=middle;" value="DataInitialized → GameplayReady&amp;nbsp;" vertex="1">
+          <mxGeometry height="44" width="230" x="1400" y="1600" as="geometry" />
+        </mxCell>
+        <mxCell id="F15" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#64748B;fontSize=11;fontColor=#111827;align=left;spacingLeft=8;spacingRight=6;verticalAlign=middle;" value="DataInitialized → GameplayReady&amp;nbsp;" vertex="1">
+          <mxGeometry height="44" width="230" x="1670" y="1600" as="geometry" />
+        </mxCell>
+        <mxCell id="gttitle" parent="1" style="text;html=1;fontSize=16;fontStyle=1;fontColor=#111827;align=left;" value="InitState 门控对照&amp;nbsp;" vertex="1">
+          <mxGeometry height="24" width="1300" x="40" y="1680" as="geometry" />
+        </mxCell>
+        <mxCell id="gh_mig" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E5E7EB;strokeColor=#6B7280;fontSize=11;fontStyle=1;fontColor=#111827;align=left;spacingLeft=8;verticalAlign=middle;" value="迁移（四态链）" vertex="1">
+          <mxGeometry height="28" width="230" x="40" y="1712" as="geometry" />
+        </mxCell>
+        <mxCell id="gh_pe" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E5E7EB;strokeColor=#6B7280;fontSize=11;fontStyle=1;fontColor=#111827;align=left;spacingLeft=8;verticalAlign=middle;" value="ULyraPawnExtensionComponent" vertex="1">
+          <mxGeometry height="28" width="950" x="278" y="1712" as="geometry" />
+        </mxCell>
+        <mxCell id="gh_hero" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E5E7EB;strokeColor=#6B7280;fontSize=11;fontStyle=1;fontColor=#111827;align=left;spacingLeft=8;verticalAlign=middle;" value="ULyraHeroComponent" vertex="1">
+          <mxGeometry height="28" width="944" x="1236" y="1712" as="geometry" />
+        </mxCell>
+        <mxCell id="g_mig0" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#D1FAE5;strokeColor=#059669;fontSize=10;fontColor=#064E3B;align=left;spacingLeft=6;verticalAlign=middle;" value="∅ → Spawned" vertex="1">
+          <mxGeometry height="58" width="230" x="40" y="1748" as="geometry" />
+        </mxCell>
+        <mxCell id="g_pe0" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#94A3B8;fontSize=10;fontColor=#111827;align=left;spacingLeft=8;verticalAlign=middle;" value="有合法 Pawn" vertex="1">
+          <mxGeometry height="58" width="950" x="278" y="1748" as="geometry" />
+        </mxCell>
+        <mxCell id="g_hero0" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#94A3B8;fontSize=10;fontColor=#111827;align=left;spacingLeft=8;verticalAlign=middle;" value="有合法 Pawn" vertex="1">
+          <mxGeometry height="58" width="944" x="1236" y="1748" as="geometry" />
+        </mxCell>
+        <mxCell id="g_mig1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#D1FAE5;strokeColor=#059669;fontSize=10;fontColor=#064E3B;align=left;spacingLeft=6;verticalAlign=middle;" value="Spawned → DataAvailable" vertex="1">
+          <mxGeometry height="58" width="230" x="40" y="1812" as="geometry" />
+        </mxCell>
+        <mxCell id="g_pe1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#94A3B8;fontSize=10;fontColor=#111827;align=left;spacingLeft=8;verticalAlign=middle;" value="有 PawnData；authority 或本地控制时还需 Controller（已被 Possess）" vertex="1">
+          <mxGeometry height="58" width="950" x="278" y="1812" as="geometry" />
+        </mxCell>
+        <mxCell id="g_hero1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#94A3B8;fontSize=10;fontColor=#111827;align=left;spacingLeft=8;verticalAlign=middle;" value="有 PlayerState；非 SimProxy 需 Controller 且已配对 PS；本地控制(非 bot)还需 InputComponent + PC + LocalPlayer" vertex="1">
+          <mxGeometry height="58" width="944" x="1236" y="1812" as="geometry" />
+        </mxCell>
+        <mxCell id="g_mig2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#D1FAE5;strokeColor=#059669;fontSize=10;fontColor=#064E3B;align=left;spacingLeft=6;verticalAlign=middle;" value="DataAvailable → DataInitialized" vertex="1">
+          <mxGeometry height="58" width="230" x="40" y="1876" as="geometry" />
+        </mxCell>
+        <mxCell id="g_pe2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#94A3B8;fontSize=10;fontColor=#111827;align=left;spacingLeft=8;verticalAlign=middle;" value="HaveAllFeaturesReachedInitState(DataAvailable) —— 所有 feature 都到 DataAvailable" vertex="1">
+          <mxGeometry height="58" width="950" x="278" y="1876" as="geometry" />
+        </mxCell>
+        <mxCell id="g_hero2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#94A3B8;fontSize=10;fontColor=#111827;align=left;spacingLeft=8;verticalAlign=middle;" value="有 PlayerState 且 PawnExtension 已到 DataInitialized" vertex="1">
+          <mxGeometry height="58" width="944" x="1236" y="1876" as="geometry" />
+        </mxCell>
+        <mxCell id="g_mig3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#D1FAE5;strokeColor=#059669;fontSize=10;fontColor=#064E3B;align=left;spacingLeft=6;verticalAlign=middle;" value="DataInitialized → GameplayReady" vertex="1">
+          <mxGeometry height="58" width="230" x="40" y="1940" as="geometry" />
+        </mxCell>
+        <mxCell id="g_pe3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#94A3B8;fontSize=10;fontColor=#111827;align=left;spacingLeft=8;verticalAlign=middle;" value="无条件 true" vertex="1">
+          <mxGeometry height="58" width="950" x="278" y="1940" as="geometry" />
+        </mxCell>
+        <mxCell id="g_hero3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#94A3B8;fontSize=10;fontColor=#111827;align=left;spacingLeft=8;verticalAlign=middle;" value="无条件 true" vertex="1">
+          <mxGeometry height="58" width="944" x="1236" y="1940" as="geometry" />
+        </mxCell>
+        <mxCell id="gtnote" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FAFAFA;strokeColor=#9CA3AF;fontSize=10;fontColor=#374151;align=left;spacingLeft=8;verticalAlign=top;" value="机制：feature 实现 IGameFrameworkInitStateInterface —— CanChangeInitState（门控）/ HandleChangeInitState（动作）/ CheckDefaultInitialization（推进）；TryToChangeInitState = 门控 → 动作 → ChangeFeatureInitState 通知。&lt;br&gt;动作差异：PawnExtension 的 DataAvailable→DataInitialized 无动作（纯协调，靠 OnActorInitStateChanged 回调联动）；Hero 的 DataAvailable→DataInitialized 做 InitializeAbilitySystem + InitializePlayerInput + 绑相机。&lt;br&gt;「feature」= 同一 Actor 上实现该接口的组件（Lyra 里即 PawnExtension / Hero），与 GameFeatures 插件无关。" vertex="1">
+          <mxGeometry height="100" width="2140" x="40" y="2006" as="geometry" />
+        </mxCell>
+        <mxCell id="pg1" edge="1" parent="1" source="p1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;" target="p2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pg2" edge="1" parent="1" source="p2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;" target="p3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pg3" edge="1" parent="1" source="p3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;" target="p4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pg4" edge="1" parent="1" source="p4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;" target="p5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pg5" edge="1" parent="1" source="p6" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=4 3;" target="p4" value="DefaultEngine.ini 指定">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pg6" edge="1" parent="1" source="p4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=4 3;" target="gfcm0" value="GetSubsystem&lt;UGameFrameworkComponentManager&gt; → RegisterInitState">
+          <mxGeometry relative="1" x="0.2187" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="a1" edge="1" parent="1" source="E1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;" target="E2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a2" edge="1" parent="1" source="E2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;" target="E4" value="确定 ExperienceId">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a3" edge="1" parent="1" source="E4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;" target="E5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a4" edge="1" parent="1" source="E5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;" target="E6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a5" edge="1" parent="1" source="E6" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;" target="E7" value="Broadcast">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="b1" edge="1" parent="1" source="E7" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;" target="B1" value="监听①">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="b2" edge="1" parent="1" source="E7" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;" target="B2" value="监听②">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="b3" edge="1" parent="1" source="B2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;" target="B3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="b4" edge="1" parent="1" source="B3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;" target="B4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="b5" edge="1" parent="1" source="B4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;" target="B5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="b6" edge="1" parent="1" source="B3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=4 3;" target="B3c" value="复制(Replicated)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="b7" edge="1" parent="1" source="B1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;" target="P1" value="进入阶段三">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c1" edge="1" parent="1" source="P1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;" target="P2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c2" edge="1" parent="1" source="P2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;" target="P3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c3" edge="1" parent="1" source="P3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;" target="P4" value="PawnClass → SpawnActor(延迟)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c4" edge="1" parent="1" source="P2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;" target="P5" value="SetPawnData(PawnData)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c5" edge="1" parent="1" source="P4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;" target="P6" value="FinishSpawning → Possess → PossessedBy">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c6" edge="1" parent="1" source="P6" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;" target="P7" value="HandleControllerChanged">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d0" edge="1" parent="1" source="P7" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=4 3;" target="F1" value="BeginPlay 后推进状态机">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d1" edge="1" parent="1" source="F1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;" target="F4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d2" edge="1" parent="1" source="F4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;" target="F7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d3" edge="1" parent="1" source="F6" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=4 3;" target="F7" value="门控：HaveAllFeaturesReachedInitState(DataAvailable)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d4" edge="1" parent="1" source="F2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;" target="F5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d5" edge="1" parent="1" source="F7" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=4 3;" target="F8" value="PawnExtension 到 DataInitialized → 触发监听">
+          <mxGeometry relative="1" x="-1" y="2" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="d5c" edge="1" parent="1" source="F5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=4 3;" target="F9" value="门控：等待 PawnExtension 到 DataInitialized">
+          <mxGeometry relative="1" x="-0.7209" y="5" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="d6" edge="1" parent="1" source="F8" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;" target="F9" value="CheckDefaultInitialization 推进">
+          <mxGeometry relative="1" x="-0.1667" y="-5" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="d7" edge="1" parent="1" source="F9" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;" target="F10" value="进入 DataInitialized">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d8" edge="1" parent="1" source="F10" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;" target="F10b" value="调用 InitializeAbilitySystem">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d9" edge="1" parent="1" source="F11" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=4 3;" target="F10b" value="ASC（Owner = PlayerState）">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d10" edge="1" parent="1" source="F10b" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;" target="F12" value="OnAbilitySystemInitialized.Broadcast">
+          <mxGeometry relative="1" x="-0.1133" y="-8" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="d11" edge="1" parent="1" source="F12" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;" target="F13" value="InitializeWithAbilitySystem(ASC)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d12" edge="1" parent="1" source="F7" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;" target="F14">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d13" edge="1" parent="1" source="F10" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;" target="F15">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d14" edge="1" parent="1" source="F7" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=4 3;" target="F16" value="客户端 OnRep_PawnData → CheckDefaultInitialization">
+          <mxGeometry relative="1" x="-0.4684" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="d15" edge="1" parent="1" source="F1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=4 3;" target="F3" value="RegisterInitStateFeature">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d16" edge="1" parent="1" source="F2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;whiteSpace=wrap;endArrow=block;endFill=1;fontSize=10;fontColor=#374151;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=4 3;" target="F3" value="RegisterInitStateFeature">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

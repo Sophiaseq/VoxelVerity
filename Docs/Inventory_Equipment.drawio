@@ -1,6 +1,6 @@
 <mxfile host="Electron">
   <diagram name="第 1 页" id="1RoMMSrcz0iPBIinnVQq">
-    <mxGraphModel dx="4236" dy="1136" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="0" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="3499" dy="659" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="0" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -20,7 +20,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="4OV-WDt5KJ_VW9DOspJ9-4" parent="1" style="swimlane;fontStyle=3;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;" value="FLyraInventoryList" vertex="1">
-          <mxGeometry height="241" width="900" x="138" y="198" as="geometry" />
+          <mxGeometry height="257" width="900" x="139" y="184.75" as="geometry" />
         </mxCell>
         <mxCell id="4OV-WDt5KJ_VW9DOspJ9-5" parent="4OV-WDt5KJ_VW9DOspJ9-4" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="+void AddEntry(ULyraInventoryItemInstance* Instance)&lt;br&gt;+void RemoveEntry(ULyraInventoryItemInstance* Instance)&lt;br&gt;-void BroadcastChangeMessage(FLyraInventoryEntry&amp;amp; Entry, int32 OldCount, int32 NewCount)&lt;br&gt;+bool NetDeltaSerialize(FNetDeltaSerializeInfo&amp;amp; DeltaParms)&lt;br&gt;{return FFastArraySerializer::FastArrayDeltaSerialize&amp;lt;FMGInventoryEntry, FMGInventoryList&amp;gt;(Entries, DeltaParms, *this);}继承FFastArraySerializer所必须添加的函数" vertex="1">
           <mxGeometry height="95" width="900" y="29" as="geometry" />
@@ -28,8 +28,8 @@
         <mxCell id="RMdz0tVG34XLr6AN7apm-10" parent="4OV-WDt5KJ_VW9DOspJ9-4" style="text;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;rounded=0;" value="template&lt;&gt;&#xa;struct TStructOpsTypeTraits&lt;FMGInventoryList&gt; : public TStructOpsTypeTraitsBase2&lt;FMGInventoryList&gt;&#xa;{&#xa;    enum { WithNetDeltaSerializer = true };&#xa;};也是必须添加的" vertex="1">
           <mxGeometry height="79" width="900" y="124" as="geometry" />
         </mxCell>
-        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-6" parent="4OV-WDt5KJ_VW9DOspJ9-4" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;convertToSvg=0;svgWhiteSpace=wrap;html=1;" value="-TArray&amp;lt;FLyraInventoryEntry&amp;gt; Entries&lt;br&gt;-&lt;u&gt;TObjectPtr&amp;lt;UActorComponent&amp;gt; OwnerComponent&lt;/u&gt;" vertex="1">
-          <mxGeometry height="38" width="900" y="203" as="geometry" />
+        <mxCell id="4OV-WDt5KJ_VW9DOspJ9-6" parent="4OV-WDt5KJ_VW9DOspJ9-4" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;convertToSvg=0;svgWhiteSpace=wrap;html=1;" value="-TArray&amp;lt;FLyraInventoryEntry&amp;gt; Entries&lt;br&gt;-&lt;u&gt;TObjectPtr&amp;lt;UActorComponent&amp;gt; OwnerComponent&lt;/u&gt;&lt;br&gt;-&lt;u&gt;&lt;font face=&quot;Garamond&quot;&gt;int32 MaxEntryCount = 32&lt;/font&gt;&lt;/u&gt;" vertex="1">
+          <mxGeometry height="54" width="900" y="203" as="geometry" />
         </mxCell>
         <mxCell id="4OV-WDt5KJ_VW9DOspJ9-8" edge="1" parent="1" source="4OV-WDt5KJ_VW9DOspJ9-4" style="endArrow=none;startArrow=diamondThin;endFill=0;startFill=1;html=1;verticalAlign=bottom;labelBackgroundColor=none;strokeWidth=1;startSize=8;endSize=8;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="4OV-WDt5KJ_VW9DOspJ9-2" value="">
           <mxGeometry relative="1" width="160" as="geometry">
@@ -73,9 +73,9 @@
             <mxPoint x="-152" y="247" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <UserObject label="用下划线替代NotReplicated，斜体表示一个Object网络复制为true" placeholders="1" name="Variable" id="4OV-WDt5KJ_VW9DOspJ9-18">
-          <mxCell parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontStyle=1;labelBackgroundColor=light-dark(#f3f556, #ededed);" vertex="1">
-            <mxGeometry height="28" width="368" x="-827" y="21" as="geometry" />
+        <UserObject label="用下划线替代NotReplicated，斜体表示一个Object网络复制为true，字体标记绿色表示新增的类，“&lt;span style=&quot;font-family: Garamond;&quot;&gt;this front&lt;/span&gt;”表示增加的成员" placeholders="1" name="Variable" id="4OV-WDt5KJ_VW9DOspJ9-18">
+          <mxCell parent="1" style="text;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontStyle=1;labelBackgroundColor=light-dark(#f3f556, #ededed);fontFamily=Helvetica;html=1;" vertex="1">
+            <mxGeometry height="38" width="374" x="-827" y="14" as="geometry" />
           </mxCell>
         </UserObject>
         <mxCell id="4OV-WDt5KJ_VW9DOspJ9-19" parent="1" style="swimlane;fontStyle=3;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;" value="ULyraInventoryItemDefinition" vertex="1">
@@ -512,6 +512,32 @@
         </mxCell>
         <mxCell id="RMdz0tVG34XLr6AN7apm-12" parent="1" style="text;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontColor=#CC6600;whiteSpace=wrap;html=1;" value="只对增量进行网络复制，而不是改变一点就对整个结构体进行网络复制" vertex="1">
           <mxGeometry height="30" width="261" x="474" y="132" as="geometry" />
+        </mxCell>
+        <mxCell id="TpOY8OZM3VDaF-nOysZM-1" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=middle;childLayout=stackLayout;horizontal=1;startSize=29;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;fontColor=light-dark(#1aa22a, #ededed);" value="UMGInventoryFragment_Stackable" vertex="1">
+          <mxGeometry height="54" width="227" x="1730" y="595.75" as="geometry" />
+        </mxCell>
+        <mxCell id="TpOY8OZM3VDaF-nOysZM-2" parent="TpOY8OZM3VDaF-nOysZM-1" style="text;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;" value="#int32 MaxStackCount" vertex="1">
+          <mxGeometry height="25" width="227" y="29" as="geometry" />
+        </mxCell>
+        <mxCell id="TpOY8OZM3VDaF-nOysZM-3" edge="1" parent="1" source="4OV-WDt5KJ_VW9DOspJ9-25" style="endArrow=none;html=1;rounded=0;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0;entryDx=0;entryDy=0;" target="TpOY8OZM3VDaF-nOysZM-1" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="771" y="525" as="sourcePoint" />
+            <mxPoint x="1368" y="588" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="TpOY8OZM3VDaF-nOysZM-4" connectable="0" parent="TpOY8OZM3VDaF-nOysZM-3" style="edgeLabel;resizable=0;html=1;align=left;verticalAlign=bottom;" value="parent" vertex="1">
+          <mxGeometry relative="1" x="-1" as="geometry">
+            <mxPoint x="65" y="19" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="TpOY8OZM3VDaF-nOysZM-5" connectable="0" parent="TpOY8OZM3VDaF-nOysZM-3" style="edgeLabel;resizable=0;html=1;align=right;verticalAlign=bottom;" value="child" vertex="1">
+          <mxGeometry relative="1" x="0.999" as="geometry" />
+        </mxCell>
+        <mxCell id="TpOY8OZM3VDaF-nOysZM-6" parent="1" style="text;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontColor=#0000CC;whiteSpace=wrap;" value="需求：设置物品是可堆叠的且有上限" vertex="1">
+          <mxGeometry height="30" width="310" x="1806" y="564" as="geometry" />
+        </mxCell>
+        <mxCell id="TpOY8OZM3VDaF-nOysZM-7" parent="1" style="text;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontColor=#0000CC;whiteSpace=wrap;" value="设置背包条目上限" vertex="1">
+          <mxGeometry height="30" width="119" x="273" y="436" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

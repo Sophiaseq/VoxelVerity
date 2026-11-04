@@ -1,7 +1,17 @@
-# 游戏演示
-**学习路径：b站系列教程《虚幻5 C++ 游戏开发从入门到秃头》https://www.bilibili.com/video/BV1Wk9EYvEoy?t=5.6、《【虚幻引擎5】超硬核GAS游戏开发教程【完结】》https://www.bilibili.com/video/BV1L7JczbEwZ?t=8.2和Lyra源码。Lyra主要学习的部分是LyraCharacter和它的Component的模块化初始化流程**
+# 项目架构
 
-## 角色移动
+## GameplayFramework
+学习Lary的模块化初始化流程来解决组件加载顺序不确定的问题，下面是主要文件的目录结构。首先在 `ULyraGameInstance::Init()` 里 `GetSubsystem<UGameFrameworkComponentManager>` 拿到 GFCM对象，并 `RegisterInitState` 注册状态机；PawnExtensionComponent实现接口 `IGameFrameworkInitStateInterface` 的四个函数 `CanChangeInitState` `HandleChangeInitState` `CheckDefaultInitialization` `TryToChangeInitState` 协调各个组件的初始化，详细可见[初始化流程图](/Docs/Lyra_Startup_GFCM.drawio)。
+```text
+MundusGranum/
+└──Source/
+   └──MundusGranum/
+      ├──Character/
+      ├──Player/
+      └──GameModes/
+```
+下面是相关的实际功能演示
+### 角色移动
 
 <details>
 <summary>点击查看演示 GIF</summary>
@@ -10,7 +20,7 @@
 
 </details>
 
-## 角色移动模式的状态机
+### 角色移动模式的状态机
 声明FGameplayTagBlueprintPropertyMap类型的变量将一个标签与一个bool变量绑定。手持武器时切换动画蓝图。
 
 <details>
@@ -20,17 +30,7 @@
 
 </details>
 
-## 玩家背包与手持物品切换
-没有做UI，gif中演示了空手和手持武器的切换
-
-<details>
-<summary>点击查看演示 GIF</summary>
-
-![演示](Docs/Images/Desktop_2026.10.06_20.19.01.07_26-38s.gif)
-
-</details>
-
-## 数据驱动的Character生成
+### 数据驱动的Character生成
 派生一个ATargetPoint，角色的数据资产作为成员变量让TargetPoint在它的位置生成一个指定类型的Character，它的初始化流程融合进了玩家操控的Character的模块化初始化流程。
 
 <details>
@@ -47,16 +47,26 @@
 
 </details>
 
-## 敌人AI
+## 背包系统
+学习Lyra的背包系统，绘制了[UML图](/Docs/Inventory_Equipment.drawio)，写了部分逻辑的**单元测试**。主要文件的目录结构如下。
+```text
+MundusGranum/
+└──Source/
+   └──MundusGranum/
+      ├──Inventory/
+      └──Equipment/
+```
+### 玩家背包与手持物品切换演示
+暂时没有UI，gif中演示了空手和手持武器的切换
 
 <details>
 <summary>点击查看演示 GIF</summary>
 
-![演示](Docs/Images/Desktop_2026.10.06_15.19.04.05_85-100s.gif)
+![演示](Docs/Images/Desktop_2026.10.06_20.19.01.07_26-38s.gif)
 
 </details>
 
-## 能力
+## GAS
 GAS相关演示
 
 ### 跳跃能力
@@ -111,5 +121,15 @@ GAS相关演示
 <summary>点击查看演示 GIF</summary>
 
 ![演示](Docs/Images/Desktop_2026.10.07_13.31.01.12_2-6s.gif)
+
+</details>
+
+## 敌人AI
+通过编写AI行为树和BlackBoard实现了锁定、追踪玩家并在指定范围内攻击玩家
+
+<details>
+<summary>点击查看演示 GIF</summary>
+
+![演示](Docs/Images/Desktop_2026.10.06_15.19.04.05_85-100s.gif)
 
 </details>

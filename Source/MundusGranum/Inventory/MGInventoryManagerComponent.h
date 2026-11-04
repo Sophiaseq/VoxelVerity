@@ -95,7 +95,7 @@ private:
 
 	//需要硬编码
 	UPROPERTY(EditDefaultsOnly, NotReplicated)
-	int8 MaxEntryCount = 32; 
+	int32 MaxEntryCount = 32;
 	
 	//网络复制
 	UPROPERTY()
